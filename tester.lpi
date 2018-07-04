@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="10"/>
+    <PathDelim Value="\"/>
+    <General>
+      <SessionStorage Value="InProjectDir"/>
+      <MainUnit Value="0"/>
+      <Title Value="tester"/>
+      <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
+      <Icon Value="0"/>
+    </General>
+    <BuildModes Count="1">
+      <Item1 Name="Default" Default="True"/>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+    </PublishOptions>
+    <RunParams>
+      <local>
+        <FormatVersion Value="1"/>
+      </local>
+    </RunParams>
+    <RequiredPackages Count="1">
+      <Item1>
+        <PackageName Value="LCL"/>
+      </Item1>
+    </RequiredPackages>
+    <Units Count="15">
+      <Unit0>
+        <Filename Value="tester.lpr"/>
+        <IsPartOfProject Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="test.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="GDAXTester"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="src\gdax.api.accounts.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="src\gdax.api.authenticator.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="src\gdax.api.book.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="src\gdax.api.candles.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="src\gdax.api.fills.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="src\gdax.api.orders.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="src\gdax.api.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="src\gdax.api.ticker.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="src\gdax.api.time.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="src\gdax.api.consts.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="src\gdax.inc"/>
+        <IsPartOfProject Value="True"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="src\gdax.api.types.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="src\gdax.api.products.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit14>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="tester"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="src;src\mORMot;src\mORMot\CrossPlatform;src\HashLib4Pascal\HashLib\src\Crypto;src\HashLib4Pascal\HashLib\src\Interfaces;src\HashLib4Pascal\HashLib\src\Utils;src\HashLib4Pascal\HashLib\src\Base;src\HashLib4Pascal\HashLib\src\Nullable;src\HashLib4Pascal\HashLib\src\NullDigest;src\HashLib4Pascal\HashLib\src\Checksum;src\HashLib4Pascal\HashLib\src\Hash32;src\HashLib4Pascal\HashLib\src\Hash64;src\HashLib4Pascal\HashLib\src\Hash128;src\HashLib4Pascal\HashLib\src\Include;src\HashLib4Pascal\HashLib\src\Interfaces\IBlake2BConfigurations;src\HashLib4Pascal\HashLib\src\Interfaces\IBlake2SConfigurations;src\HashLib4Pascal\HashLib\src\Crypto\Blake2BConfigurations;src\HashLib4Pascal\HashLib\src\Crypto\Blake2SConfigurations;src\HashLib4Pascal\HashLib\src\KDF;src\SimpleBaseLib4Pascal\SimpleBaseLib\src\Bases;src\SimpleBaseLib4Pascal\SimpleBaseLib\src\Include;src\SimpleBaseLib4Pascal\SimpleBaseLib\src\Interfaces;src\SimpleBaseLib4Pascal\SimpleBaseLib\src\Utils;src\internettools\internet;src\internettools\data"/>
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+    <Linking>
+      <Options>
+        <Win32>
+          <GraphicApplication Value="True"/>
+        </Win32>
+      </Options>
+    </Linking>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

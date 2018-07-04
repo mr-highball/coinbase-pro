@@ -1,0 +1,647 @@
+object GDAXTester: TGDAXTester
+  Left = 444
+  Height = 322
+  Top = 299
+  Width = 546
+  Align = alBottom
+  Caption = 'GDAXTester'
+  ClientHeight = 322
+  ClientWidth = 546
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  LCLVersion = '1.8.2.0'
+  object pctrl_main: TPageControl
+    Left = 5
+    Height = 292
+    Top = 5
+    Width = 536
+    ActivePage = ts_auth
+    Align = alClient
+    BorderSpacing.Left = 5
+    BorderSpacing.Top = 5
+    BorderSpacing.Right = 5
+    BorderSpacing.Bottom = 25
+    TabIndex = 0
+    TabOrder = 0
+    OnChange = pctrl_mainChange
+    object ts_auth: TTabSheet
+      Caption = 'Authenticator'
+      ClientHeight = 264
+      ClientWidth = 528
+      object edit_auth_key: TLabeledEdit
+        Left = 16
+        Height = 23
+        Top = 32
+        Width = 200
+        EditLabel.AnchorSideLeft.Control = edit_auth_key
+        EditLabel.AnchorSideRight.Control = edit_auth_key
+        EditLabel.AnchorSideRight.Side = asrBottom
+        EditLabel.AnchorSideBottom.Control = edit_auth_key
+        EditLabel.Left = 16
+        EditLabel.Height = 15
+        EditLabel.Top = 14
+        EditLabel.Width = 200
+        EditLabel.Caption = 'Key'
+        EditLabel.ParentColor = False
+        TabOrder = 0
+      end
+      object edit_auth_secret: TLabeledEdit
+        Left = 16
+        Height = 23
+        Top = 92
+        Width = 200
+        EditLabel.AnchorSideLeft.Control = edit_auth_secret
+        EditLabel.AnchorSideRight.Control = edit_auth_secret
+        EditLabel.AnchorSideRight.Side = asrBottom
+        EditLabel.AnchorSideBottom.Control = edit_auth_secret
+        EditLabel.Left = 16
+        EditLabel.Height = 15
+        EditLabel.Top = 74
+        EditLabel.Width = 200
+        EditLabel.Caption = 'Secret'
+        EditLabel.ParentColor = False
+        TabOrder = 1
+      end
+      object edit_auth_pass: TLabeledEdit
+        Left = 16
+        Height = 23
+        Top = 152
+        Width = 200
+        EditLabel.AnchorSideLeft.Control = edit_auth_pass
+        EditLabel.AnchorSideRight.Control = edit_auth_pass
+        EditLabel.AnchorSideRight.Side = asrBottom
+        EditLabel.AnchorSideBottom.Control = edit_auth_pass
+        EditLabel.Left = 16
+        EditLabel.Height = 15
+        EditLabel.Top = 134
+        EditLabel.Width = 200
+        EditLabel.Caption = 'Passphrase'
+        EditLabel.ParentColor = False
+        TabOrder = 2
+      end
+      object btn_auth_test: TButton
+        AnchorSideRight.Control = ts_auth
+        AnchorSideRight.Side = asrBottom
+        Left = 448
+        Height = 25
+        Top = 232
+        Width = 75
+        Anchors = [akRight]
+        BorderSpacing.Right = 5
+        Caption = 'Test'
+        OnClick = btn_auth_testClick
+        TabOrder = 3
+      end
+      object memo_auth_result: TMemo
+        AnchorSideLeft.Control = edit_auth_key
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = edit_auth_key
+        AnchorSideRight.Control = btn_auth_test
+        AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Control = edit_auth_pass
+        AnchorSideBottom.Side = asrBottom
+        Left = 226
+        Height = 143
+        Top = 32
+        Width = 297
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        BorderSpacing.Left = 10
+        ScrollBars = ssAutoBoth
+        TabOrder = 4
+      end
+      object chk_auth_time: TCheckBox
+        AnchorSideLeft.Control = edit_auth_pass
+        AnchorSideTop.Control = edit_auth_pass
+        AnchorSideTop.Side = asrBottom
+        Left = 16
+        Height = 19
+        Top = 185
+        Width = 100
+        BorderSpacing.Top = 10
+        Caption = 'Use Local Time'
+        Checked = True
+        State = cbChecked
+        TabOrder = 5
+      end
+    end
+    object ts_fpc_web: TTabSheet
+      Caption = 'Base Web Client'
+      ClientHeight = 264
+      ClientWidth = 432
+      object btn_base_web_test: TButton
+        AnchorSideRight.Control = ts_fpc_web
+        AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Control = ts_fpc_web
+        AnchorSideBottom.Side = asrBottom
+        Left = 352
+        Height = 25
+        Top = 234
+        Width = 75
+        Anchors = [akRight, akBottom]
+        BorderSpacing.Right = 5
+        BorderSpacing.Bottom = 5
+        Caption = 'Test'
+        OnClick = btn_base_web_testClick
+        TabOrder = 0
+      end
+      object memo_base_web: TMemo
+        AnchorSideBottom.Control = btn_base_web_test
+        Left = 5
+        Height = 209
+        Top = 5
+        Width = 422
+        Align = alClient
+        BorderSpacing.Left = 5
+        BorderSpacing.Top = 5
+        BorderSpacing.Right = 5
+        BorderSpacing.Bottom = 50
+        ScrollBars = ssAutoBoth
+        TabOrder = 1
+      end
+    end
+    object ts_products: TTabSheet
+      Caption = 'Products'
+      ClientHeight = 264
+      ClientWidth = 432
+      object edit_product_quote: TLabeledEdit
+        Left = 15
+        Height = 23
+        Top = 39
+        Width = 136
+        EditLabel.AnchorSideLeft.Control = edit_product_quote
+        EditLabel.AnchorSideRight.Control = edit_product_quote
+        EditLabel.AnchorSideRight.Side = asrBottom
+        EditLabel.AnchorSideBottom.Control = edit_product_quote
+        EditLabel.Left = 15
+        EditLabel.Height = 15
+        EditLabel.Top = 21
+        EditLabel.Width = 136
+        EditLabel.Caption = 'Quote Currency Filter'
+        EditLabel.ParentColor = False
+        TabOrder = 0
+      end
+      object list_products: TListBox
+        AnchorSideLeft.Control = edit_product_quote
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = edit_product_quote
+        AnchorSideRight.Control = btn_product_test
+        AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Control = btn_product_test
+        Left = 176
+        Height = 170
+        Top = 39
+        Width = 251
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        BorderSpacing.Left = 25
+        BorderSpacing.Bottom = 25
+        ItemHeight = 0
+        TabOrder = 1
+      end
+      object btn_product_test: TButton
+        AnchorSideRight.Control = ts_products
+        AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Control = ts_products
+        AnchorSideBottom.Side = asrBottom
+        Left = 352
+        Height = 25
+        Top = 234
+        Width = 75
+        Anchors = [akRight, akBottom]
+        BorderSpacing.Right = 5
+        BorderSpacing.Bottom = 5
+        Caption = 'Test'
+        OnClick = btn_product_testClick
+        TabOrder = 2
+      end
+    end
+    object ts_accounts: TTabSheet
+      Caption = 'Accounts'
+      ClientHeight = 264
+      ClientWidth = 432
+      object btn_accounts_test: TButton
+        AnchorSideRight.Control = ts_accounts
+        AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Control = ts_accounts
+        AnchorSideBottom.Side = asrBottom
+        Left = 352
+        Height = 25
+        Top = 234
+        Width = 75
+        Anchors = [akRight, akBottom]
+        BorderSpacing.Right = 5
+        BorderSpacing.Bottom = 5
+        Caption = 'Test'
+        OnClick = btn_accounts_testClick
+        TabOrder = 0
+      end
+      object grid_accounts: TStringGrid
+        AnchorSideLeft.Control = ts_accounts
+        AnchorSideTop.Control = ts_accounts
+        AnchorSideRight.Control = btn_accounts_test
+        AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Control = btn_accounts_test
+        Left = 5
+        Height = 224
+        Top = 5
+        Width = 422
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        BorderSpacing.Left = 5
+        BorderSpacing.Top = 5
+        BorderSpacing.Bottom = 5
+        ColumnClickSorts = True
+        DefaultColWidth = 75
+        DefaultRowHeight = 25
+        Flat = True
+        GridLineWidth = 2
+        Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSizing, goColSizing, goDblClickAutoSize, goSmoothScroll]
+        RowCount = 1
+        TabOrder = 1
+      end
+    end
+    object ts_order: TTabSheet
+      Caption = 'Order'
+      ClientHeight = 264
+      ClientWidth = 528
+      object btn_test_order: TButton
+        AnchorSideRight.Control = ts_order
+        AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Control = ts_order
+        AnchorSideBottom.Side = asrBottom
+        Left = 448
+        Height = 25
+        Top = 234
+        Width = 75
+        Anchors = [akRight, akBottom]
+        BorderSpacing.Right = 5
+        BorderSpacing.Bottom = 5
+        Caption = 'Test'
+        OnClick = btn_test_orderClick
+        TabOrder = 0
+      end
+      object combo_order_ids: TComboBox
+        Left = 8
+        Height = 23
+        Top = 24
+        Width = 128
+        ItemHeight = 15
+        ItemIndex = 0
+        Items.Strings = (
+          'BTC-USD'
+          'LTC-USD'
+          'ETH-USD'
+          'BCH-USD'
+          'LTC-BTC'
+          'ETH-BTC'
+          'BCH-BTC'
+        )
+        TabOrder = 1
+        Text = 'BTC-USD'
+      end
+      object memo_order_output: TMemo
+        AnchorSideLeft.Control = combo_order_ids
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = combo_order_ids
+        AnchorSideRight.Control = btn_test_order
+        AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Control = btn_test_order
+        Left = 161
+        Height = 185
+        Top = 24
+        Width = 362
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        BorderSpacing.Left = 25
+        BorderSpacing.Bottom = 25
+        TabOrder = 2
+      end
+      object edit_order_price: TEdit
+        Left = 8
+        Height = 23
+        Top = 64
+        Width = 128
+        TabOrder = 3
+        TextHint = 'input price'
+      end
+      object edit_order_size: TEdit
+        Left = 8
+        Height = 23
+        Top = 104
+        Width = 128
+        TabOrder = 4
+        TextHint = 'input size'
+      end
+      object combo_order_type: TComboBox
+        Left = 8
+        Height = 23
+        Top = 186
+        Width = 128
+        ItemHeight = 15
+        ItemIndex = 0
+        Items.Strings = (
+          'limit'
+          'market'
+        )
+        TabOrder = 5
+        Text = 'limit'
+      end
+      object combo_order_side: TComboBox
+        Left = 8
+        Height = 23
+        Top = 144
+        Width = 128
+        ItemHeight = 15
+        Items.Strings = (
+          'buy'
+          'sell'
+        )
+        TabOrder = 6
+        Text = 'limit'
+      end
+      object chk_order_stop: TCheckBox
+        Left = 8
+        Height = 19
+        Top = 234
+        Width = 77
+        Caption = 'Stop Order'
+        TabOrder = 7
+      end
+      object chk_order_post: TCheckBox
+        Left = 161
+        Height = 19
+        Top = 234
+        Width = 71
+        Caption = 'Post Only'
+        TabOrder = 8
+      end
+    end
+    object ts_ledger: TTabSheet
+      Caption = 'Ledger'
+      ClientHeight = 264
+      ClientWidth = 528
+      object btn_test_ledger: TButton
+        AnchorSideRight.Control = ts_order
+        AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Control = ts_order
+        AnchorSideBottom.Side = asrBottom
+        Left = 448
+        Height = 25
+        Top = 234
+        Width = 75
+        Anchors = [akRight, akBottom]
+        BorderSpacing.Right = 5
+        BorderSpacing.Bottom = 5
+        Caption = 'Test'
+        OnClick = btn_test_ledgerClick
+        TabOrder = 0
+      end
+      object list_ledger: TListBox
+        AnchorSideLeft.Control = ts_ledger
+        AnchorSideTop.Control = combo_ledger_accounts
+        AnchorSideTop.Side = asrBottom
+        AnchorSideRight.Control = ts_ledger
+        AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Control = ts_ledger
+        AnchorSideBottom.Side = asrBottom
+        Left = 5
+        Height = 146
+        Top = 38
+        Width = 518
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        BorderSpacing.Left = 5
+        BorderSpacing.Top = 5
+        BorderSpacing.Right = 5
+        BorderSpacing.Bottom = 80
+        ItemHeight = 0
+        TabOrder = 1
+      end
+      object arrow_ledger_forward: TShape
+        AnchorSideTop.Control = list_ledger
+        AnchorSideTop.Side = asrBottom
+        AnchorSideRight.Control = list_ledger
+        AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Control = list_ledger
+        AnchorSideBottom.Side = asrBottom
+        Left = 498
+        Height = 25
+        Top = 189
+        Width = 25
+        Anchors = [akRight]
+        Brush.Color = clGreen
+        Pen.Color = 4433210
+        Shape = stTriangleRight
+      end
+      object arrow_ledger_back: TShape
+        AnchorSideTop.Control = list_ledger
+        AnchorSideTop.Side = asrBottom
+        AnchorSideRight.Control = arrow_ledger_forward
+        AnchorSideBottom.Control = arrow_ledger_forward
+        AnchorSideBottom.Side = asrBottom
+        Left = 463
+        Height = 25
+        Top = 189
+        Width = 25
+        Anchors = [akRight, akBottom]
+        BorderSpacing.Right = 10
+        Brush.Color = clGreen
+        Pen.Color = 4433210
+        Shape = stTriangleLeft
+      end
+      object combo_ledger_accounts: TComboBox
+        AnchorSideRight.Control = ts_ledger
+        AnchorSideRight.Side = asrBottom
+        Left = 273
+        Height = 23
+        Top = 10
+        Width = 250
+        Anchors = [akRight]
+        BorderSpacing.Right = 5
+        ItemHeight = 15
+        TabOrder = 2
+      end
+      object lbl_ledger_ids: TLabel
+        AnchorSideRight.Control = combo_ledger_accounts
+        Left = 198
+        Height = 15
+        Top = 10
+        Width = 70
+        Anchors = [akRight]
+        BorderSpacing.Right = 5
+        Caption = 'Account ID''s:'
+        ParentColor = False
+      end
+      object lbl_ledger_count: TLabel
+        Left = 5
+        Height = 15
+        Top = 8
+        Width = 6
+        Caption = '0'
+        ParentColor = False
+      end
+    end
+    object ts_fills: TTabSheet
+      Caption = 'Fills'
+      ClientHeight = 264
+      ClientWidth = 528
+      OnShow = ts_fillsShow
+      object list_fills: TListBox
+        AnchorSideLeft.Control = ts_ledger
+        AnchorSideTop.Control = combo_ledger_accounts
+        AnchorSideTop.Side = asrBottom
+        AnchorSideRight.Control = ts_ledger
+        AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Control = ts_ledger
+        AnchorSideBottom.Side = asrBottom
+        Left = 5
+        Height = 146
+        Top = 38
+        Width = 518
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        BorderSpacing.Left = 5
+        BorderSpacing.Top = 5
+        BorderSpacing.Right = 5
+        BorderSpacing.Bottom = 80
+        ItemHeight = 0
+        TabOrder = 0
+      end
+      object arrow_fills_back: TShape
+        AnchorSideTop.Control = list_fills
+        AnchorSideTop.Side = asrBottom
+        AnchorSideRight.Control = arrow_fills_forward
+        AnchorSideBottom.Control = arrow_fills_forward
+        AnchorSideBottom.Side = asrBottom
+        Left = 463
+        Height = 25
+        Top = 189
+        Width = 25
+        Anchors = [akRight, akBottom]
+        BorderSpacing.Right = 10
+        Brush.Color = clGreen
+        Pen.Color = 4433210
+        Shape = stTriangleLeft
+      end
+      object arrow_fills_forward: TShape
+        AnchorSideTop.Control = list_fills
+        AnchorSideTop.Side = asrBottom
+        AnchorSideRight.Control = list_fills
+        AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Control = list_fills
+        AnchorSideBottom.Side = asrBottom
+        Left = 498
+        Height = 25
+        Top = 189
+        Width = 25
+        Anchors = [akRight]
+        Brush.Color = clGreen
+        Pen.Color = 4433210
+        Shape = stTriangleRight
+      end
+      object btn_test_fills: TButton
+        AnchorSideRight.Control = ts_order
+        AnchorSideRight.Side = asrBottom
+        AnchorSideBottom.Control = ts_order
+        AnchorSideBottom.Side = asrBottom
+        Left = 448
+        Height = 25
+        Top = 234
+        Width = 75
+        Anchors = [akRight, akBottom]
+        BorderSpacing.Right = 5
+        BorderSpacing.Bottom = 5
+        Caption = 'Test'
+        OnClick = btn_test_fillsClick
+        TabOrder = 1
+      end
+      object lbl_fills_total: TLabel
+        AnchorSideLeft.Control = ts_fills
+        AnchorSideTop.Control = arrow_fills_forward
+        AnchorSideBottom.Control = arrow_fills_forward
+        AnchorSideBottom.Side = asrBottom
+        Left = 5
+        Height = 15
+        Top = 199
+        Width = 29
+        Anchors = [akLeft, akBottom]
+        BorderSpacing.Left = 5
+        Caption = 'Total:'
+        ParentColor = False
+      end
+      object lbl_fills_total_size: TLabel
+        AnchorSideLeft.Control = lbl_fills_total
+        AnchorSideTop.Control = lbl_fills_total
+        AnchorSideTop.Side = asrBottom
+        Left = 5
+        Height = 15
+        Top = 219
+        Width = 49
+        BorderSpacing.Top = 5
+        Caption = 'TotalSize:'
+        ParentColor = False
+      end
+      object lbl_fills_total_price: TLabel
+        AnchorSideLeft.Control = lbl_fills_total
+        AnchorSideLeft.Side = asrBottom
+        AnchorSideTop.Control = lbl_fills_total
+        AnchorSideRight.Control = lbl_fills_total
+        AnchorSideRight.Side = asrBottom
+        Left = 134
+        Height = 15
+        Top = 199
+        Width = 55
+        BorderSpacing.Left = 100
+        Caption = 'TotalPrice:'
+        ParentColor = False
+      end
+      object lbl_fills_total_fees: TLabel
+        AnchorSideLeft.Control = lbl_fills_total_price
+        AnchorSideTop.Control = lbl_fills_total_size
+        Left = 134
+        Height = 15
+        Top = 219
+        Width = 52
+        Caption = 'TotalFees:'
+        ParentColor = False
+      end
+      object lbl_fills_prods: TLabel
+        AnchorSideRight.Control = combo_fills_products
+        Left = 218
+        Height = 15
+        Top = 10
+        Width = 50
+        Anchors = [akRight]
+        BorderSpacing.Right = 5
+        Caption = 'Products:'
+        ParentColor = False
+      end
+      object combo_fills_products: TComboBox
+        AnchorSideRight.Control = ts_ledger
+        AnchorSideRight.Side = asrBottom
+        Left = 273
+        Height = 23
+        Top = 10
+        Width = 250
+        Anchors = [akRight]
+        BorderSpacing.Right = 5
+        ItemHeight = 15
+        TabOrder = 2
+      end
+    end
+  end
+  object chk_sandbox: TCheckBox
+    AnchorSideTop.Control = pctrl_main
+    AnchorSideTop.Side = asrBottom
+    AnchorSideRight.Control = pctrl_main
+    AnchorSideRight.Side = asrBottom
+    AnchorSideBottom.Control = Owner
+    AnchorSideBottom.Side = asrBottom
+    Left = 437
+    Height = 19
+    Top = 303
+    Width = 99
+    Alignment = taLeftJustify
+    Anchors = [akRight, akBottom]
+    BorderSpacing.Right = 5
+    Caption = 'SandBox Mode'
+    Checked = True
+    State = cbChecked
+    TabOrder = 1
+  end
+end

@@ -1,0 +1,12 @@
+[submodule "src/mORMot"]
+	path = src/mORMot
+	url = https://github.com/synopse/mORMot.git
+[submodule "src/HashLib4Pascal"]
+	path = src/HashLib4Pascal
+	url = https://github.com/Xor-el/HashLib4Pascal.git
+[submodule "src/SimpleBaseLib4Pascal"]
+	path = src/SimpleBaseLib4Pascal
+	url = https://github.com/Xor-el/SimpleBaseLib4Pascal.git
+[submodule "src/internettools"]
+	path = src/internettools
+	url = https://github.com/benibela/internettools.git

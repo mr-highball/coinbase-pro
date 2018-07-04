@@ -8,6 +8,7 @@ To request features or report a bug, open a github issue with details/steps to r
 
 1. download and install lazarus if you don't already have it (http://www.lazarus-ide.org)
 1. git clone this repo
+1. library needs open ssl binaries in compiled app directory (https://wiki.openssl.org/index.php/Binaries)
 1. open tester.lpr and attempt to compile/run (F9 Key)
 1. type in your key/secret/passphrase (generated on coinbase) on the first screen (required to sign requests)
     * this project shows how to use library

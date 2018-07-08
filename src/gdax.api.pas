@@ -44,7 +44,7 @@ type
     FAuthenticator:IGDAXAuthenticator;
     function GetAuthenticator: IGDAXAuthenticator;
     function GetSupportedOperations: TRestOperations;
-    procedure SetAuthenticator(AValue: IGDAXAuthenticator);
+    procedure SetAuthenticator(Const AValue: IGDAXAuthenticator);
   strict protected
     function GetEndpoint(Const AOperation:TRestOperation) : String;virtual;abstract;
     function GetHeadersForOperation(Const AOperation:TRestOperation;
@@ -88,11 +88,11 @@ type
       var data: TInternetAccessDataBlock;
       var reaction: TInternetAccessReaction);
   strict protected
-    function DoDelete(const AEndpoint: string; const AHeaders: TStrings;
+    function DoDelete(Const AEndpoint: string; Const AHeaders: TStrings;
       Out Content:String;out Error: string): Boolean; override;
-    function DoPost(const AEndPoint: string; const AHeaders: TStrings;
-      const ABody: string; Out Content:String;out Error: string): Boolean; override;
-    function DoGet(const AEndpoint: string; const AHeaders: TStrings;
+    function DoPost(Const AEndPoint: string; Const AHeaders: TStrings;
+      Const ABody: string; Out Content:String;out Error: string): Boolean; override;
+    function DoGet(Const AEndpoint: string; Const AHeaders: TStrings;
       Out Content:String;out Error: string): Boolean; override;
   public
     constructor Create; override;
@@ -107,11 +107,11 @@ type
   strict private
     FClient: TNetHTTPClient;
   strict protected
-    function DoDelete(const AEndpoint: string; const AHeaders: TStrings;
+    function DoDelete(Const AEndpoint: string; Const AHeaders: TStrings;
       Out Content:String;out Error: string): Boolean; override;
-    function DoPost(const AEndPoint: string; const AHeaders: TStrings;
-      const ABody: string; Out Content:String;out Error: string): Boolean; override;
-    function DoGet(const AEndpoint: string; const AHeaders: TStrings;
+    function DoPost(Const AEndPoint: string; Const AHeaders: TStrings;
+      Const ABody: string; Out Content:String;out Error: string): Boolean; override;
+    function DoGet(Const AEndpoint: string; Const AHeaders: TStrings;
       Out Content:String;out Error: string): Boolean; override;
   public
     constructor Create; override;
@@ -145,7 +145,7 @@ type
     function DoMove(Const ADirection:TGDAXPageDirection;Out Error:String;
       Const ALastBeforeID,ALastAfterID:Integer;
       Const ALimit:TPageLimit=0):Boolean;virtual;
-    function DoGet(const AEndpoint: string; const AHeaders: TStrings; out
+    function DoGet(Const AEndpoint: string; Const AHeaders: TStrings; out
       Content: String; out Error: string): Boolean; override;
     function GetMovingParameters:String;
   public
@@ -189,7 +189,7 @@ begin
   Result:=FLastBeforeID
 end;
 
-procedure TGDAXPagedApi.ExtractPageIDs(const AHeaders: TStrings);
+procedure TGDAXPagedApi.ExtractPageIDs(Const AHeaders: TStrings);
 var
   I:Integer;
 begin
@@ -206,7 +206,7 @@ begin
     FLastAfterID:=StrToIntDef(AHeaders.ValueFromIndex[I],0);
 end;
 
-function TGDAXPagedApi.DoMove(const ADirection: TGDAXPageDirection;out Error: String;
+function TGDAXPagedApi.DoMove(Const ADirection: TGDAXPageDirection;out Error: String;
   Const ALastBeforeID,ALastAfterID:Integer;
   Const ALimit: TPageLimit): Boolean;
 var
@@ -232,7 +232,7 @@ begin
   end;
 end;
 
-function TGDAXPagedApi.DoGet(const AEndpoint: string; const AHeaders: TStrings;
+function TGDAXPagedApi.DoGet(Const AEndpoint: string; Const AHeaders: TStrings;
   out Content: String; out Error: string): Boolean;
 begin
   Result:=inherited DoGet(AEndpoint, AHeaders, Content, Error);
@@ -250,9 +250,9 @@ begin
     Result:=FMovingParams;
 end;
 
-function TGDAXPagedApi.Move(const ADirection: TGDAXPageDirection;Out Error:String;
-  const ALastBeforeID, ALastAfterID: Integer;
-  const ALimit: TPageLimit): Boolean;
+function TGDAXPagedApi.Move(Const ADirection: TGDAXPageDirection;Out Error:String;
+  Const ALastBeforeID, ALastAfterID: Integer;
+  Const ALimit: TPageLimit): Boolean;
 begin
   Result:=False;
   try
@@ -263,15 +263,15 @@ begin
   end;
 end;
 
-function TGDAXPagedApi.Move(const ADirection: TGDAXPageDirection;
-  const ALimit: TPageLimit): Boolean;
+function TGDAXPagedApi.Move(Const ADirection: TGDAXPageDirection;
+  Const ALimit: TPageLimit): Boolean;
 var
   LError:String;
 begin
   Result:=Move(ADirection,LError,ALimit);
 end;
 
-function TGDAXPagedApi.Move(const ADirection: TGDAXPageDirection;
+function TGDAXPagedApi.Move(Const ADirection: TGDAXPageDirection;
   out Error: String; Const ALimit: TPageLimit): Boolean;
 begin
   Result:=False;
@@ -330,7 +330,7 @@ begin
   Result:='';
 end;
 
-function TBaseGDAXRestApiImpl.DoGetSuccess(const AHTTPStatusCode: Integer;
+function TBaseGDAXRestApiImpl.DoGetSuccess(Const AHTTPStatusCode: Integer;
   out Error: String): Boolean;
 begin
   Result:=False;
@@ -342,7 +342,7 @@ begin
   Error:=Format('invalid web status code %d',[AHTTPStatusCode]);
 end;
 
-function TBaseGDAXRestApiImpl.DoLoadFromJSON(const AJSON: String;
+function TBaseGDAXRestApiImpl.DoLoadFromJSON(Const AJSON: String;
   out Error: String): Boolean;
 begin
   //nothing to load from
@@ -393,13 +393,13 @@ begin
   Result:=DoGetSupportedOperations;
 end;
 
-procedure TBaseGDAXRestApiImpl.SetAuthenticator(AValue: IGDAXAuthenticator);
+procedure TBaseGDAXRestApiImpl.SetAuthenticator(Const AValue: IGDAXAuthenticator);
 begin
   FAuthenticator:=AValue;
 end;
 
 function TBaseGDAXRestApiImpl.GetHeadersForOperation(
-  const AOperation: TRestOperation; const AHeaders: TStrings;
+  Const AOperation: TRestOperation; Const AHeaders: TStrings;
   out Error: String): Boolean;
 var
   LEpoch:Integer;
@@ -426,7 +426,7 @@ begin
   end;
 end;
 
-function TBaseGDAXRestApiImpl.LoadFromJSON(const JSON: String;
+function TBaseGDAXRestApiImpl.LoadFromJSON(Const JSON: String;
   out Error: String): Boolean;
 begin
   Result:=DoLoadFromJSON(JSON,Error);
@@ -484,7 +484,7 @@ begin
   inherited;
 end;
 
-function TDelphiRestAPI.DoDelete(const AEndpoint: string; const AHeaders: TStrings;
+function TDelphiRestAPI.DoDelete(Const AEndpoint: string; Const AHeaders: TStrings;
   Out Content:String;out Error: string): Boolean;
 var
   LHeaders:TArray<TNameValuePair>;
@@ -511,7 +511,7 @@ begin
   end;
 end;
 
-function TDelphiRestAPI.DoGet(const AEndpoint: string; const AHeaders: TStrings;
+function TDelphiRestAPI.DoGet(Const AEndpoint: string; Const AHeaders: TStrings;
   Out Content:String;out Error: string): Boolean;
 var
   LHeaders:TArray<TNameValuePair>;
@@ -544,8 +544,8 @@ begin
   end;
 end;
 
-function TDelphiRestAPI.DoPost(const AEndPoint: string; const AHeaders: TStrings;
-  const ABody: string; Out Content:String;out Error: string): Boolean;
+function TDelphiRestAPI.DoPost(Const AEndPoint: string; Const AHeaders: TStrings;
+  Const ABody: string; Out Content:String;out Error: string): Boolean;
 var
   LHeaders:TArray<TNameValuePair>;
   I: Integer;
@@ -587,8 +587,8 @@ begin
   reaction:=TInternetAccessReaction.iarAccept;
 end;
 
-function TFPCRestAPI.DoDelete(const AEndpoint: string;
-  const AHeaders: TStrings; out Content: String; out Error: string): Boolean;
+function TFPCRestAPI.DoDelete(Const AEndpoint: string;
+  Const AHeaders: TStrings; out Content: String; out Error: string): Boolean;
 var
   LClient:TInternetAccess;
 begin
@@ -619,8 +619,8 @@ begin
   end;
 end;
 
-function TFPCRestAPI.DoPost(const AEndPoint: string; const AHeaders: TStrings;
-  const ABody: string; out Content: String; out Error: string): Boolean;
+function TFPCRestAPI.DoPost(Const AEndPoint: string; Const AHeaders: TStrings;
+  Const ABody: string; out Content: String; out Error: string): Boolean;
 var
   LClient:TInternetAccess;
 begin
@@ -651,7 +651,7 @@ begin
   end;
 end;
 
-function TFPCRestAPI.DoGet(const AEndpoint: string; const AHeaders: TStrings;
+function TFPCRestAPI.DoGet(Const AEndpoint: string; Const AHeaders: TStrings;
   out Content: String; out Error: string): Boolean;
 var
   LClient:TInternetAccess;

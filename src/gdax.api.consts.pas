@@ -181,14 +181,14 @@ begin
     end;
 end;
 
-function LedgerTypeToString(const AType: TLedgerType): String;
+function LedgerTypeToString(Const AType: TLedgerType): String;
 begin
   Result:='';
   if Ord(AType)<=High(LEDGER_TYPES) then
     Result:=LEDGER_TYPES[Ord(AType)];
 end;
 
-function StringToLedgerType(const AType: String): TLedgerType;
+function StringToLedgerType(Const AType: String): TLedgerType;
 var
   I: Integer;
 begin

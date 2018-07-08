@@ -41,22 +41,22 @@ type
     FEndTime: TDatetime;
     FGranularity: Cardinal;
     function GetProduct: IGDAXProduct;
-    procedure SetProduct(const Value: IGDAXProduct);
+    procedure SetProduct(Const Value: IGDAXProduct);
     function GetStartTime: TDatetime;
-    procedure SetStartTime(const Value: TDatetime);
+    procedure SetStartTime(Const Value: TDatetime);
     function GetEndTime: TDatetime;
-    procedure SetEndTime(const Value: TDatetime);
+    procedure SetEndTime(Const Value: TDatetime);
     function GetGranularity: Cardinal;
-    procedure SetGranularity(const Value: Cardinal);
+    procedure SetGranularity(Const Value: Cardinal);
     function BuildQueryParams:String;
     function GetList: TList<TCandleBucket>;
   protected
     function DoGetSupportedOperations: TRestOperations; override;
-    function DoGet(const AEndpoint: string; const AHeaders: TStrings;
+    function DoGet(Const AEndpoint: string; Const AHeaders: TStrings;
       out Content: string; out Error: string): Boolean; override;
-    function DoLoadFromJSON(const AJSON: string; out Error: string): Boolean;
+    function DoLoadFromJSON(Const AJSON: string; out Error: string): Boolean;
       override;
-    function GetEndpoint(const AOperation: TRestOperation): string; override;
+    function GetEndpoint(Const AOperation: TRestOperation): string; override;
   public
     property Product: IGDAXProduct read GetProduct write SetProduct;
     property StartTime: TDatetime read GetStartTime write SetStartTime;
@@ -113,7 +113,7 @@ begin
   inherited;
 end;
 
-function TCandles.DoGet(const AEndpoint: string; const AHeaders: TStrings;
+function TCandles.DoGet(Const AEndpoint: string; Const AHeaders: TStrings;
   out Content, Error: string): Boolean;
 begin
   Result:=False;
@@ -130,7 +130,7 @@ begin
   Result:=[roGet];
 end;
 
-function TCandles.DoLoadFromJSON(const AJSON: string;
+function TCandles.DoLoadFromJSON(Const AJSON: string;
   out Error: string): Boolean;
 var
   LJSON:TJSONVariantData;
@@ -177,7 +177,7 @@ begin
   end;
 end;
 
-function TCandles.GetEndpoint(const AOperation: TRestOperation): string;
+function TCandles.GetEndpoint(Const AOperation: TRestOperation): string;
 begin
   Result:=Format(GDAX_END_API_CANDLES,[OrderProductToString(FProduct)])+BuildQueryParams;
 end;
@@ -207,12 +207,12 @@ begin
   Result:=FStartTime;
 end;
 
-procedure TCandles.SetEndTime(const Value: TDatetime);
+procedure TCandles.SetEndTime(Const Value: TDatetime);
 begin
   FEndTime:=Value;
 end;
 
-procedure TCandles.SetGranularity(const Value: Cardinal);
+procedure TCandles.SetGranularity(Const Value: Cardinal);
 var
   I:Integer;
 begin
@@ -231,12 +231,12 @@ begin
   FGranularity:=ACCEPTED_GRANULARITY[High(ACCEPTED_GRANULARITY)];
 end;
 
-procedure TCandles.SetProduct(const Value: IGDAXProduct);
+procedure TCandles.SetProduct(Const Value: IGDAXProduct);
 begin
   FProduct:=Value;
 end;
 
-procedure TCandles.SetStartTime(const Value: TDatetime);
+procedure TCandles.SetStartTime(Const Value: TDatetime);
 begin
   FStartTime:=Value;
 end;

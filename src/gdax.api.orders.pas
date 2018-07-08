@@ -73,43 +73,43 @@ type
     function GetCreatedAt: TDateTime;
     function GetProduct: IGDAXProduct;
     function GetStopOrder: Boolean;
-    procedure SetCreatedAt(const AValue: TDateTime);
-    procedure SetProduct(const Value: IGDAXProduct);
+    procedure SetCreatedAt(Const AValue: TDateTime);
+    procedure SetProduct(Const Value: IGDAXProduct);
     function GetPostOnly: Boolean;
-    procedure SetPostOnly(const Value: Boolean);
+    procedure SetPostOnly(Const Value: Boolean);
     function GetSize: Extended;
-    procedure SetSize(const Value: Extended);
+    procedure SetSize(Const Value: Extended);
     function GetOrderType: TOrderType;
-    procedure SetOrderType(const Value: TOrderType);
+    procedure SetOrderType(Const Value: TOrderType);
     function GetID: String;
-    procedure SetID(const Value: String);
+    procedure SetID(Const Value: String);
     function GetFillFees: Extended;
-    procedure SetFillFees(const Value: Extended);
+    procedure SetFillFees(Const Value: Extended);
     function GetFilledSized: Extended;
-    procedure SetFilledSized(const Value: Extended);
+    procedure SetFilledSized(Const Value: Extended);
     function GetExecutedValue: Extended;
-    procedure SetExecutedValue(const Value: Extended);
+    procedure SetExecutedValue(Const Value: Extended);
     function GetOrderStatus: TOrderStatus;
-    procedure SetOrderStatus(const Value: TOrderStatus);
+    procedure SetOrderStatus(Const Value: TOrderStatus);
     function GetSettled: Boolean;
-    procedure SetSettled(const Value: Boolean);
+    procedure SetSettled(Const Value: Boolean);
     function GetSide: TOrderSide;
-    procedure SetSide(const Value: TOrderSide);
+    procedure SetSide(Const Value: TOrderSide);
     function GetPrice: Extended;
-    procedure SetPrice(const Value: Extended);
+    procedure SetPrice(Const Value: Extended);
     function GetRejectReason: String;
-    procedure SetRejectReason(const Value: String);
-    procedure SetStopOrder(const AValue: Boolean);
+    procedure SetRejectReason(Const Value: String);
+    procedure SetStopOrder(Const AValue: Boolean);
   protected
     function DoGetPostBody: string; override;
-    function DoGet(const AEndpoint: string; const AHeaders: TStrings;
+    function DoGet(Const AEndpoint: string; Const AHeaders: TStrings;
       out Content: string; out Error: string): Boolean; override;
-    function DoPost(const AEndPoint: string; const AHeaders: TStrings;
-      const ABody: string; out Content: string; out Error: string): Boolean;override;
-    function GetEndpoint(const AOperation: TRestOperation): string; override;
-    function DoLoadFromJSON(const AJSON: string; out Error: string): Boolean;override;
+    function DoPost(Const AEndPoint: string; Const AHeaders: TStrings;
+      Const ABody: string; out Content: string; out Error: string): Boolean;override;
+    function GetEndpoint(Const AOperation: TRestOperation): string; override;
+    function DoLoadFromJSON(Const AJSON: string; out Error: string): Boolean;override;
     function DoGetSupportedOperations: TRestOperations; override;
-    function DoDelete(const AEndpoint: string; const AHeaders: TStrings;
+    function DoDelete(Const AEndpoint: string; Const AHeaders: TStrings;
       out Content: string; out Error: string): Boolean; override;
   public
     property ID: String read GetID write SetID;
@@ -141,18 +141,18 @@ type
     function GetOrders: TGDAXOrderList;
     function GetPaged: IGDAXPaged;
     function GetStatuses: TOrderStatuses;
-    procedure SetStatuses(const Value: TOrderStatuses);
+    procedure SetStatuses(Const Value: TOrderStatuses);
     function BuildQueryStringForStatus:String;
     function GetProduct: IGDAXProduct;
-    procedure SetProduct(const Value: IGDAXProduct);
+    procedure SetProduct(Const Value: IGDAXProduct);
   protected
     function DoGetSupportedOperations: TRestOperations; override;
-    function DoLoadFromJSON(const AJSON: string;
+    function DoLoadFromJSON(Const AJSON: string;
       out Error: string): Boolean;override;
-    function GetEndpoint(const AOperation: TRestOperation): string; override;
-    function DoMove(const ADirection: TGDAXPageDirection; out Error: String;
-      const ALastBeforeID, ALastAfterID: Integer;
-      const ALimit: TPageLimit=0): Boolean; override;
+    function GetEndpoint(Const AOperation: TRestOperation): string; override;
+    function DoMove(Const ADirection: TGDAXPageDirection; out Error: String;
+      Const ALastBeforeID, ALastAfterID: Integer;
+      Const ALimit: TPageLimit=0): Boolean; override;
   public
     property Orders: TGDAXOrderList read GetOrders;
     property Statuses: TOrderStatuses read GetStatuses write SetStatuses;
@@ -183,7 +183,7 @@ begin
   inherited;
 end;
 
-function TGDAXOrderImpl.DoDelete(const AEndpoint: string; const AHeaders: TStrings; out
+function TGDAXOrderImpl.DoDelete(Const AEndpoint: string; Const AHeaders: TStrings; out
   Content: string; out Error: string): Boolean;
 begin
   Result:=False;
@@ -201,7 +201,7 @@ begin
   end;
 end;
 
-function TGDAXOrderImpl.DoGet(const AEndpoint: string; const AHeaders: TStrings; out
+function TGDAXOrderImpl.DoGet(Const AEndpoint: string; Const AHeaders: TStrings; out
   Content: string; out Error: string): Boolean;
 begin
   Result:=False;
@@ -246,7 +246,7 @@ begin
   Result:=[roGet,roPost,roDelete];
 end;
 
-function TGDAXOrderImpl.DoLoadFromJSON(const AJSON: string; out Error: string): Boolean;
+function TGDAXOrderImpl.DoLoadFromJSON(Const AJSON: string; out Error: string): Boolean;
 var
   LJSON:TJSONVariantData;
 begin
@@ -369,8 +369,8 @@ begin
   end;
 end;
 
-function TGDAXOrderImpl.DoPost(const AEndPoint: string; const AHeaders: TStrings;
-  const ABody: string; out Content: string; out Error: string): Boolean;
+function TGDAXOrderImpl.DoPost(Const AEndPoint: string; Const AHeaders: TStrings;
+  Const ABody: string; out Content: string; out Error: string): Boolean;
 begin
   Result:=False;
   if FType=otUnknown then
@@ -396,7 +396,7 @@ begin
   Result:=inherited;
 end;
 
-function TGDAXOrderImpl.GetEndpoint(const AOperation: TRestOperation): string;
+function TGDAXOrderImpl.GetEndpoint(Const AOperation: TRestOperation): string;
 begin
   Result:='';
   if (AOperation=roGet) or (AOperation=roDelete) then
@@ -462,7 +462,7 @@ begin
   Result:=FCreatedAt;
 end;
 
-procedure TGDAXOrderImpl.SetCreatedAt(const AValue: TDateTime);
+procedure TGDAXOrderImpl.SetCreatedAt(Const AValue: TDateTime);
 begin
   FCreatedAt:=AValue;
 end;
@@ -487,74 +487,74 @@ begin
   Result:=FSize;
 end;
 
-procedure TGDAXOrderImpl.SetExecutedValue(const Value: Extended);
+procedure TGDAXOrderImpl.SetExecutedValue(Const Value: Extended);
 begin
   FExecutedValue:=Value;
 end;
 
-procedure TGDAXOrderImpl.SetFilledSized(const Value: Extended);
+procedure TGDAXOrderImpl.SetFilledSized(Const Value: Extended);
 begin
   FFilledSize:=Value;
 end;
 
-procedure TGDAXOrderImpl.SetFillFees(const Value: Extended);
+procedure TGDAXOrderImpl.SetFillFees(Const Value: Extended);
 begin
   FFillFees:=Value;
 end;
 
-procedure TGDAXOrderImpl.SetID(const Value: String);
+procedure TGDAXOrderImpl.SetID(Const Value: String);
 begin
   FID:=Value;
 end;
 
-procedure TGDAXOrderImpl.SetOrderStatus(const Value: TOrderStatus);
+procedure TGDAXOrderImpl.SetOrderStatus(Const Value: TOrderStatus);
 begin
   FStatus:=Value;
 end;
 
-procedure TGDAXOrderImpl.SetOrderType(const Value: TOrderType);
+procedure TGDAXOrderImpl.SetOrderType(Const Value: TOrderType);
 begin
   FType:=Value;
 end;
 
-procedure TGDAXOrderImpl.SetPostOnly(const Value: Boolean);
+procedure TGDAXOrderImpl.SetPostOnly(Const Value: Boolean);
 begin
   FPostOnly:=Value;
 end;
 
-procedure TGDAXOrderImpl.SetPrice(const Value: Extended);
+procedure TGDAXOrderImpl.SetPrice(Const Value: Extended);
 begin
   FPrice:=Value;
 end;
 
-procedure TGDAXOrderImpl.SetProduct(const Value: IGDAXProduct);
+procedure TGDAXOrderImpl.SetProduct(Const Value: IGDAXProduct);
 begin
   //free reference first
   FProduct:=nil;
   FProduct:=Value;
 end;
 
-procedure TGDAXOrderImpl.SetRejectReason(const Value: String);
+procedure TGDAXOrderImpl.SetRejectReason(Const Value: String);
 begin
   FRejectReason:=Value;
 end;
 
-procedure TGDAXOrderImpl.SetStopOrder(const AValue: Boolean);
+procedure TGDAXOrderImpl.SetStopOrder(Const AValue: Boolean);
 begin
   FStop:=AValue;
 end;
 
-procedure TGDAXOrderImpl.SetSettled(const Value: Boolean);
+procedure TGDAXOrderImpl.SetSettled(Const Value: Boolean);
 begin
   FSettled:=Value;
 end;
 
-procedure TGDAXOrderImpl.SetSide(const Value: TOrderSide);
+procedure TGDAXOrderImpl.SetSide(Const Value: TOrderSide);
 begin
   FSide:=Value;
 end;
 
-procedure TGDAXOrderImpl.SetSize(const Value: Extended);
+procedure TGDAXOrderImpl.SetSize(Const Value: Extended);
 begin
   FSize:=Value;
 end;
@@ -622,7 +622,7 @@ begin
   Result:=[roGet];
 end;
 
-function TGDAXOrdersImpl.DoLoadFromJSON(const AJSON: string;
+function TGDAXOrdersImpl.DoLoadFromJSON(Const AJSON: string;
   out Error: string): Boolean;
 var
   LJSON:TJSONVariantData;
@@ -656,7 +656,7 @@ begin
   end;
 end;
 
-function TGDAXOrdersImpl.GetEndpoint(const AOperation: TRestOperation): string;
+function TGDAXOrdersImpl.GetEndpoint(Const AOperation: TRestOperation): string;
 var
   LMoving:String;
 begin
@@ -672,9 +672,9 @@ begin
     Result:=Result+LMoving;
 end;
 
-function TGDAXOrdersImpl.DoMove(const ADirection: TGDAXPageDirection; out Error: String;
-  const ALastBeforeID, ALastAfterID: Integer;
-  const ALimit: TPageLimit): Boolean;
+function TGDAXOrdersImpl.DoMove(Const ADirection: TGDAXPageDirection; out Error: String;
+  Const ALastBeforeID, ALastAfterID: Integer;
+  Const ALimit: TPageLimit): Boolean;
 var
   I:Integer;
   LList:TGDAXOrderList;
@@ -713,12 +713,12 @@ begin
   Result:=FStatuses;
 end;
 
-procedure TGDAXOrdersImpl.SetProduct(const Value: IGDAXProduct);
+procedure TGDAXOrdersImpl.SetProduct(Const Value: IGDAXProduct);
 begin
   FProduct:=Value;
 end;
 
-procedure TGDAXOrdersImpl.SetStatuses(const Value: TOrderStatuses);
+procedure TGDAXOrdersImpl.SetStatuses(Const Value: TOrderStatuses);
 begin
   FStatuses:=Value;
 end;

@@ -39,9 +39,9 @@ type
     FAskSize: Single;
     FBidSize: Single;
     function GetLevel: TGDAXBookLevel;
-    procedure SetLevel(const Value: TGDAXBookLevel);
+    procedure SetLevel(Const Value: TGDAXBookLevel);
     function GetProduct: IGDAXProduct;
-    procedure SetProduct(const AValue: IGDAXProduct);
+    procedure SetProduct(Const AValue: IGDAXProduct);
     function GetAskList: TObjectList<TBookEntry>;
     function GetBidList: TObjectList<TBookEntry>;
     procedure ClearMetaData;
@@ -49,10 +49,10 @@ type
     function GetAskSize: Single;
     function GetBidSize: Single;
   protected
-    function DoLoadFromJSON(const AJSON: string; out Error: string): Boolean;
+    function DoLoadFromJSON(Const AJSON: string; out Error: string): Boolean;
       override;
-    function GetEndpoint(const AOperation: TRestOperation): string; override;
-    function DoGet(const AEndpoint: string; const AHeaders: TStrings;
+    function GetEndpoint(Const AOperation: TRestOperation): string; override;
+    function DoGet(Const AEndpoint: string; Const AHeaders: TStrings;
       out Content: string; out Error: string): Boolean; override;
     function DoGetSupportedOperations: TRestOperations; override;
   public
@@ -97,7 +97,7 @@ begin
   inherited;
 end;
 
-function TGDAXBook.DoGet(const AEndpoint: string; const AHeaders: TStrings;
+function TGDAXBook.DoGet(Const AEndpoint: string; Const AHeaders: TStrings;
   out Content, Error: string): Boolean;
 begin
   Result:=False;
@@ -114,7 +114,7 @@ begin
   Result:=[roGet];
 end;
 
-function TGDAXBook.DoLoadFromJSON(const AJSON: string;
+function TGDAXBook.DoLoadFromJSON(Const AJSON: string;
   out Error: string): Boolean;
 var
   LJSON,LAsks,LBids:LJSONVariantData;
@@ -236,7 +236,7 @@ begin
   Result:=FBidSize;
 end;
 
-function TGDAXBook.GetEndpoint(const AOperation: TRestOperation): string;
+function TGDAXBook.GetEndpoint(Const AOperation: TRestOperation): string;
 begin
   Result:=Format(GDAX_END_API_BOOK,[OrderProductToString(FProduct),Ord(FLevel)]);
 end;
@@ -256,13 +256,13 @@ begin
   Result:=FProduct;
 end;
 
-procedure TGDAXBook.SetLevel(const Value: TGDAXBookLevel);
+procedure TGDAXBook.SetLevel(Const Value: TGDAXBookLevel);
 begin
   ClearMetaData;
   FLevel:=Value;
 end;
 
-procedure TGDAXBook.SetProduct(const AValue: IGDAXProduct);
+procedure TGDAXBook.SetProduct(Const AValue: IGDAXProduct);
 begin
   ClearMetaData;
   FProduct:=Value;

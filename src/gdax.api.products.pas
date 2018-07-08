@@ -55,15 +55,15 @@ type
     function GetID: String;
     function GetQuoteCurrency: String;
     function GetQuoteIncrement: Extended;
-    procedure SetBaseCurrency(AValue: String);
-    procedure SetBaseMaxSize(AValue: Extended);
-    procedure SetBaseMinSize(AValue: Extended);
-    procedure SetID(AValue: String);
-    procedure SetQuoteCurrency(AValue: String);
-    procedure SetQuoteIncrement(AValue: Extended);
+    procedure SetBaseCurrency(Const AValue: String);
+    procedure SetBaseMaxSize(Const AValue: Extended);
+    procedure SetBaseMinSize(Const AValue: Extended);
+    procedure SetID(Const AValue: String);
+    procedure SetQuoteCurrency(Const AValue: String);
+    procedure SetQuoteIncrement(Const AValue: Extended);
   strict protected
-    function GetEndpoint(const AOperation: TRestOperation): String; override;
-    function DoLoadFromJSON(const AJSON: String;
+    function GetEndpoint(Const AOperation: TRestOperation): String; override;
+    function DoLoadFromJSON(Const AJSON: String;
       out Error: String): Boolean;override;
     function DoGetSupportedOperations: TRestOperations; override;
   public
@@ -84,11 +84,11 @@ type
     FProducts: TGDAXProductList;
     function GetProducts: TGDAXProductList;
     function GetQuoteCurrency: String;
-    procedure SetQuoteCurrency(AValue: String);
+    procedure SetQuoteCurrency(Const AValue: String);
   strict protected
     function DoGetSupportedOperations: TRestOperations; override;
-    function GetEndpoint(const AOperation: TRestOperation): String; override;
-    function DoLoadFromJSON(const AJSON: String; out Error: String): Boolean;override;
+    function GetEndpoint(Const AOperation: TRestOperation): String; override;
+    function DoLoadFromJSON(Const AJSON: String; out Error: String): Boolean;override;
   public
     property QuoteCurrency : String read GetQuoteCurrency write SetQuoteCurrency;
     property Products : TGDAXProductList read GetProducts;
@@ -112,7 +112,7 @@ begin
   Result:=FQuoteCurrency;
 end;
 
-procedure TGDAXProductsImpl.SetQuoteCurrency(AValue: String);
+procedure TGDAXProductsImpl.SetQuoteCurrency(Const AValue: String);
 begin
   FQuoteCurrency:=AValue;
 end;
@@ -123,12 +123,12 @@ begin
 end;
 
 function TGDAXProductsImpl.GetEndpoint(
-  const AOperation: TRestOperation): String;
+  Const AOperation: TRestOperation): String;
 begin
   Result:=GDAX_END_API_PRODUCT;
 end;
 
-function TGDAXProductsImpl.DoLoadFromJSON(const AJSON: String; out
+function TGDAXProductsImpl.DoLoadFromJSON(Const AJSON: String; out
   Error: String): Boolean;
 var
   I:Integer;
@@ -224,37 +224,37 @@ begin
   Result:=FQuoteIncrement;
 end;
 
-procedure TGDAXProductImpl.SetBaseCurrency(AValue: String);
+procedure TGDAXProductImpl.SetBaseCurrency(Const AValue: String);
 begin
   FBaseCurrency:=AValue;
 end;
 
-procedure TGDAXProductImpl.SetBaseMaxSize(AValue: Extended);
+procedure TGDAXProductImpl.SetBaseMaxSize(Const AValue: Extended);
 begin
   FBaseMaxSize:=AValue;
 end;
 
-procedure TGDAXProductImpl.SetBaseMinSize(AValue: Extended);
+procedure TGDAXProductImpl.SetBaseMinSize(Const AValue: Extended);
 begin
   FBaseMinSize:=AValue;
 end;
 
-procedure TGDAXProductImpl.SetID(AValue: String);
+procedure TGDAXProductImpl.SetID(Const AValue: String);
 begin
   FID:=AValue;
 end;
 
-procedure TGDAXProductImpl.SetQuoteCurrency(AValue: String);
+procedure TGDAXProductImpl.SetQuoteCurrency(Const AValue: String);
 begin
   FQuoteCurrency:=AValue;
 end;
 
-procedure TGDAXProductImpl.SetQuoteIncrement(AValue: Extended);
+procedure TGDAXProductImpl.SetQuoteIncrement(Const AValue: Extended);
 begin
   FQuoteIncrement:=AValue;
 end;
 
-function TGDAXProductImpl.DoLoadFromJSON(const AJSON: String; out
+function TGDAXProductImpl.DoLoadFromJSON(Const AJSON: String; out
   Error: String): Boolean;
 var
   LJSON:TJSONVariantData;
@@ -283,7 +283,7 @@ begin
   Result:=[roGet];
 end;
 
-function TGDAXProductImpl.GetEndpoint(const AOperation: TRestOperation): String;
+function TGDAXProductImpl.GetEndpoint(Const AOperation: TRestOperation): String;
 begin
   Result:=Format(GDAX_END_API_PRODUCTS,[FID]);
 end;

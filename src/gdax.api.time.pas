@@ -40,14 +40,14 @@ type
     FEpoch: Extended;
     function GetEpoch: Extended;
     function GetISO: String;
-    procedure SetEpoch(AValue: Extended);
-    procedure SetISO(AValue: String);
+    procedure SetEpoch(Const AValue: Extended);
+    procedure SetISO(Const AValue: String);
   strict protected
     function DoGetSupportedOperations: TRestOperations; override;
-    function GetHeadersForOperation(const AOperation: TRestOperation;
-      const AHeaders: TStrings; out Error: String): Boolean; override;
-    function GetEndpoint(const AOperation: TRestOperation): String; override;
-    function DoLoadFromJSON(const AJSON: String;
+    function GetHeadersForOperation(Const AOperation: TRestOperation;
+      Const AHeaders: TStrings; out Error: String): Boolean; override;
+    function GetEndpoint(Const AOperation: TRestOperation): String; override;
+    function DoLoadFromJSON(Const AJSON: String;
       out Error: String): Boolean;override;
   public
     property ISO: String read GetISO write SetISO;
@@ -64,8 +64,8 @@ begin
   Result:=[roGet];
 end;
 
-function TGDAXTimeImpl.GetHeadersForOperation(const AOperation: TRestOperation;
-  const AHeaders: TStrings; out Error: String): Boolean;
+function TGDAXTimeImpl.GetHeadersForOperation(Const AOperation: TRestOperation;
+  Const AHeaders: TStrings; out Error: String): Boolean;
 begin
   Result:=False;
   try
@@ -79,7 +79,7 @@ begin
   end;
 end;
 
-function TGDAXTimeImpl.DoLoadFromJSON(const AJSON: String;
+function TGDAXTimeImpl.DoLoadFromJSON(Const AJSON: String;
   out Error: String): Boolean;
 var
   LJSON:TJSONVariantData;
@@ -109,7 +109,7 @@ begin
   end;
 end;
 
-function TGDAXTimeImpl.GetEndpoint(const AOperation: TRestOperation): String;
+function TGDAXTimeImpl.GetEndpoint(Const AOperation: TRestOperation): String;
 begin
   Result:=GDAX_END_API_TIME;
 end;
@@ -124,12 +124,12 @@ begin
   Result:=FISO;
 end;
 
-procedure TGDAXTimeImpl.SetEpoch(AValue: Extended);
+procedure TGDAXTimeImpl.SetEpoch(Const AValue: Extended);
 begin
   FEpoch:=AValue;
 end;
 
-procedure TGDAXTimeImpl.SetISO(AValue: String);
+procedure TGDAXTimeImpl.SetISO(Const AValue: String);
 begin
   FISO:=AValue;
 end;

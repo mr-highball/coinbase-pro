@@ -47,11 +47,11 @@ type
     function GetSecret: String;
     function GetTime: IGDAXTime;
     function GetUseLocalTime: Boolean;
-    procedure SetKey(AValue: String);
-    procedure SetMode(AValue: TGDAXApi);
-    procedure SetPassphrase(AValue: String);
-    procedure SetSecret(AValue: String);
-    procedure SetUseLocalTime(AValue: Boolean);
+    procedure SetKey(Const AValue: String);
+    procedure SetMode(Const AValue: TGDAXApi);
+    procedure SetPassphrase(Const AValue: String);
+    procedure SetSecret(Const AValue: String);
+    procedure SetUseLocalTime(Const AValue: Boolean);
   strict protected
     procedure DoBuildHeaders(Const AOutput:TStrings;Const ASignature:String;
       Const AEpoch:Integer);virtual;
@@ -78,8 +78,8 @@ uses
   HlpHashFactory;
 { TGDAXAuthenticatorImpl }
 
-procedure TGDAXAuthenticatorImpl.BuildHeaders(const AOutput: TStrings;
-  const ASignature: String;const AEpoch:Integer);
+procedure TGDAXAuthenticatorImpl.BuildHeaders(Const AOutput: TStrings;
+  Const ASignature: String;Const AEpoch:Integer);
 begin
   DoBuildHeaders(AOutput,ASignature,AEpoch);
 end;
@@ -127,33 +127,33 @@ begin
   Result:=FUseLocalTime;
 end;
 
-procedure TGDAXAuthenticatorImpl.SetKey(AValue: String);
+procedure TGDAXAuthenticatorImpl.SetKey(Const AValue: String);
 begin
   FKey:=AValue;
 end;
 
-procedure TGDAXAuthenticatorImpl.SetMode(AValue: TGDAXApi);
+procedure TGDAXAuthenticatorImpl.SetMode(Const AValue: TGDAXApi);
 begin
   FMode:=AValue;
 end;
 
-procedure TGDAXAuthenticatorImpl.SetPassphrase(AValue: String);
+procedure TGDAXAuthenticatorImpl.SetPassphrase(Const AValue: String);
 begin
   FPass:=AValue;
 end;
 
-procedure TGDAXAuthenticatorImpl.SetSecret(AValue: String);
+procedure TGDAXAuthenticatorImpl.SetSecret(Const AValue: String);
 begin
   FSecret:=AValue;
 end;
 
-procedure TGDAXAuthenticatorImpl.SetUseLocalTime(AValue: Boolean);
+procedure TGDAXAuthenticatorImpl.SetUseLocalTime(Const AValue: Boolean);
 begin
   FUseLocalTime:=AValue;
 end;
 
-procedure TGDAXAuthenticatorImpl.DoBuildHeaders(const AOutput: TStrings;
-  const ASignature: String;const AEpoch:Integer);
+procedure TGDAXAuthenticatorImpl.DoBuildHeaders(Const AOutput: TStrings;
+  Const ASignature: String;Const AEpoch:Integer);
 begin
   AOutput.Clear;
   AOutput.NameValueSeparator:=':';
@@ -167,8 +167,8 @@ begin
 end;
 
 function TGDAXAuthenticatorImpl.GenerateAccessSignature(
-  const AOperation: TRestOperation; const ARequestPath: String;
-  Out Epoch:Integer;const ARequestBody: String): String;
+  Const AOperation: TRestOperation; Const ARequestPath: String;
+  Out Epoch:Integer;Const ARequestBody: String): String;
 var
   LContent:String;
   LError:String;

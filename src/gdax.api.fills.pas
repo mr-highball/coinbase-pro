@@ -42,20 +42,20 @@ type
     function GetOrderID: String;
     function GetPaged: IGDAXPaged;
     function GetProductID: String;
-    procedure SetOrderID(Value: String);
+    procedure SetOrderID(Const Value: String);
     function BuildQueryParams:String;
-    function GetTotalSize(const ASides: TOrderSides): Extended;
-    function GetTotalPrice(const ASides: TOrderSides): Extended;
-    function GetTotalFees(const ASides: TOrderSides): Extended;
-    procedure SetProductID(AValue: String);
+    function GetTotalSize(Const ASides: TOrderSides): Extended;
+    function GetTotalPrice(Const ASides: TOrderSides): Extended;
+    function GetTotalFees(Const ASides: TOrderSides): Extended;
+    procedure SetProductID(Const AValue: String);
   protected
     function DoGetSupportedOperations: TRestOperations; override;
-    function GetEndpoint(const AOperation: TRestOperation): string; override;
-    function DoLoadFromJSON(const AJSON: string;
+    function GetEndpoint(Const AOperation: TRestOperation): string; override;
+    function DoLoadFromJSON(Const AJSON: string;
       out Error: string): Boolean;override;
-    function DoMove(const ADirection: TGDAXPageDirection; out Error: String;
-      const ALastBeforeID, ALastAfterID: Integer;
-      const ALimit: TPageLimit=0): Boolean; override;
+    function DoMove(Const ADirection: TGDAXPageDirection; out Error: String;
+      Const ALastBeforeID, ALastAfterID: Integer;
+      Const ALimit: TPageLimit=0): Boolean; override;
   public
     property Paged: IGDAXPaged read GetPaged;
     property Entries: TFillEntryArray read GetEntries;
@@ -107,7 +107,7 @@ begin
   Result:=[roGet];
 end;
 
-function TGDAXFillsImpl.DoLoadFromJSON(const AJSON: string; out Error: string): Boolean;
+function TGDAXFillsImpl.DoLoadFromJSON(Const AJSON: string; out Error: string): Boolean;
 var
   LJSON:TJSONVariantData;
   I: Integer;
@@ -140,9 +140,9 @@ begin
   end;
 end;
 
-function TGDAXFillsImpl.DoMove(const ADirection: TGDAXPageDirection; out
-  Error: String; const ALastBeforeID, ALastAfterID: Integer;
-  const ALimit: TPageLimit): Boolean;
+function TGDAXFillsImpl.DoMove(Const ADirection: TGDAXPageDirection; out
+  Error: String; Const ALastBeforeID, ALastAfterID: Integer;
+  Const ALimit: TPageLimit): Boolean;
 var
   LEntries:TFillEntryArray;
   I,J:Integer;
@@ -190,7 +190,7 @@ begin
   SetLength(FEntries,0);
 end;
 
-function TGDAXFillsImpl.GetEndpoint(const AOperation: TRestOperation): string;
+function TGDAXFillsImpl.GetEndpoint(Const AOperation: TRestOperation): string;
 begin
   Result:='';
   if AOperation=roGet then
@@ -222,7 +222,7 @@ begin
   Result:=FProductID;
 end;
 
-function TGDAXFillsImpl.GetTotalFees(const ASides: TOrderSides): Extended;
+function TGDAXFillsImpl.GetTotalFees(Const ASides: TOrderSides): Extended;
 var
   I: Integer;
 begin
@@ -232,12 +232,12 @@ begin
       Result:=Result + FEntries[I].Fee;
 end;
 
-procedure TGDAXFillsImpl.SetProductID(AValue: String);
+procedure TGDAXFillsImpl.SetProductID(Const AValue: String);
 begin
   FProductID:=AValue;
 end;
 
-function TGDAXFillsImpl.GetTotalPrice(const ASides: TOrderSides): Extended;
+function TGDAXFillsImpl.GetTotalPrice(Const ASides: TOrderSides): Extended;
 var
   I: Integer;
 begin
@@ -247,7 +247,7 @@ begin
       Result:=Result + FEntries[I].Price;
 end;
 
-function TGDAXFillsImpl.GetTotalSize(const ASides: TOrderSides): Extended;
+function TGDAXFillsImpl.GetTotalSize(Const ASides: TOrderSides): Extended;
 var
   I: Integer;
 begin
@@ -257,7 +257,7 @@ begin
       Result:=Result + FEntries[I].Size;
 end;
 
-procedure TGDAXFillsImpl.SetOrderID(Value: String);
+procedure TGDAXFillsImpl.SetOrderID(Const Value: String);
 begin
   FOrderID:=Value;
 end;

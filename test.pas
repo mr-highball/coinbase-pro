@@ -116,9 +116,9 @@ type
     function TestOrder(Const AProductID:String;Const ASide:TOrderSide;
       Const AType:TOrderType;Const APostOnly,AStop:Boolean;Const APrice,ASize:Extended;
       Out Success:Boolean;Out Content:String):IGDAXOrder;
-    function TestLedger(const AAcctID:String; Out Content,Error:String;
+    function TestLedger(Const AAcctID:String; Out Content,Error:String;
       Out Success:Boolean):IGDAXAccountLedger;
-    function TestFills(const AProductID:String; Out Content,Error:String;
+    function TestFills(Const AProductID:String; Out Content,Error:String;
       Out Success:Boolean):IGDAXFills;
   public
 
@@ -473,7 +473,7 @@ begin
 end;
 
 function TGDAXTester.TestProducts(
-  const AQuoteCurrencyFilter: String): IGDAXProducts;
+  Const AQuoteCurrencyFilter: String): IGDAXProducts;
 var
   LContent,LError:String;
 begin
@@ -496,9 +496,9 @@ begin
     raise Exception.Create(LError);
 end;
 
-function TGDAXTester.TestOrder(const AProductID: String;
-  const ASide: TOrderSide; const AType: TOrderType; const APostOnly,
-  AStop: Boolean; const APrice, ASize: Extended; out Success: Boolean; out
+function TGDAXTester.TestOrder(Const AProductID: String;
+  Const ASide: TOrderSide; Const AType: TOrderType; Const APostOnly,
+  AStop: Boolean; Const APrice, ASize: Extended; out Success: Boolean; out
   Content: String): IGDAXOrder;
 var
   LError:String;
@@ -538,7 +538,7 @@ begin
   Success:=True;
 end;
 
-function TGDAXTester.TestLedger(const AAcctID: String; out Content,
+function TGDAXTester.TestLedger(Const AAcctID: String; out Content,
   Error: String; out Success: Boolean): IGDAXAccountLedger;
 begin
   Success:=False;
@@ -551,7 +551,7 @@ begin
   Success:=True;
 end;
 
-function TGDAXTester.TestFills(const AProductID: String; out Content,
+function TGDAXTester.TestFills(Const AProductID: String; out Content,
   Error: String; out Success: Boolean): IGDAXFills;
 begin
   Success:=False;

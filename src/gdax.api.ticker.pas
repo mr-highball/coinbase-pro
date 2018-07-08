@@ -34,44 +34,44 @@ uses
   System.Generics.Collections
   {$ENDIF};
 type
-  TProductTicker = class(TGDAXRestApi)
+  TProductTicker = class(TGDAXRestApi,IGDAXTicker)
   strict private
     FProduct: IGDAXProduct;
-    FSize: Single;
-    FAsk: Single;
-    FBid: Single;
+    FSize: Extended;
+    FAsk: Extended;
+    FBid: Extended;
     FTime: String;
-    FVolume: Single;
-    FPrice: Single;
+    FVolume: Extended;
+    FPrice: Extended;
     function GetProduct: IGDAXProduct;
-    procedure SetProduct(const Value: IGDAXProduct);
-    function GetSize: Single;
-    procedure SetSize(const Value: Single);
-    function GetAsk: Single;
-    function GetBid: Single;
-    function GetTime: String;
-    function GetVolume: Single;
-    procedure SetAsk(const Value: Single);
-    procedure SetBid(const Value: Single);
-    procedure SetTime(const Value: String);
-    procedure SetVolume(const Value: Single);
-    function GetPrice: Single;
-    procedure SetPrice(const Value: Single);
+    procedure SetProduct(Const Value: IGDAXProduct);
+    function GetSize: Extended;
+    procedure SetSize(Const Value: Extended);
+    function GetAsk: Extended;
+    function GetBid: Extended;
+    function GetTime: TDateTime;
+    function GetVolume: Extended;
+    procedure SetAsk(Const Value: Extended);
+    procedure SetBid(Const Value: Extended);
+    procedure SetTime(Const Value: String);
+    procedure SetVolume(Const Value: Extended);
+    function GetPrice: Extended;
+    procedure SetPrice(Const Value: Extended);
   strict protected
-    function GetEndpoint(const AOperation: TRestOperation): string; override;
-    function DoGet(const AEndpoint: string; const AHeaders: TStrings;
+    function GetEndpoint(Const AOperation: TRestOperation): string; override;
+    function DoGet(Const AEndpoint: string; Const AHeaders: TStrings;
       out Content: string; out Error: string): Boolean; override;
     function DoGetSupportedOperations: TRestOperations; override;
-    function DoLoadFromJSON(const AJSON: string; out Error: string): Boolean;
+    function DoLoadFromJSON(Const AJSON: string; out Error: string): Boolean;
       override;
   public
     property Product: IGDAXProduct read GetProduct write SetProduct;
-    property Price: Single read GetPrice write SetPrice;
-    property Size: Single read GetSize write SetSize;
-    property Bid: Single read GetBid write SetBid;
-    property Ask: Single read GetAsk write SetAsk;
-    property Volume: Single read GetVolume write SetVolume;
-    property Time: String read GetTime write SetTime;
+    property Price: Extended read GetPrice write SetPrice;
+    property Size: Extended read GetSize write SetSize;
+    property Bid: Extended read GetBid write SetBid;
+    property Ask: Extended read GetAsk write SetAsk;
+    property Volume: Extended read GetVolume write SetVolume;
+    property Time: TDateTime read GetTime write SetTime;
     constructor Create; override;
   end;
 implementation
@@ -85,7 +85,7 @@ begin
   FProduct:=opUnknown;
 end;
 
-function TProductTicker.DoGet(const AEndpoint: string; const AHeaders: TStrings;
+function TProductTicker.DoGet(Const AEndpoint: string; Const AHeaders: TStrings;
   out Content, Error: string): Boolean;
 begin
   Result:=False;
@@ -106,7 +106,7 @@ begin
   Result:=[roGet];
 end;
 
-function TProductTicker.DoLoadFromJSON(const AJSON: string;
+function TProductTicker.DoLoadFromJSON(Const AJSON: string;
   out Error: string): Boolean;
 var
   LJSON:TJSONVariantData;
@@ -130,22 +130,22 @@ begin
   end;
 end;
 
-function TProductTicker.GetAsk: Single;
+function TProductTicker.GetAsk: Extended;
 begin
   Result:=FAsk;
 end;
 
-function TProductTicker.GetBid: Single;
+function TProductTicker.GetBid: Extended;
 begin
   Result:=FBid;
 end;
 
-function TProductTicker.GetEndpoint(const AOperation: TRestOperation): string;
+function TProductTicker.GetEndpoint(Const AOperation: TRestOperation): string;
 begin
   Result:=Format(GDAX_END_API_TICKER,[FProduct.ID]);
 end;
 
-function TProductTicker.GetPrice: Single;
+function TProductTicker.GetPrice: Extended;
 begin
   Result:=FPrice;
 end;
@@ -155,7 +155,7 @@ begin
   Result:=FProduct;
 end;
 
-function TProductTicker.GetSize: Single;
+function TProductTicker.GetSize: Extended;
 begin
   Result:=FSize;
 end;
@@ -165,43 +165,43 @@ begin
   Result:=FTime;
 end;
 
-function TProductTicker.GetVolume: Single;
+function TProductTicker.GetVolume: Extended;
 begin
   Result:=FVolume;
 end;
 
-procedure TProductTicker.SetAsk(const Value: Single);
+procedure TProductTicker.SetAsk(Const Value: Extended);
 begin
   FAsk:=Value;
 end;
 
-procedure TProductTicker.SetBid(const Value: Single);
+procedure TProductTicker.SetBid(Const Value: Extended);
 begin
   FBid:=Value;
 end;
 
 
-procedure TProductTicker.SetPrice(const Value: Single);
+procedure TProductTicker.SetPrice(Const Value: Extended);
 begin
   FPrice:=Value;
 end;
 
-procedure TProductTicker.SetProduct(const Value: IGDAXProduct);
+procedure TProductTicker.SetProduct(Const Value: IGDAXProduct);
 begin
   FProduct:=Value;
 end;
 
-procedure TProductTicker.SetSize(const Value: Single);
+procedure TProductTicker.SetSize(Const Value: Extended);
 begin
   FSize:=Value;
 end;
 
-procedure TProductTicker.SetTime(const Value: String);
+procedure TProductTicker.SetTime(Const Value: String);
 begin
   FTime:=Value;
 end;
 
-procedure TProductTicker.SetVolume(const Value: Single);
+procedure TProductTicker.SetVolume(Const Value: Extended);
 begin
   FVolume:=Volume;
 end;

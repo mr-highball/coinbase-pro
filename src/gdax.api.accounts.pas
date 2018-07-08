@@ -40,15 +40,15 @@ type
     function GetCount: Cardinal;
     function GetEntries: TLedgerEntryArray;
     function GetPaged: IGDAXPaged;
-    procedure SetAcctID(Value: String);
+    procedure SetAcctID(Const Value: String);
   strict protected
-    function DoGet(const AEndpoint: string; const AHeaders: TStrings; out
+    function DoGet(Const AEndpoint: string; Const AHeaders: TStrings; out
       Content: String; out Error: string): Boolean; override;
-    function DoLoadFromJSON(const AJSON: string; out Error: string): Boolean;override;
-    function DoMove(const ADirection: TGDAXPageDirection; out Error: String;
-      const ALastBeforeID, ALastAfterID: Integer;
-      const ALimit: TPageLimit=0): Boolean; override;
-    function GetEndpoint(const AOperation: TRestOperation): string; override;
+    function DoLoadFromJSON(Const AJSON: string; out Error: string): Boolean;override;
+    function DoMove(Const ADirection: TGDAXPageDirection; out Error: String;
+      Const ALastBeforeID, ALastAfterID: Integer;
+      Const ALimit: TPageLimit=0): Boolean; override;
+    function GetEndpoint(Const AOperation: TRestOperation): string; override;
     function DoGetSupportedOperations: TRestOperations; override;
   public
     property AcctID: String read GetAcctID write SetAcctID;
@@ -66,19 +66,19 @@ type
     FHolds: Extended;
     FAvailable: Extended;
     function GetAcctID: String;
-    procedure SetAcctID(const AValue: String);
+    procedure SetAcctID(Const AValue: String);
     function GetCurrency: String;
-    procedure SetCurrency(const AValue: String);
+    procedure SetCurrency(Const AValue: String);
     function GetBalance: Extended;
-    procedure SetBalance(const AValue: Extended);
+    procedure SetBalance(Const AValue: Extended);
     function GetHolds: Extended;
-    procedure SetHolds(const AValue: Extended);
+    procedure SetHolds(Const AValue: Extended);
     function GetAvailable: Extended;
-    procedure SetAvailable(const AValue: Extended);
+    procedure SetAvailable(Const AValue: Extended);
   strict protected
     function DoGetSupportedOperations: TRestOperations; override;
-    function GetEndpoint(const AOperation: TRestOperation): string; override;
-    function DoLoadFromJSON(const AJSON: string; out Error: string): Boolean;
+    function GetEndpoint(Const AOperation: TRestOperation): string; override;
+    function DoLoadFromJSON(Const AJSON: string; out Error: string): Boolean;
       override;
   public
     property AcctID: String read GetAcctID write SetAcctID;
@@ -105,8 +105,8 @@ type
     function GetAccounts: TGDAXAccountList;
   strict protected
     function DoGetSupportedOperations: TRestOperations; override;
-    function GetEndpoint(const AOperation: TRestOperation): string; override;
-    function DoLoadFromJSON(const AJSON: string;
+    function GetEndpoint(Const AOperation: TRestOperation): string; override;
+    function DoLoadFromJSON(Const AJSON: string;
       out Error: string): Boolean;override;
   public
     property Accounts : TGDAXAccountList read GetAccounts;
@@ -124,7 +124,7 @@ begin
   Result:=[roGet];
 end;
 
-function TGDAXAccountImpl.DoLoadFromJSON(const AJSON: string;
+function TGDAXAccountImpl.DoLoadFromJSON(Const AJSON: string;
   out Error: string): Boolean;
 var
   LJSON:TJSONVariantData;
@@ -198,7 +198,7 @@ begin
   Result:=FCurrency;
 end;
 
-function TGDAXAccountImpl.GetEndpoint(const AOperation: TRestOperation): string;
+function TGDAXAccountImpl.GetEndpoint(Const AOperation: TRestOperation): string;
 begin
   Result:='';
   if AOperation = roGet then
@@ -210,27 +210,27 @@ begin
   Result:=FHolds;
 end;
 
-procedure TGDAXAccountImpl.SetAcctID(const AValue: String);
+procedure TGDAXAccountImpl.SetAcctID(Const AValue: String);
 begin
   FID:=AValue;
 end;
 
-procedure TGDAXAccountImpl.SetAvailable(const AValue: Extended);
+procedure TGDAXAccountImpl.SetAvailable(Const AValue: Extended);
 begin
   FAvailable:=AValue;
 end;
 
-procedure TGDAXAccountImpl.SetBalance(const AValue: Extended);
+procedure TGDAXAccountImpl.SetBalance(Const AValue: Extended);
 begin
   FBalance:=AValue;
 end;
 
-procedure TGDAXAccountImpl.SetCurrency(const AValue: String);
+procedure TGDAXAccountImpl.SetCurrency(Const AValue: String);
 begin
   FCurrency:=AValue;
 end;
 
-procedure TGDAXAccountImpl.SetHolds(const AValue: Extended);
+procedure TGDAXAccountImpl.SetHolds(Const AValue: Extended);
 begin
   FHolds:=AValue;
 end;
@@ -254,7 +254,7 @@ begin
   Result:=[roGet];
 end;
 
-function TGDAXAccountsImpl.DoLoadFromJSON(const AJSON: string;
+function TGDAXAccountsImpl.DoLoadFromJSON(Const AJSON: string;
   out Error: string): Boolean;
 var
   LJSON: TJSONVariantData;
@@ -301,14 +301,14 @@ begin
   Result:=FAccounts;
 end;
 
-function TGDAXAccountsImpl.GetEndpoint(const AOperation: TRestOperation): string;
+function TGDAXAccountsImpl.GetEndpoint(Const AOperation: TRestOperation): string;
 begin
   Result:=GDAX_END_API_ACCTS;
 end;
 
 { TGDAXAccountLedgerImpl }
 
-function TGDAXAccountLedgerImpl.DoLoadFromJSON(const AJSON: string;
+function TGDAXAccountLedgerImpl.DoLoadFromJSON(Const AJSON: string;
   out Error: string): Boolean;
 var
   I:Integer;
@@ -344,9 +344,9 @@ begin
   end;
 end;
 
-function TGDAXAccountLedgerImpl.DoMove(const ADirection: TGDAXPageDirection;
-  out Error: String; const ALastBeforeID, ALastAfterID: Integer;
-  const ALimit: TPageLimit): Boolean;
+function TGDAXAccountLedgerImpl.DoMove(Const ADirection: TGDAXPageDirection;
+  out Error: String; Const ALastBeforeID, ALastAfterID: Integer;
+  Const ALimit: TPageLimit): Boolean;
 var
   LEntries:TLedgerEntryArray;
   I,J:Integer;
@@ -417,7 +417,7 @@ begin
 end;
 
 function TGDAXAccountLedgerImpl.GetEndpoint(
-  const AOperation: TRestOperation): string;
+  Const AOperation: TRestOperation): string;
 var
   LMoving:String;
 begin
@@ -441,13 +441,13 @@ begin
   SetLength(FEntries,0);
 end;
 
-procedure TGDAXAccountLedgerImpl.SetAcctID(Value: String);
+procedure TGDAXAccountLedgerImpl.SetAcctID(Const Value: String);
 begin
   FID:=Value;
 end;
 
-function TGDAXAccountLedgerImpl.DoGet(const AEndpoint: string;
-  const AHeaders: TStrings; out Content: String; out Error: string): Boolean;
+function TGDAXAccountLedgerImpl.DoGet(Const AEndpoint: string;
+  Const AHeaders: TStrings; out Content: String; out Error: string): Boolean;
 begin
   if FID.IsEmpty then
   begin

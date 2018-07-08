@@ -50,11 +50,11 @@ type
     function GetSecret: String;
     function GetTime: IGDAXTime;
     function GetUseLocalTime: Boolean;
-    procedure SetKey(AValue: String);
-    procedure SetMode(AValue: TGDAXApi);
-    procedure SetPassphrase(AValue: String);
-    procedure SetSecret(AValue: String);
-    procedure SetUseLocalTime(AValue: Boolean);
+    procedure SetKey(Const AValue: String);
+    procedure SetMode(Const AValue: TGDAXApi);
+    procedure SetPassphrase(Const AValue: String);
+    procedure SetSecret(Const AValue: String);
+    procedure SetUseLocalTime(Const AValue: Boolean);
     //properties
     property Key: String read GetKey write SetKey;
     property Secret: String read GetSecret write SetSecret;
@@ -99,7 +99,7 @@ type
     //property methods
     function GetAuthenticator: IGDAXAuthenticator;
     function GetSupportedOperations: TRestOperations;
-    procedure SetAuthenticator(AValue: IGDAXAuthenticator);
+    procedure SetAuthenticator(Const AValue: IGDAXAuthenticator);
     //properties
     property SupportedOperations: TRestOperations read GetSupportedOperations;
     property Authenticator: IGDAXAuthenticator read GetAuthenticator write SetAuthenticator;
@@ -117,8 +117,8 @@ type
     //property methods
     function GetEpoch: Extended;
     function GetISO: String;
-    procedure SetEpoch(AValue: Extended);
-    procedure SetISO(AValue: String);
+    procedure SetEpoch(Const AValue: Extended);
+    procedure SetISO(Const AValue: String);
     //properties
     property ISO: String read GetISO write SetISO;
     property Epoch: Extended read GetEpoch write SetEpoch;
@@ -184,7 +184,7 @@ type
     function GetCount: Cardinal;
     function GetEntries: TLedgerEntryArray;
     function GetPaged: IGDAXPaged;
-    procedure SetAcctID(AValue: String);
+    procedure SetAcctID(Const AValue: String);
     //properties
     property AcctID: String read GetAcctID write SetAcctID;
     property Paged: IGDAXPaged read GetPaged;
@@ -204,11 +204,11 @@ type
     function GetBalance: Extended;
     function GetCurrency: String;
     function GetHolds: Extended;
-    procedure SetAcctID(const AValue: String);
-    procedure SetAvailable(const AValue: Extended);
-    procedure SetBalance(const AValue: Extended);
-    procedure SetCurrency(const AValue: String);
-    procedure SetHolds(const AValue: Extended);
+    procedure SetAcctID(Const AValue: String);
+    procedure SetAvailable(Const AValue: Extended);
+    procedure SetBalance(Const AValue: Extended);
+    procedure SetCurrency(Const AValue: String);
+    procedure SetHolds(Const AValue: Extended);
     //properties
     property AcctID: String read GetAcctID write SetAcctID;
     property Currency: String read GetCurrency write SetCurrency;
@@ -245,10 +245,10 @@ type
     FSide: TOrderSide;
     function GetPrice: Single;
     function GetSize: Extended;
-    procedure SetPrice(const Value: Single);
-    procedure SetSize(const Value: Extended);
+    procedure SetPrice(Const Value: Single);
+    procedure SetSize(Const Value: Extended);
     function GetSide: TOrderSide;
-    procedure SetSide(const Value: TOrderSide);
+    procedure SetSide(Const Value: TOrderSide);
   protected
   public
     property Price: Single read GetPrice write SetPrice;
@@ -263,7 +263,7 @@ type
   private
     FNumberOrders: Cardinal;
     function GetNumberOrders: Integer;
-    procedure SetNumberOrders(const Value: Integer);
+    procedure SetNumberOrders(Const Value: Integer);
   public
     property NumberOrders: Integer read GetNumberOrders write SetNumberOrders;
     constructor Create(Const APrice:Single;Const ASize:Extended;
@@ -276,7 +276,7 @@ type
   private
     FOrderID: String;
     function GetOrderID: String;
-    procedure SetOrderID(const Value: String);
+    procedure SetOrderID(Const Value: String);
   public
     property OrderID: String read GetOrderID write SetOrderID;
     constructor Create(Const APrice:Single;Const ASize:Extended;Const AOrderID:String);overload;
@@ -293,12 +293,12 @@ type
     function GetID: String;
     function GetQuoteCurrency: String;
     function GetQuoteIncrement: Extended;
-    procedure SetBaseCurrency(AValue: String);
-    procedure SetBaseMaxSize(AValue: Extended);
-    procedure SetBaseMinSize(AValue: Extended);
-    procedure SetID(AValue: String);
-    procedure SetQuoteCurrency(AValue: String);
-    procedure SetQuoteIncrement(AValue: Extended);
+    procedure SetBaseCurrency(Const AValue: String);
+    procedure SetBaseMaxSize(Const AValue: Extended);
+    procedure SetBaseMinSize(Const AValue: Extended);
+    procedure SetID(Const AValue: String);
+    procedure SetQuoteCurrency(Const AValue: String);
+    procedure SetQuoteIncrement(Const AValue: Extended);
     //properties
     property ID : String read GetID write SetID;
     property BaseCurrency : String read GetBaseCurrency write SetBaseCurrency;
@@ -325,7 +325,7 @@ type
     //property methods
     function GetProducts: TGDAXProductList;
     function GetQuoteCurrency: String;
-    procedure SetQuoteCurrency(AValue: String);
+    procedure SetQuoteCurrency(Const AValue: String);
     //properties
     property QuoteCurrency : String read GetQuoteCurrency write SetQuoteCurrency;
     property Products : TGDAXProductList read GetProducts;
@@ -350,8 +350,8 @@ type
     function GetLevel: TGDAXBookLevel;
     function GetMarketType: TMarketType;
     function GetProduct: IGDAXProduct;
-    procedure SetLevel(AValue: TGDAXBookLevel);
-    procedure SetProduct(AValue: IGDAXProduct);
+    procedure SetLevel(Const AValue: TGDAXBookLevel);
+    procedure SetProduct(Const AValue: IGDAXProduct);
     //properties
     property Level: TGDAXBookLevel read GetLevel write SetLevel;
     property Product: IGDAXProduct read GetProduct write SetProduct;
@@ -373,17 +373,17 @@ type
     FClose: Single;
     FVolume: Extended;
     function GetTime: Extended;
-    procedure SetTime(const Value: Extended);
+    procedure SetTime(Const Value: Extended);
     function GetLow: Single;
-    procedure SetLow(const Value: Single);
+    procedure SetLow(Const Value: Single);
     function GetHigh: Single;
-    procedure SetHigh(const Value: Single);
+    procedure SetHigh(Const Value: Single);
     function GetOpen: Single;
-    procedure SetOpen(const Value: Single);
+    procedure SetOpen(Const Value: Single);
     function GetClose: Single;
-    procedure SetClose(const Value: Single);
+    procedure SetClose(Const Value: Single);
     function GetVolume: Extended;
-    procedure SetVolume(const Value: Extended);
+    procedure SetVolume(Const Value: Extended);
   public
     property Time: Extended read GetTime write SetTime;
     property Low: Single read GetLow write SetLow;
@@ -413,10 +413,10 @@ type
     function GetList: TGDAXCandleBucketList;
     function GetProduct: IGDAXProduct;
     function GetStartTime: TDatetime;
-    procedure SetEndTime(AValue: TDatetime);
-    procedure SetGranularity(AValue: Cardinal);
-    procedure SetProduct(AValue: IGDAXProduct);
-    procedure SetStartTime(AValue: TDatetime);
+    procedure SetEndTime(Const AValue: TDatetime);
+    procedure SetGranularity(Const AValue: Cardinal);
+    procedure SetProduct(Const AValue: IGDAXProduct);
+    procedure SetStartTime(Const AValue: TDatetime);
     //properties
     property Product: IGDAXProduct read GetProduct write SetProduct;
     property StartTime: TDatetime read GetStartTime write SetStartTime;
@@ -480,8 +480,8 @@ type
     function GetTotalFees(Const ASides: TOrderSides): Extended;
     function GetTotalPrice(Const ASides: TOrderSides): Extended;
     function GetTotalSize(Const ASides: TOrderSides): Extended;
-    procedure SetOrderID(AValue: String);
-    procedure SetProductID(AValue: String);
+    procedure SetOrderID(Const AValue: String);
+    procedure SetProductID(Const AValue: String);
     //properties
     property Paged: IGDAXPaged read GetPaged;
     property Entries: TFillEntryArray read GetEntries;
@@ -500,28 +500,28 @@ type
   IGDAXTicker = interface(IGDAXRestAPI)
     ['{945801E3-05EC-423E-8036-0013F5D1AA02}']
     //property methods
-    function GetAsk: Single;
-    function GetBid: Single;
-    function GetPrice: Single;
+    function GetAsk: Extended;
+    function GetBid: Extended;
+    function GetPrice: Extended;
     function GetProduct: IGDAXProduct;
-    function GetSize: Single;
-    function GetTime: String;
-    function GetVolume: Single;
-    procedure SetAsk(AValue: Single);
-    procedure SetBid(AValue: Single);
-    procedure SetPrice(AValue: Single);
-    procedure SetProduct(AValue: IGDAXProduct);
-    procedure SetSize(AValue: Single);
-    procedure SetTime(AValue: String);
-    procedure SetVolume(AValue: Single);
+    function GetSize: Extended;
+    function GetTime: TDateTime;
+    function GetVolume: Extended;
+    procedure SetAsk(Const AValue: Extended);
+    procedure SetBid(Const AValue: Extended);
+    procedure SetPrice(Const AValue: Extended);
+    procedure SetProduct(Const AValue: IGDAXProduct);
+    procedure SetSize(Const AValue: Extended);
+    procedure SetTime(Const AValue: TDateTime);
+    procedure SetVolume(Const AValue: Extended);
     //properties
     property Product: IGDAXProduct read GetProduct write SetProduct;
-    property Price: Single read GetPrice write SetPrice;
-    property Size: Single read GetSize write SetSize;
-    property Bid: Single read GetBid write SetBid;
-    property Ask: Single read GetAsk write SetAsk;
-    property Volume: Single read GetVolume write SetVolume;
-    property Time: String read GetTime write SetTime;
+    property Price: Extended read GetPrice write SetPrice;
+    property Size: Extended read GetSize write SetSize;
+    property Bid: Extended read GetBid write SetBid;
+    property Ask: Extended read GetAsk write SetAsk;
+    property Volume: Extended read GetVolume write SetVolume;
+    property Time: TDateTime read GetTime write SetTime;
   end;
 
   { IGDAXOrder }
@@ -544,21 +544,21 @@ type
     function GetSide: TOrderSide;
     function GetSize: Extended;
     function GetStopOrder: Boolean;
-    procedure SetCreatedAt(const AValue: TDateTime);
-    procedure SetExecutedValue(const AValue: Extended);
-    procedure SetFilledSized(const AValue: Extended);
-    procedure SetFillFees(const AValue: Extended);
-    procedure SetID(const AValue: String);
-    procedure SetOrderStatus(const AValue: TOrderStatus);
-    procedure SetOrderType(const AValue: TOrderType);
-    procedure SetPostOnly(const AValue: Boolean);
-    procedure SetPrice(const AValue: Extended);
-    procedure SetProduct(const AValue: IGDAXProduct);
-    procedure SetRejectReason(const AValue: String);
-    procedure SetSettled(const AValue: Boolean);
-    procedure SetSide(const AValue: TOrderSide);
-    procedure SetSize(const AValue: Extended);
-    procedure SetStopOrder(const AValue: Boolean);
+    procedure SetCreatedAt(Const AValue: TDateTime);
+    procedure SetExecutedValue(Const AValue: Extended);
+    procedure SetFilledSized(Const AValue: Extended);
+    procedure SetFillFees(Const AValue: Extended);
+    procedure SetID(Const AValue: String);
+    procedure SetOrderStatus(Const AValue: TOrderStatus);
+    procedure SetOrderType(Const AValue: TOrderType);
+    procedure SetPostOnly(Const AValue: Boolean);
+    procedure SetPrice(Const AValue: Extended);
+    procedure SetProduct(Const AValue: IGDAXProduct);
+    procedure SetRejectReason(Const AValue: String);
+    procedure SetSettled(Const AValue: Boolean);
+    procedure SetSide(Const AValue: TOrderSide);
+    procedure SetSize(Const AValue: Extended);
+    procedure SetStopOrder(Const AValue: Boolean);
     //properties
     property ID: String read GetID write SetID;
     property Product: IGDAXProduct read GetProduct write SetProduct;
@@ -592,8 +592,8 @@ type
     function GetPaged: IGDAXPaged;
     function GetProduct: IGDAXProduct;
     function GetStatuses: TOrderStatuses;
-    procedure SetProduct(const AValue: IGDAXProduct);
-    procedure SetStatuses(const AValue: TOrderStatuses);
+    procedure SetProduct(Const AValue: IGDAXProduct);
+    procedure SetStatuses(Const AValue: TOrderStatuses);
     function GetOrders: TGDAXOrderList;
     //properties
     property Orders: TGDAXOrderList read GetOrders;
@@ -608,7 +608,7 @@ uses
 
 { TFillEntry }
 
-constructor TFillEntry.Create(const AJSON: String);
+constructor TFillEntry.Create(Const AJSON: String);
 var
   LJSON:TJSONVariantData;
 begin
@@ -630,7 +630,7 @@ end;
 
 { TLedgerEntry.TDetails }
 
-constructor TLedgerEntry.TDetails.Create(const AJSON: String);
+constructor TLedgerEntry.TDetails.Create(Const AJSON: String);
 var
   LJSON:TJSONVariantData;
 begin
@@ -645,7 +645,7 @@ end;
 
 { TLedgerEntry }
 
-constructor TLedgerEntry.Create(const AJSON: String);
+constructor TLedgerEntry.Create(Const AJSON: String);
 var
   I:Integer;
   LJSON:TJSONVariantData;
@@ -669,7 +669,7 @@ end;
 
 { TBookEntry }
 
-constructor TBookEntry.Create(const APrice: Single; const ASize: Extended);
+constructor TBookEntry.Create(Const APrice: Single; Const ASize: Extended);
 begin
   FPrice:=APrice;
   FSize:=ASize;
@@ -690,25 +690,25 @@ begin
   Result:=FSize;
 end;
 
-procedure TBookEntry.SetPrice(const Value: Single);
+procedure TBookEntry.SetPrice(Const Value: Single);
 begin
   FPrice:=Value;
 end;
 
-procedure TBookEntry.SetSide(const Value: TOrderSide);
+procedure TBookEntry.SetSide(Const Value: TOrderSide);
 begin
   FSide:=Value;
 end;
 
-procedure TBookEntry.SetSize(const Value: Extended);
+procedure TBookEntry.SetSize(Const Value: Extended);
 begin
   FSize:=Value;
 end;
 
 { TAggregatedEntry }
 
-constructor TAggregatedEntry.Create(const APrice: Single; const ASize: Extended;
-  const ANumberOrders: Cardinal);
+constructor TAggregatedEntry.Create(Const APrice: Single; Const ASize: Extended;
+  Const ANumberOrders: Cardinal);
 begin
   inherited create(APrice,ASize);
   FNumberOrders:=ANumberOrders;
@@ -719,15 +719,15 @@ begin
   Result:=FNumberOrders;
 end;
 
-procedure TAggregatedEntry.SetNumberOrders(const Value: Integer);
+procedure TAggregatedEntry.SetNumberOrders(Const Value: Integer);
 begin
   FNumberOrders:=Value;
 end;
 
 { TFullEntry }
 
-constructor TFullEntry.Create(const APrice: Single; const ASize: Extended;
-  const AOrderID: String);
+constructor TFullEntry.Create(Const APrice: Single; Const ASize: Extended;
+  Const AOrderID: String);
 begin
   inherited create(APrice,ASize);
   FOrderID:=AOrderID;
@@ -738,14 +738,14 @@ begin
   Result:=FOrderID;
 end;
 
-procedure TFullEntry.SetOrderID(const Value: String);
+procedure TFullEntry.SetOrderID(Const Value: String);
 begin
   FOrderID:=Value;
 end;
 
 { TCandleBucket }
 
-constructor TCandleBucket.create(const ATime: Extended; ALow, AHigh, AOpen,
+constructor TCandleBucket.create(Const ATime: Extended; ALow, AHigh, AOpen,
  AClose: Single; AVolume: Extended);
 begin
  Self.FTime:=ATime;
@@ -756,7 +756,7 @@ begin
  Self.FVolume:=AVolume;
 end;
 
-class operator TCandleBucket.Equal(const A, B: TCandleBucket): Boolean;
+class operator TCandleBucket.Equal(Const A, B: TCandleBucket): Boolean;
 begin
   Result:=A.Time=B.Time;
 end;
@@ -791,32 +791,32 @@ begin
  Result:=FVolume;
 end;
 
-procedure TCandleBucket.SetClose(const Value: Single);
+procedure TCandleBucket.SetClose(Const Value: Single);
 begin
  FClose:=Value;
 end;
 
-procedure TCandleBucket.SetHigh(const Value: Single);
+procedure TCandleBucket.SetHigh(Const Value: Single);
 begin
  FHigh:=Value;
 end;
 
-procedure TCandleBucket.SetLow(const Value: Single);
+procedure TCandleBucket.SetLow(Const Value: Single);
 begin
  FLow:=Value;
 end;
 
-procedure TCandleBucket.SetOpen(const Value: Single);
+procedure TCandleBucket.SetOpen(Const Value: Single);
 begin
 
 end;
 
-procedure TCandleBucket.SetTime(const Value: Extended);
+procedure TCandleBucket.SetTime(Const Value: Extended);
 begin
  FTime:=Value;
 end;
 
-procedure TCandleBucket.SetVolume(const Value: Extended);
+procedure TCandleBucket.SetVolume(Const Value: Extended);
 begin
  FVolume:=Value;
 end;

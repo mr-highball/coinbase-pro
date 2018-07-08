@@ -30,13 +30,13 @@ uses
   Classes, gdax.api, gdax.api.consts, gdax.api.types;
 type
 
-  TCandles = class(TGDAXRestApi)
-  private const
-    MAX_CANDLES = 200;
-    ACCEPTED_GRANULARITY : array of Integer = [60,300,900,3600,21600,86400];
+  TGDAXCandlesImpl = class(TGDAXRestApi,IGDAXCandles)
+  public const
+    MAX_CANDLES = 300;
+    ACCEPTED_GRANULARITY : array[0..5] of Integer = (60,300,900,3600,21600,86400);
   private
     FProduct: IGDAXProduct;
-    FList: TList<TCandleBucket>;
+    FList: TGDAXCandleBucketList;
     FStartTime: TDatetime;
     FEndTime: TDatetime;
     FGranularity: Cardinal;
@@ -49,7 +49,7 @@ type
     function GetGranularity: Cardinal;
     procedure SetGranularity(Const Value: Cardinal);
     function BuildQueryParams:String;
-    function GetList: TList<TCandleBucket>;
+    function GetList: TGDAXCandleBucketList;
   protected
     function DoGetSupportedOperations: TRestOperations; override;
     function DoGet(Const AEndpoint: string; Const AHeaders: TStrings;
@@ -62,7 +62,7 @@ type
     property StartTime: TDatetime read GetStartTime write SetStartTime;
     property Granularity: Cardinal read GetGranularity write SetGranularity;
     property EndTime: TDatetime read GetEndTime write SetEndTime;
-    property List: TList<TCandleBucket> read GetList;
+    property List: TGDAXCandleBucketList read GetList;
     constructor Create; override;
     destructor Destroy; override;
   end;
@@ -71,9 +71,9 @@ implementation
 uses
   SysUtils,SynCrossPlatformJSON,Dateutils;
 
-{ TCandles }
+{ TGDAXCandlesImpl }
 
-function TCandles.BuildQueryParams: String;
+function TGDAXCandlesImpl.BuildQueryParams: String;
 var
   LGran:Integer;
 begin
@@ -101,36 +101,37 @@ begin
   );
 end;
 
-constructor TCandles.Create;
+constructor TGDAXCandlesImpl.Create;
 begin
   inherited;
-  FList:=TList<TCandleBucket>.Create;
+  FList:=TGDAXCandleBucketList.Create;
 end;
 
-destructor TCandles.Destroy;
+destructor TGDAXCandlesImpl.Destroy;
 begin
+  FProduct:=nil;
   FList.Free;
   inherited;
 end;
 
-function TCandles.DoGet(Const AEndpoint: string; Const AHeaders: TStrings;
+function TGDAXCandlesImpl.DoGet(Const AEndpoint: string; Const AHeaders: TStrings;
   out Content, Error: string): Boolean;
 begin
   Result:=False;
-  if FProduct=opUnknown then
+  if not Assigned(FProduct) then
   begin
-    Error:=Format(E_UNKNOWN,['candles product','TCandles DoGet']);
+    Error:=Format(E_UNKNOWN,['candles product','TGDAXCandlesImpl DoGet']);
     Exit;
   end;
   Result:=inherited;
 end;
 
-function TCandles.DoGetSupportedOperations: TRestOperations;
+function TGDAXCandlesImpl.DoGetSupportedOperations: TRestOperations;
 begin
   Result:=[roGet];
 end;
 
-function TCandles.DoLoadFromJSON(Const AJSON: string;
+function TGDAXCandlesImpl.DoLoadFromJSON(Const AJSON: string;
   out Error: string): Boolean;
 var
   LJSON:TJSONVariantData;
@@ -177,42 +178,45 @@ begin
   end;
 end;
 
-function TCandles.GetEndpoint(Const AOperation: TRestOperation): string;
+function TGDAXCandlesImpl.GetEndpoint(Const AOperation: TRestOperation): string;
 begin
-  Result:=Format(GDAX_END_API_CANDLES,[OrderProductToString(FProduct)])+BuildQueryParams;
+  Result:='';
+  if not Assigned(FProduct) then
+    raise Exception.Create(Format(E_UNKNOWN,['product',Self.ClassName]));
+  Result:=Format(GDAX_END_API_CANDLES,[FProduct.ID])+BuildQueryParams;
 end;
 
-function TCandles.GetEndTime: TDatetime;
+function TGDAXCandlesImpl.GetEndTime: TDatetime;
 begin
   Result:=FEndTime;
 end;
 
-function TCandles.GetGranularity: Cardinal;
+function TGDAXCandlesImpl.GetGranularity: Cardinal;
 begin
   Result:=FGranularity;
 end;
 
-function TCandles.GetList: TList<TCandleBucket>;
+function TGDAXCandlesImpl.GetList: TGDAXCandleBucketList;
 begin
   Result:=FList;
 end;
 
-function TCandles.GetProduct: IGDAXProduct;
+function TGDAXCandlesImpl.GetProduct: IGDAXProduct;
 begin
   Result:=FProduct;
 end;
 
-function TCandles.GetStartTime: TDatetime;
+function TGDAXCandlesImpl.GetStartTime: TDatetime;
 begin
   Result:=FStartTime;
 end;
 
-procedure TCandles.SetEndTime(Const Value: TDatetime);
+procedure TGDAXCandlesImpl.SetEndTime(Const Value: TDatetime);
 begin
   FEndTime:=Value;
 end;
 
-procedure TCandles.SetGranularity(Const Value: Cardinal);
+procedure TGDAXCandlesImpl.SetGranularity(Const Value: Cardinal);
 var
   I:Integer;
 begin
@@ -231,12 +235,13 @@ begin
   FGranularity:=ACCEPTED_GRANULARITY[High(ACCEPTED_GRANULARITY)];
 end;
 
-procedure TCandles.SetProduct(Const Value: IGDAXProduct);
+procedure TGDAXCandlesImpl.SetProduct(Const Value: IGDAXProduct);
 begin
+  FProduct:=nil;
   FProduct:=Value;
 end;
 
-procedure TCandles.SetStartTime(Const Value: TDatetime);
+procedure TGDAXCandlesImpl.SetStartTime(Const Value: TDatetime);
 begin
   FStartTime:=Value;
 end;

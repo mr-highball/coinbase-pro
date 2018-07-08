@@ -31,7 +31,7 @@ uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls,
   StdCtrls, ExtCtrls, Grids, gdax.api.types, gdax.api.authenticator,
   gdax.api.accounts, gdax.api.orders, gdax.api.consts, gdax.api.ticker,
-  gdax.api.book;
+  gdax.api.book, gdax.api.candles;
 
 type
 
@@ -191,9 +191,24 @@ begin
 end;
 
 procedure TGDAXTester.btn_base_web_testClick(Sender: TObject);
+var
+  LTicker:IGDAXTicker;
+  LCandles:IGDAXCandles;
+  LError,LContent:String;
 begin
+  LTicker:=TGDAXTickerImpl.Create;
+  LTicker.Product:=TGDAXProductImpl.Create;
+  LTicker.Product.ID:='btc-usd';
+  LCandles:=TGDAXCandlesImpl.Create;
+  LCandles.Product:=LTicker.Product;
   memo_base_web.Lines.Clear;
   memo_base_web.Lines.Add(TestTimeEndpoint);
+  memo_base_web.Lines.Add('ticker test');
+  LTicker.Get(LContent,LError);
+  memo_base_web.Lines.Add(LContent);
+  memo_base_web.Lines.Add('candles test');
+  LCandles.Get(LContent,LError);
+  memo_base_web.Lines.Add(LContent);
 end;
 
 procedure TGDAXTester.btn_product_testClick(Sender: TObject);

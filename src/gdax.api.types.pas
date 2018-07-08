@@ -367,31 +367,31 @@ type
   TCandleBucket = record
   private
     FTime: Extended;
-    FLow: Single;
-    FHigh: Single;
-    FOpen: Single;
-    FClose: Single;
+    FLow: Extended;
+    FHigh: Extended;
+    FOpen: Extended;
+    FClose: Extended;
     FVolume: Extended;
     function GetTime: Extended;
     procedure SetTime(Const Value: Extended);
-    function GetLow: Single;
-    procedure SetLow(Const Value: Single);
-    function GetHigh: Single;
-    procedure SetHigh(Const Value: Single);
-    function GetOpen: Single;
-    procedure SetOpen(Const Value: Single);
-    function GetClose: Single;
-    procedure SetClose(Const Value: Single);
+    function GetLow: Extended;
+    procedure SetLow(Const Value: Extended);
+    function GetHigh: Extended;
+    procedure SetHigh(Const Value: Extended);
+    function GetOpen: Extended;
+    procedure SetOpen(Const Value: Extended);
+    function GetClose: Extended;
+    procedure SetClose(Const Value: Extended);
     function GetVolume: Extended;
     procedure SetVolume(Const Value: Extended);
   public
     property Time: Extended read GetTime write SetTime;
-    property Low: Single read GetLow write SetLow;
-    property High: Single read GetHigh write SetHigh;
-    property Open: Single read GetOpen write SetOpen;
-    property Close: Single read GetClose write SetClose;
+    property Low: Extended read GetLow write SetLow;
+    property High: Extended read GetHigh write SetHigh;
+    property Open: Extended read GetOpen write SetOpen;
+    property Close: Extended read GetClose write SetClose;
     property Volume: Extended read GetVolume write SetVolume;
-    constructor create(Const ATime:Extended;ALow,AHigh,AOpen,AClose:Single;
+    constructor create(Const ATime:Extended;ALow,AHigh,AOpen,AClose:Extended;
       AVolume:Extended);
     class operator Equal(Const A,B:TCandleBucket):Boolean;
   end;
@@ -746,7 +746,7 @@ end;
 { TCandleBucket }
 
 constructor TCandleBucket.create(Const ATime: Extended; ALow, AHigh, AOpen,
- AClose: Single; AVolume: Extended);
+ AClose: Extended; AVolume: Extended);
 begin
  Self.FTime:=ATime;
  Self.FLow:=ALow;
@@ -761,22 +761,22 @@ begin
   Result:=A.Time=B.Time;
 end;
 
-function TCandleBucket.GetClose: Single;
+function TCandleBucket.GetClose: Extended;
 begin
  Result:=FClose;
 end;
 
-function TCandleBucket.GetHigh: Single;
+function TCandleBucket.GetHigh: Extended;
 begin
  Result:=FHigh;
 end;
 
-function TCandleBucket.GetLow: Single;
+function TCandleBucket.GetLow: Extended;
 begin
  Result:=FLow;
 end;
 
-function TCandleBucket.GetOpen: Single;
+function TCandleBucket.GetOpen: Extended;
 begin
  Result:=FOpen;
 end;
@@ -791,24 +791,24 @@ begin
  Result:=FVolume;
 end;
 
-procedure TCandleBucket.SetClose(Const Value: Single);
+procedure TCandleBucket.SetClose(Const Value: Extended);
 begin
  FClose:=Value;
 end;
 
-procedure TCandleBucket.SetHigh(Const Value: Single);
+procedure TCandleBucket.SetHigh(Const Value: Extended);
 begin
  FHigh:=Value;
 end;
 
-procedure TCandleBucket.SetLow(Const Value: Single);
+procedure TCandleBucket.SetLow(Const Value: Extended);
 begin
  FLow:=Value;
 end;
 
-procedure TCandleBucket.SetOpen(Const Value: Single);
+procedure TCandleBucket.SetOpen(Const Value: Extended);
 begin
-
+  FOpen:=Value;
 end;
 
 procedure TCandleBucket.SetTime(Const Value: Extended);

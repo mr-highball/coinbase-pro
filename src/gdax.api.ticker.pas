@@ -149,6 +149,8 @@ end;
 function TGDAXTickerImpl.GetEndpoint(const AOperation: TRestOperation): string;
 begin
   Result:='';
+  if not Assigned(FProduct) then
+    raise Exception.Create(Format(E_UNKNOWN,['product',Self.ClassName]));
   if AOperation=roGet then
     Result:=Format(GDAX_END_API_TICKER,[FProduct.ID]);
 end;

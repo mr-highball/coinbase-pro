@@ -78,12 +78,12 @@ var
   LGran:Integer;
 begin
   Result:='';
-  if FGranularity<1 then
+  if FGranularity<ACCEPTED_GRANULARITY[Low(ACCEPTED_GRANULARITY)] then
   begin
     FGranularity:=SecondsBetween(FStartTime,FEndTime);
-    //if still less than 1, then just set it to 1
+    //if still less than 1, then just set it to the lowest accepted
     if FGranularity<1 then
-      FGranularity:=1;
+      FGranularity:=ACCEPTED_GRANULARITY[Low(ACCEPTED_GRANULARITY)];
   end;
   //find if we aren't above the maximum candles
   if Round(SecondsBetween(FStartTime,FEndTime) / FGranularity)>MAX_CANDLES then
@@ -105,6 +105,7 @@ constructor TGDAXCandlesImpl.Create;
 begin
   inherited;
   FList:=TGDAXCandleBucketList.Create;
+  FGranularity:=ACCEPTED_GRANULARITY[Low(ACCEPTED_GRANULARITY)];
 end;
 
 destructor TGDAXCandlesImpl.Destroy;

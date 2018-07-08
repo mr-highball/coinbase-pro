@@ -196,18 +196,23 @@ var
   LCandles:IGDAXCandles;
   LError,LContent:String;
 begin
+  InitAuthenticator;
   LTicker:=TGDAXTickerImpl.Create;
   LTicker.Product:=TGDAXProductImpl.Create;
   LTicker.Product.ID:='btc-usd';
   LCandles:=TGDAXCandlesImpl.Create;
   LCandles.Product:=LTicker.Product;
+  LTicker.Authenticator:=FAuthenticator;
+  LCandles.Authenticator:=FAuthenticator;
   memo_base_web.Lines.Clear;
   memo_base_web.Lines.Add(TestTimeEndpoint);
   memo_base_web.Lines.Add('ticker test');
-  LTicker.Get(LContent,LError);
+  if not LTicker.Get(LContent,LError) then
+    memo_base_web.Lines.Add('--Failure--');
   memo_base_web.Lines.Add(LContent);
   memo_base_web.Lines.Add('candles test');
-  LCandles.Get(LContent,LError);
+  if not LCandles.Get(LContent,LError) then
+    memo_base_web.Lines.Add('--Failure--');
   memo_base_web.Lines.Add(LContent);
 end;
 

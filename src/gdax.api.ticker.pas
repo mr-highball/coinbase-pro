@@ -27,20 +27,19 @@ unit gdax.api.ticker;
 
 interface
 uses
-  Classes, SysUtils, gdax.api, gdax.api.consts, gdax.api.types,
-  {$IFDEF FPC}
-  fgl
-  {$ELSE}
-  System.Generics.Collections
-  {$ENDIF};
+  Classes, SysUtils, gdax.api, gdax.api.consts, gdax.api.types;
+
 type
-  TProductTicker = class(TGDAXRestApi,IGDAXTicker)
+
+  { TGDAXTickerImpl }
+
+  TGDAXTickerImpl = class(TGDAXRestApi,IGDAXTicker)
   strict private
     FProduct: IGDAXProduct;
     FSize: Extended;
     FAsk: Extended;
     FBid: Extended;
-    FTime: String;
+    FTime: TDateTime;
     FVolume: Extended;
     FPrice: Extended;
     function GetProduct: IGDAXProduct;
@@ -53,7 +52,7 @@ type
     function GetVolume: Extended;
     procedure SetAsk(Const Value: Extended);
     procedure SetBid(Const Value: Extended);
-    procedure SetTime(Const Value: String);
+    procedure SetTime(Const Value: TDateTime);
     procedure SetVolume(Const Value: Extended);
     function GetPrice: Extended;
     procedure SetPrice(Const Value: Extended);
@@ -73,20 +72,27 @@ type
     property Volume: Extended read GetVolume write SetVolume;
     property Time: TDateTime read GetTime write SetTime;
     constructor Create; override;
+    destructor Destroy; override;
   end;
 implementation
 uses
-  SynCrossPlatformJSON,Math;
+  SynCrossPlatformJSON, fpindexer;
+
 { TProductTicket }
 
-constructor TProductTicker.Create;
+constructor TGDAXTickerImpl.Create;
 begin
-  inherited;
-  FProduct:=opUnknown;
+  inherited Create;
 end;
 
-function TProductTicker.DoGet(Const AEndpoint: string; Const AHeaders: TStrings;
-  out Content, Error: string): Boolean;
+destructor TGDAXTickerImpl.Destroy;
+begin
+  FProduct:=nil;
+  inherited Destroy;
+end;
+
+function TGDAXTickerImpl.DoGet(const AEndpoint: string;
+  const AHeaders: TStrings; out Content: string; out Error: string): Boolean;
 begin
   Result:=False;
   try
@@ -101,12 +107,12 @@ begin
   end;
 end;
 
-function TProductTicker.DoGetSupportedOperations: TRestOperations;
+function TGDAXTickerImpl.DoGetSupportedOperations: TRestOperations;
 begin
   Result:=[roGet];
 end;
 
-function TProductTicker.DoLoadFromJSON(Const AJSON: string;
+function TGDAXTickerImpl.DoLoadFromJSON(const AJSON: string;
   out Error: string): Boolean;
 var
   LJSON:TJSONVariantData;
@@ -118,92 +124,95 @@ begin
       Error:=E_BADJSON;
       Exit;
     end;
-    FPrice:=SimpleRoundTo(StrToFloat(LJSON.Value['price']),-2);
-    FSize:=SimpleRoundTo(StrToFloat(LJSON.Value['size']),-3);
-    FAsk:=SimpleRoundTo(StrToFloat(LJSON.Value['ask']),-2);
-    FBid:=SimpleRoundTo(StrToFloat(LJSON.Value['bid']),-2);
-    FVolume:=SimpleRoundTo(StrToFloat(LJSON.Value['volume']),-8);
-    FTime:=LJSON.Value['time'];
+    FPrice:=LJSON.Value['price'];
+    FSize:=LJSON.Value['size'];
+    FAsk:=LJSON.Value['ask'];
+    FBid:=LJSON.Value['bid'];
+    FVolume:=LJSON.Value['volume'];
+    FTime:=ISO8601ToDate(LJSON.Value['time']);
     Result:=True;
   except on E: Exception do
     Error:=E.ClassName+': '+E.Message;
   end;
 end;
 
-function TProductTicker.GetAsk: Extended;
+function TGDAXTickerImpl.GetAsk: Extended;
 begin
   Result:=FAsk;
 end;
 
-function TProductTicker.GetBid: Extended;
+function TGDAXTickerImpl.GetBid: Extended;
 begin
   Result:=FBid;
 end;
 
-function TProductTicker.GetEndpoint(Const AOperation: TRestOperation): string;
+function TGDAXTickerImpl.GetEndpoint(const AOperation: TRestOperation): string;
 begin
-  Result:=Format(GDAX_END_API_TICKER,[FProduct.ID]);
+  Result:='';
+  if AOperation=roGet then
+    Result:=Format(GDAX_END_API_TICKER,[FProduct.ID]);
 end;
 
-function TProductTicker.GetPrice: Extended;
+function TGDAXTickerImpl.GetPrice: Extended;
 begin
   Result:=FPrice;
 end;
 
-function TProductTicker.GetProduct: IGDAXProduct;
+function TGDAXTickerImpl.GetProduct: IGDAXProduct;
 begin
   Result:=FProduct;
 end;
 
-function TProductTicker.GetSize: Extended;
+function TGDAXTickerImpl.GetSize: Extended;
 begin
   Result:=FSize;
 end;
 
-function TProductTicker.GetTime: String;
+function TGDAXTickerImpl.GetTime: TDateTime;
 begin
   Result:=FTime;
 end;
 
-function TProductTicker.GetVolume: Extended;
+function TGDAXTickerImpl.GetVolume: Extended;
 begin
   Result:=FVolume;
 end;
 
-procedure TProductTicker.SetAsk(Const Value: Extended);
+procedure TGDAXTickerImpl.SetAsk(const Value: Extended);
 begin
   FAsk:=Value;
 end;
 
-procedure TProductTicker.SetBid(Const Value: Extended);
+procedure TGDAXTickerImpl.SetBid(const Value: Extended);
 begin
   FBid:=Value;
 end;
 
 
-procedure TProductTicker.SetPrice(Const Value: Extended);
+procedure TGDAXTickerImpl.SetPrice(const Value: Extended);
 begin
   FPrice:=Value;
 end;
 
-procedure TProductTicker.SetProduct(Const Value: IGDAXProduct);
+procedure TGDAXTickerImpl.SetProduct(const Value: IGDAXProduct);
 begin
+  FProduct:=nil;
   FProduct:=Value;
 end;
 
-procedure TProductTicker.SetSize(Const Value: Extended);
+procedure TGDAXTickerImpl.SetSize(const Value: Extended);
 begin
   FSize:=Value;
 end;
 
-procedure TProductTicker.SetTime(Const Value: String);
+procedure TGDAXTickerImpl.SetTime(const Value: TDateTime);
 begin
   FTime:=Value;
 end;
 
-procedure TProductTicker.SetVolume(Const Value: Extended);
+procedure TGDAXTickerImpl.SetVolume(const Value: Extended);
 begin
-  FVolume:=Volume;
+  FVolume:=Value;
 end;
 
 end.

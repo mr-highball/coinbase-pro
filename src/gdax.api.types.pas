@@ -610,14 +610,20 @@ type
       PROP_ID = 'id';
       PROP_NAME = 'name';
       PROP_MIN_SIZE = 'min_size';
+      PROP_STATUS = 'status';
+      PROP_MESSAGE = 'message';
   strict private
     FID: String;
     FMinSize: Extended;
     FName: String;
+    FStatus: String;
+    FMessage: String;
   public
     property ID : String read FID write FID;
     property Name : String read FName write FName;
     property MinSize : Extended read FMinSize write FMinSize;
+    property Status : String read FStatus write FStatus;
+    property Message : String read FMessage write FMessage;
     constructor Create(Const AJSON:String);
   end;
 
@@ -652,6 +658,10 @@ begin
   FID:=LJSON.Value[PROP_ID];
   FMinSize:=LJSON.Value[PROP_MIN_SIZE];
   FName:=LJSON.Value[PROP_NAME];
+  FStatus:=LJSON.Value[PROP_STATUS];
+  FMessage:='';
+  if not (TJSONVariantData(LJSON.Value[PROP_MESSAGE]).Kind=jvUndefined) then
+    FMessage:=LJSON.Value[PROP_MESSAGE];
 end;
 
 { TFillEntry }
@@ -695,7 +705,6 @@ end;
 
 constructor TLedgerEntry.Create(Const AJSON: String);
 var
-  I:Integer;
   LJSON:TJSONVariantData;
   LDetails:TJSONVariantData;
 begin

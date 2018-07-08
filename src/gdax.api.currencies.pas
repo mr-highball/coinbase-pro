@@ -5,7 +5,7 @@ unit gdax.api.currencies;
 interface
 
 uses
-  Classes, SysUtils, gdax.api, gdax.api.types;
+  Classes, SysUtils, gdax.api.consts, gdax.api, gdax.api.types;
 type
 
   { TGDAXCurrenciesImpl }
@@ -17,7 +17,7 @@ type
     function GetCurrencies: TCurrencyArray;
   strict protected
     function GetEndpoint(Const AOperation: TRestOperation): String; override;
-    function GetSupportedOperations: TRestOperations;
+    function DoGetSupportedOperations: TRestOperations; override;
     function DoLoadFromJSON(Const AJSON: String;
       out Error: String): Boolean;override;
   public
@@ -27,7 +27,7 @@ type
 
 implementation
 uses
-  SynCrossPlatformJSON, gdax.api.consts;
+  SynCrossPlatformJSON;
 
 { TGDAXCurrenciesImpl }
 
@@ -48,7 +48,7 @@ begin
     Result:=GDAX_END_API_CURRENCIES;
 end;
 
-function TGDAXCurrenciesImpl.GetSupportedOperations: TRestOperations;
+function TGDAXCurrenciesImpl.DoGetSupportedOperations: TRestOperations;
 begin
   Result:=[roGet];
 end;
@@ -69,7 +69,7 @@ begin
       Error:=E_BADJSON;
       Exit;
     end;
-    if not LJSON.Kind=jvArray then
+    if not (LJSON.Kind=jvArray) then
     begin
       Error:=Format(E_BADJSON_PROP,['main json array']);
       Exit;

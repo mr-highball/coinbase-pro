@@ -31,7 +31,7 @@ uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls,
   StdCtrls, ExtCtrls, Grids, gdax.api.types, gdax.api.authenticator,
   gdax.api.accounts, gdax.api.orders, gdax.api.consts, gdax.api.ticker,
-  gdax.api.book, gdax.api.candles, gdax.api.currecies;
+  gdax.api.book, gdax.api.candles;
 
 type
 
@@ -130,7 +130,8 @@ var
 
 implementation
 uses
-  SynCrossPlatformJSON, gdax.api.time, gdax.api.products, gdax.api.fills;
+  SynCrossPlatformJSON, gdax.api.time, gdax.api.products, gdax.api.fills,
+  gdax.api.currencies;
 {$R *.lfm}
 
 { TGDAXTester }
@@ -194,6 +195,7 @@ procedure TGDAXTester.btn_base_web_testClick(Sender: TObject);
 var
   LTicker:IGDAXTicker;
   LCandles:IGDAXCandles;
+  LCurrencies:IGDAXCurrencies;
   LError,LContent:String;
 begin
   InitAuthenticator;
@@ -202,6 +204,8 @@ begin
   LTicker.Product.ID:='btc-usd';
   LCandles:=TGDAXCandlesImpl.Create;
   LCandles.Product:=LTicker.Product;
+  LCurrencies:=TGDAXCurrenciesImpl.Create;
+  LCurrencies.Authenticator:=FAuthenticator;
   LTicker.Authenticator:=FAuthenticator;
   LCandles.Authenticator:=FAuthenticator;
   memo_base_web.Lines.Clear;
@@ -212,6 +216,10 @@ begin
   memo_base_web.Lines.Add(LContent);
   memo_base_web.Lines.Add('candles test');
   if not LCandles.Get(LContent,LError) then
+    memo_base_web.Lines.Add('--Failure--');
+  memo_base_web.Lines.Add(LContent);
+  memo_base_web.Lines.Add('currencies test');
+  if not LCurrencies.Get(LContent,LError) then
     memo_base_web.Lines.Add('--Failure--');
   memo_base_web.Lines.Add(LContent);
 end;

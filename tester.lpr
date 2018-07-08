@@ -8,7 +8,7 @@ uses
   {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms,
-  test
+  test, gdax.api.currencies
   { you can add units after this };
 
 {$R *.res}

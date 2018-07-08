@@ -602,9 +602,57 @@ type
     property Paged: IGDAXPaged read GetPaged;
   end;
 
+  { TCurrency }
+
+  TCurrency = packed record
+  public
+    const
+      PROP_ID = 'id';
+      PROP_NAME = 'name';
+      PROP_MIN_SIZE = 'min_size';
+  strict private
+    FID: String;
+    FMinSize: Extended;
+    FName: String;
+  public
+    property ID : String read FID write FID;
+    property Name : String read FName write FName;
+    property MinSize : Extended read FMinSize write FMinSize;
+    constructor Create(Const AJSON:String);
+  end;
+
+  TCurrencyArray = array of TCurrency;
+
+  { IGDAXCurrencies }
+
+  IGDAXCurrencies = interface(IGDAXRestAPI)
+    ['{9C3A7952-31F7-4064-AE64-AD1AB079CBE6}']
+    //property methods
+    function GetCount: Cardinal;
+    function GetCurrencies: TCurrencyArray;
+    //properties
+    property Currencies : TCurrencyArray read GetCurrencies;
+    property Count : Cardinal read GetCount;
+  end;
+
 implementation
 uses
   SynCrossPlatformJSON, fpIndexer;
+
+{ TCurrency }
+
+constructor TCurrency.Create(Const AJSON: String);
+var
+  LJSON:TJSONVariantData;
+begin
+  if not LJSON.FromJSON(AJSON) then
+    raise Exception.Create(E_BADJSON);
+  if not (LJSON.Kind=jvObject) then
+    raise Exception.Create(Format(E_BADJSON_PROP,['main json object']));
+  FID:=LJSON.Value[PROP_ID];
+  FMinSize:=LJSON.Value[PROP_MIN_SIZE];
+  FName:=LJSON.Value[PROP_NAME];
+end;
 
 { TFillEntry }
 

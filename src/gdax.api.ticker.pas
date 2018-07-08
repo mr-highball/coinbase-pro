@@ -91,8 +91,8 @@ begin
   inherited Destroy;
 end;
 
-function TGDAXTickerImpl.DoGet(const AEndpoint: string;
-  const AHeaders: TStrings; out Content: string; out Error: string): Boolean;
+function TGDAXTickerImpl.DoGet(Const AEndpoint: string;
+  Const AHeaders: TStrings; out Content: string; out Error: string): Boolean;
 begin
   Result:=False;
   try
@@ -112,7 +112,7 @@ begin
   Result:=[roGet];
 end;
 
-function TGDAXTickerImpl.DoLoadFromJSON(const AJSON: string;
+function TGDAXTickerImpl.DoLoadFromJSON(Const AJSON: string;
   out Error: string): Boolean;
 var
   LJSON:TJSONVariantData;
@@ -146,7 +146,7 @@ begin
   Result:=FBid;
 end;
 
-function TGDAXTickerImpl.GetEndpoint(const AOperation: TRestOperation): string;
+function TGDAXTickerImpl.GetEndpoint(Const AOperation: TRestOperation): string;
 begin
   Result:='';
   if not Assigned(FProduct) then
@@ -180,39 +180,39 @@ begin
   Result:=FVolume;
 end;
 
-procedure TGDAXTickerImpl.SetAsk(const Value: Extended);
+procedure TGDAXTickerImpl.SetAsk(Const Value: Extended);
 begin
   FAsk:=Value;
 end;
 
-procedure TGDAXTickerImpl.SetBid(const Value: Extended);
+procedure TGDAXTickerImpl.SetBid(Const Value: Extended);
 begin
   FBid:=Value;
 end;
 
 
-procedure TGDAXTickerImpl.SetPrice(const Value: Extended);
+procedure TGDAXTickerImpl.SetPrice(Const Value: Extended);
 begin
   FPrice:=Value;
 end;
 
-procedure TGDAXTickerImpl.SetProduct(const Value: IGDAXProduct);
+procedure TGDAXTickerImpl.SetProduct(Const Value: IGDAXProduct);
 begin
   FProduct:=nil;
   FProduct:=Value;
 end;
 
-procedure TGDAXTickerImpl.SetSize(const Value: Extended);
+procedure TGDAXTickerImpl.SetSize(Const Value: Extended);
 begin
   FSize:=Value;
 end;
 
-procedure TGDAXTickerImpl.SetTime(const Value: TDateTime);
+procedure TGDAXTickerImpl.SetTime(Const Value: TDateTime);
 begin
   FTime:=Value;
 end;
 
-procedure TGDAXTickerImpl.SetVolume(const Value: Extended);
+procedure TGDAXTickerImpl.SetVolume(Const Value: Extended);
 begin
   FVolume:=Value;
 end;

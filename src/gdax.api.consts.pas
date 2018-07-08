@@ -104,6 +104,9 @@ const
   GDAX_END_API_TICKER = GDAX_END_API_PRODUCTS+'/ticker';
   GDAX_END_API_CANDLES = GDAX_END_API_PRODUCTS+'/candles';
 
+  //https://docs.pro.coinbase.com/#currencies
+  GDAX_END_API_CURRENCIES = '/currencies';
+
   //header names for gdax authentication
   CB_ACCESS_KEY = 'CB-ACCESS-KEY';
   CB_ACCESS_SIGN = 'CB-ACCESS-SIGN';

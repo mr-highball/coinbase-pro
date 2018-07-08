@@ -240,18 +240,18 @@ type
 
   TBookEntry = class(TObject)
   private
-    FPrice: Single;
+    FPrice: Extended;
     FSize: Extended;
     FSide: TOrderSide;
-    function GetPrice: Single;
+    function GetPrice: Extended;
     function GetSize: Extended;
-    procedure SetPrice(Const Value: Single);
+    procedure SetPrice(Const Value: Extended);
     procedure SetSize(Const Value: Extended);
     function GetSide: TOrderSide;
     procedure SetSide(Const Value: TOrderSide);
   protected
   public
-    property Price: Single read GetPrice write SetPrice;
+    property Price: Extended read GetPrice write SetPrice;
     property Size: Extended read GetSize write SetSize;
     property Side: TOrderSide read GetSide write SetSide;
     constructor Create(Const APrice:Single;Const ASize:Extended);overload;
@@ -266,7 +266,7 @@ type
     procedure SetNumberOrders(Const Value: Integer);
   public
     property NumberOrders: Integer read GetNumberOrders write SetNumberOrders;
-    constructor Create(Const APrice:Single;Const ASize:Extended;
+    constructor Create(Const APrice:Extended;Const ASize:Extended;
       Const ANumberOrders:Cardinal);overload;
   end;
 
@@ -675,7 +675,7 @@ begin
   FSize:=ASize;
 end;
 
-function TBookEntry.GetPrice: Single;
+function TBookEntry.GetPrice: Extended;
 begin
   Result:=FPrice;
 end;
@@ -690,7 +690,7 @@ begin
   Result:=FSize;
 end;
 
-procedure TBookEntry.SetPrice(Const Value: Single);
+procedure TBookEntry.SetPrice(Const Value: Extended);
 begin
   FPrice:=Value;
 end;
@@ -707,7 +707,7 @@ end;
 
 { TAggregatedEntry }
 
-constructor TAggregatedEntry.Create(Const APrice: Single; Const ASize: Extended;
+constructor TAggregatedEntry.Create(Const APrice: Extended; Const ASize: Extended;
   Const ANumberOrders: Cardinal);
 begin
   inherited create(APrice,ASize);

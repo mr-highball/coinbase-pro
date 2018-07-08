@@ -30,7 +30,8 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, ComCtrls,
   StdCtrls, ExtCtrls, Grids, gdax.api.types, gdax.api.authenticator,
-  gdax.api.accounts, gdax.api.orders, gdax.api.consts, gdax.api.ticker;
+  gdax.api.accounts, gdax.api.orders, gdax.api.consts, gdax.api.ticker,
+  gdax.api.book;
 
 type
 

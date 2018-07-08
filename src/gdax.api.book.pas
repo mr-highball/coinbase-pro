@@ -29,10 +29,10 @@ interface
 uses
   Classes, SysUtils, gdax.api, gdax.api.consts, gdax.api.types;
 type
-  TGDAXBook = class(TGDAXRestApi,IGDAXBook)
+  TGDAXBookImpl = class(TGDAXRestApi,IGDAXBook)
   private
-    FAskList:TObjectList<TBookEntry>;
-    FBidList:TObjectList<TBookEntry>;
+    FAskList: TGDAXBookEntryList;
+    FBidList: TGDAXBookEntryList;
     FLevel: TGDAXBookLevel;
     FProduct: IGDAXProduct;
     FMarketType: TMarketType;
@@ -41,9 +41,9 @@ type
     function GetLevel: TGDAXBookLevel;
     procedure SetLevel(Const Value: TGDAXBookLevel);
     function GetProduct: IGDAXProduct;
-    procedure SetProduct(Const AValue: IGDAXProduct);
-    function GetAskList: TObjectList<TBookEntry>;
-    function GetBidList: TObjectList<TBookEntry>;
+    procedure SetProduct(Const Value: IGDAXProduct);
+    function GetAskList: TGDAXBookEntryList;
+    function GetBidList: TGDAXBookEntryList;
     procedure ClearMetaData;
     function GetMarketType: TMarketType;
     function GetAskSize: Single;
@@ -58,8 +58,8 @@ type
   public
     property Level: TGDAXBookLevel read GetLevel write SetLevel;
     property Product: IGDAXProduct read GetProduct write SetProduct;
-    property AskList: TObjectList<TBookEntry> read GetAskList;
-    property BidList: TObjectList<TBookEntry> read GetBidList;
+    property AskList: TGDAXBookEntryList read GetAskList;
+    property BidList: TGDAXBookEntryList read GetBidList;
     property MarketType: TMarketType read GetMarketType;
     property AskSize: Single read GetAskSize;
     property BidSize: Single read GetBidSize;
@@ -68,11 +68,11 @@ type
   end;
 implementation
 uses
-  SynCrossPlatformJSON, Math;
+  SynCrossPlatformJSON;
 
-{ TGDAXBook }
+{ TGDAXBookImpl }
 
-procedure TGDAXBook.ClearMetaData;
+procedure TGDAXBookImpl.ClearMetaData;
 begin
   FAskList.Clear;
   FBidList.Clear;
@@ -81,27 +81,26 @@ begin
   FAskSize:=0;
 end;
 
-constructor TGDAXBook.Create;
+constructor TGDAXBookImpl.Create;
 begin
   inherited;
-  FAskList:=TObjectList<TBookEntry>.Create;
-  FBidList:=TObjectList<TBookEntry>.Create;
+  FAskList:=TGDAXBookEntryList.Create;
+  FBidList:=TGDAXBookEntryList.Create;
   FLevel:=blOne;
-  FProduct:=opUnknown;
 end;
 
-destructor TGDAXBook.Destroy;
+destructor TGDAXBookImpl.Destroy;
 begin
   FAskList.Free;
   FBidList.Free;
   inherited;
 end;
 
-function TGDAXBook.DoGet(Const AEndpoint: string; Const AHeaders: TStrings;
+function TGDAXBookImpl.DoGet(Const AEndpoint: string; Const AHeaders: TStrings;
   out Content, Error: string): Boolean;
 begin
   Result:=False;
-  if FProduct=opUnknown then
+  if not Assigned(FProduct) then
   begin
     Error:=Format(E_UNKNOWN,['OrderProduct',Self.ClassName]);
     Exit;
@@ -109,21 +108,20 @@ begin
   Result:=inherited;
 end;
 
-function TGDAXBook.DoGetSupportedOperations: TRestOperations;
+function TGDAXBookImpl.DoGetSupportedOperations: TRestOperations;
 begin
   Result:=[roGet];
 end;
 
-function TGDAXBook.DoLoadFromJSON(Const AJSON: string;
+function TGDAXBookImpl.DoLoadFromJSON(Const AJSON: string;
   out Error: string): Boolean;
 var
-  LJSON,LAsks,LBids:LJSONVariantData;
+  LJSON,LAsks,LBids:TJSONVariantData;
   LEntry:TBookEntry;
   I: Integer;
 const
   ENTRY_ASK='asks';
   ENTRY_BID='bids';
-  PRICE_DECIMAL=-2;
   PR_IX = 0;
   SZ_IX = 1;
   OTHER_IX = 2;
@@ -152,24 +150,24 @@ begin
     LBids:=LJSON.Data(ENTRY_BID)^;
     LAsks:=LJSON.Data(ENTRY_ASK)^;
     //fill out book for bids
-    for I := 0 to Pred(LBids.Count) do
+    for I:=0 to Pred(LBids.Count) do
     begin
       case FLevel of
         blOne,blTwo:
           begin
             LEntry:=TAggregatedEntry.create(
-              Single(SimpleRoundTo(StrToFloat(LJSONVariantData(LBids.Item[I]).Item[PR_IX]),PRICE_DECIMAL)),
-              StrToFloat(LJSONVariantData(LBids.Item[I]).Item[SZ_IX]),
-              LJSONVariantData(LBids.Item[I]).Item[OTHER_IX]
+              TJSONVariantData(LBids.Item[I]).Item[PR_IX],
+              TJSONVariantData(LBids.Item[I]).Item[SZ_IX],
+              TJSONVariantData(LBids.Item[I]).Item[OTHER_IX]
             );
             FBidList.Add(LEntry);
           end;
         blThree:
           begin
             LEntry:=TFullEntry.create(
-              Single(SimpleRoundTo(StrToFloat(LJSONVariantData(LBids.Item[I]).Item[PR_IX]),PRICE_DECIMAL)),
-              StrToFloat(LJSONVariantData(LBids.Item[I]).Item[SZ_IX]),
-              LJSONVariantData(LBids.Item[I]).Item[OTHER_IX]
+              TJSONVariantData(LBids.Item[I]).Item[PR_IX],
+              TJSONVariantData(LBids.Item[I]).Item[SZ_IX],
+              TJSONVariantData(LBids.Item[I]).Item[OTHER_IX]
             );
             FBidList.Add(LEntry);
           end;
@@ -178,24 +176,24 @@ begin
       FBidSize:=FBidSize+LEntry.Size;
     end;
     //fill out book for asks
-    for I := 0 to Pred(LAsks.Count) do
+    for I:=0 to Pred(LAsks.Count) do
     begin
       case FLevel of
         blOne,blTwo:
           begin
             LEntry:=TAggregatedEntry.create(
-              Single(SimpleRoundTo(StrToFloat(LJSONVariantData(LAsks.Item[I]).Item[PR_IX]),PRICE_DECIMAL)),
-              StrToFloat(LJSONVariantData(LAsks.Item[I]).Item[SZ_IX]),
-              LJSONVariantData(LAsks.Item[I]).Item[OTHER_IX]
+              TJSONVariantData(LAsks.Item[I]).Item[PR_IX],
+              TJSONVariantData(LAsks.Item[I]).Item[SZ_IX],
+              TJSONVariantData(LAsks.Item[I]).Item[OTHER_IX]
             );
             FAskList.Add(LEntry);
           end;
         blThree:
           begin
             LEntry:=TFullEntry.create(
-              Single(SimpleRoundTo(StrToFloat(LJSONVariantData(LAsks.Item[I]).Item[PR_IX]),PRICE_DECIMAL)),
-              StrToFloat(LJSONVariantData(LAsks.Item[I]).Item[SZ_IX]),
-              LJSONVariantData(LAsks.Item[I]).Item[OTHER_IX]
+              TJSONVariantData(LAsks.Item[I]).Item[PR_IX],
+              TJSONVariantData(LAsks.Item[I]).Item[SZ_IX],
+              TJSONVariantData(LAsks.Item[I]).Item[OTHER_IX]
             );
             FAskList.Add(LEntry);
           end;
@@ -216,53 +214,54 @@ begin
   end;
 end;
 
-function TGDAXBook.GetAskList: TObjectList<TBookEntry>;
+function TGDAXBookImpl.GetAskList: TGDAXBookEntryList;
 begin
   Result:=FAskList;
 end;
 
-function TGDAXBook.GetAskSize: Single;
+function TGDAXBookImpl.GetAskSize: Single;
 begin
   Result:=FAskSize;
 end;
 
-function TGDAXBook.GetBidList: TObjectList<TBookEntry>;
+function TGDAXBookImpl.GetBidList: TGDAXBookEntryList;
 begin
   Result:=FBidList;
 end;
 
-function TGDAXBook.GetBidSize: Single;
+function TGDAXBookImpl.GetBidSize: Single;
 begin
   Result:=FBidSize;
 end;
 
-function TGDAXBook.GetEndpoint(Const AOperation: TRestOperation): string;
+function TGDAXBookImpl.GetEndpoint(Const AOperation: TRestOperation): string;
 begin
-  Result:=Format(GDAX_END_API_BOOK,[OrderProductToString(FProduct),Ord(FLevel)]);
+  if AOperation=roGet then
+    Result:=Format(GDAX_END_API_BOOK,[FProduct.ID,Ord(FLevel)]);
 end;
 
-function TGDAXBook.GetLevel: TGDAXBookLevel;
+function TGDAXBookImpl.GetLevel: TGDAXBookLevel;
 begin
   Result:=FLevel;
 end;
 
-function TGDAXBook.GetMarketType: TMarketType;
+function TGDAXBookImpl.GetMarketType: TMarketType;
 begin
   Result:=FMarketType;
 end;
 
-function TGDAXBook.GetProduct: IGDAXProduct;
+function TGDAXBookImpl.GetProduct: IGDAXProduct;
 begin
   Result:=FProduct;
 end;
 
-procedure TGDAXBook.SetLevel(Const Value: TGDAXBookLevel);
+procedure TGDAXBookImpl.SetLevel(Const Value: TGDAXBookLevel);
 begin
   ClearMetaData;
   FLevel:=Value;
 end;
 
-procedure TGDAXBook.SetProduct(Const AValue: IGDAXProduct);
+procedure TGDAXBookImpl.SetProduct(Const Value: IGDAXProduct);
 begin
   ClearMetaData;
   FProduct:=Value;

@@ -408,11 +408,11 @@ begin
   Result:=False;
   try
     if not Assigned(Authenticator) then
-	begin
+    begin
       Error:='authenticator is invalid';
-	  Exit;
-	end;
-	//generate the signature
+      Exit;
+    end;
+	  //generate the signature
     LSignature:=Authenticator.GenerateAccessSignature(
       AOperation,
       GetEndpoint(AOperation),

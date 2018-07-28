@@ -407,7 +407,12 @@ var
 begin
   Result:=False;
   try
-    //generate the signature
+    if not Assigned(Authenticator) then
+	begin
+      Error:='authenticator is invalid';
+	  Exit;
+	end;
+	//generate the signature
     LSignature:=Authenticator.GenerateAccessSignature(
       AOperation,
       GetEndpoint(AOperation),

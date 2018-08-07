@@ -301,7 +301,7 @@ begin
   try
     if not GetHeadersForOperation(roDelete,LHeaders,Error) then
       Exit;
-    LEndpoint:=BuildFullEndpoint(GetEndpoint(roPost),Authenticator.Mode);
+    LEndpoint:=BuildFullEndpoint(GetEndpoint(roDelete),Authenticator.Mode);
     Result:=DoDelete(
       LEndpoint,
       LHeaders,

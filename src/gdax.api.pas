@@ -308,11 +308,6 @@ begin
       Content,
       Error
     );
-    if Result and (not DoLoadFromJSON(Content,Error)) then
-    begin
-      Result:=False;
-      Exit;
-    end;
   finally
     LHeaders.Free;
   end;

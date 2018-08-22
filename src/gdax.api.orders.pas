@@ -175,6 +175,16 @@ begin
   FPostOnly:=True;
   FType:=otLimit;
   FSize:=0;
+  FID:='';
+  FFillFees:=0;
+  FFilledSize:=0;
+  FExecutedValue:=0;
+  FSettled:=False;
+  FSide:=osUnknown;
+  FPrice:=0;
+  FRejectReason:='';
+  FCreatedAt:=Now;
+  FStop:=False;
 end;
 
 destructor TGDAXOrderImpl.Destroy;

@@ -83,6 +83,13 @@ uses
 constructor TGDAXTickerImpl.Create;
 begin
   inherited Create;
+  FProduct:=nil;
+  FSize:=0;
+  FAsk:=0;
+  FBid:=0;
+  FTime:=Now;
+  FVolume:=0;
+  FPrice:=0;
 end;
 
 destructor TGDAXTickerImpl.Destroy;

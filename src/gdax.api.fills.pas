@@ -77,15 +77,16 @@ uses
 function TGDAXFillsImpl.BuildQueryParams: String;
 begin
   Result:='';
+
+  //as of 8/23/18 empty call to fills is deprecated, but cb pro will report error
   if (Trim(FOrderID).Length + Trim(FProductID).Length)<1 then
     Exit;
+
   Result:='?';
-  //if requesting a specific order id
+  //if requesting a specific order id (prioritize this)
   if Trim(FOrderID).Length>0 then
-    Result:=Result+TFillEntry.PROP_ORDER+FOrderID;
+    Result:=Result+TFillEntry.PROP_ORDER+FOrderID
   //append product id filter
-  if Result.Length>1 then
-    Result:=Result+'&'+TFillEntry.PROP_PROD+'='+FProductID
   else
     Result:=Result+TFillEntry.PROP_PROD+'='+FProductID;
   //we have to check if we are being requested to "move" via paged

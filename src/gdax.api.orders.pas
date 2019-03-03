@@ -583,6 +583,7 @@ Const
   QUERY = '?status=%s';
   QUERY_ADD = '&status=%s';
 begin
+  Result:='';
   if FStatuses=[] then
   begin
     Result:=Format(QUERY,['all']);

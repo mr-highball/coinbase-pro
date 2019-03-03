@@ -440,6 +440,13 @@ end;
 function TGDAXOrderImpl.GetOrderStatus: TOrderStatus;
 begin
   Result:=FStatus;
+
+  //when an order is "done" and the settled propery is true, return
+  //that this order is "settled". this is done here, because the orderstatus
+  //won't get mapped correctly by name from cbpro since it's a separate bool
+  //property
+  if (Result = stDone) and FSettled then
+    Result:=stSettled;
 end;
 
 function TGDAXOrderImpl.GetOrderType: TOrderType;

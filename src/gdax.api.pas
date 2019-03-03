@@ -43,6 +43,7 @@ type
   strict private
     FAuthenticator:IGDAXAuthenticator;
     function GetAuthenticator: IGDAXAuthenticator;
+    function GetPostBody: String;
     function GetSupportedOperations: TRestOperations;
     procedure SetAuthenticator(Const AValue: IGDAXAuthenticator);
   strict protected
@@ -62,6 +63,7 @@ type
   public
     property SupportedOperations: TRestOperations read GetSupportedOperations;
     property Authenticator: IGDAXAuthenticator read GetAuthenticator write SetAuthenticator;
+    property PostBody : String read GetPostBody;
     function Post(Out Content:String;Out Error:String):Boolean;
     function Get(Out Content:String;Out Error:String):Boolean;
     function Delete(Out Content:String;Out Error:String):Boolean;
@@ -325,8 +327,8 @@ begin
   Result:='';
 end;
 
-function TBaseGDAXRestApiImpl.DoGetSuccess(Const AHTTPStatusCode: Integer;
-  out Error: String): Boolean;
+function TBaseGDAXRestApiImpl.DoGetSuccess(const AHTTPStatusCode: Integer; out
+  Error: String): Boolean;
 begin
   Result:=False;
   if (AHTTPStatusCode>=200) and (AHTTPStatusCode<=299) then
@@ -337,8 +339,8 @@ begin
   Error:=Format('invalid web status code %d',[AHTTPStatusCode]);
 end;
 
-function TBaseGDAXRestApiImpl.DoLoadFromJSON(Const AJSON: String;
-  out Error: String): Boolean;
+function TBaseGDAXRestApiImpl.DoLoadFromJSON(const AJSON: String; out
+  Error: String): Boolean;
 begin
   //nothing to load from
   Error:='';
@@ -383,19 +385,23 @@ begin
   Result:=FAuthenticator;
 end;
 
+function TBaseGDAXRestApiImpl.GetPostBody: String;
+begin
+  Result:=DoGetPostBody;
+end;
+
 function TBaseGDAXRestApiImpl.GetSupportedOperations: TRestOperations;
 begin
   Result:=DoGetSupportedOperations;
 end;
 
-procedure TBaseGDAXRestApiImpl.SetAuthenticator(Const AValue: IGDAXAuthenticator);
+procedure TBaseGDAXRestApiImpl.SetAuthenticator(const AValue: IGDAXAuthenticator);
 begin
   FAuthenticator:=AValue;
 end;
 
 function TBaseGDAXRestApiImpl.GetHeadersForOperation(
-  Const AOperation: TRestOperation; Const AHeaders: TStrings;
-  out Error: String): Boolean;
+  const AOperation: TRestOperation; const AHeaders: TStrings; out Error: String): Boolean;
 var
   LEpoch:Integer;
   LSignature:String;
@@ -426,8 +432,8 @@ begin
   end;
 end;
 
-function TBaseGDAXRestApiImpl.LoadFromJSON(Const JSON: String;
-  out Error: String): Boolean;
+function TBaseGDAXRestApiImpl.LoadFromJSON(const JSON: String; out Error: String
+  ): Boolean;
 begin
   Result:=DoLoadFromJSON(JSON,Error);
 end;

@@ -98,11 +98,13 @@ type
     ['{08E2B6BA-3FF0-4FC8-91E2-D180C57997A6}']
     //property methods
     function GetAuthenticator: IGDAXAuthenticator;
+    function GetPostBody: String;
     function GetSupportedOperations: TRestOperations;
     procedure SetAuthenticator(Const AValue: IGDAXAuthenticator);
     //properties
     property SupportedOperations: TRestOperations read GetSupportedOperations;
     property Authenticator: IGDAXAuthenticator read GetAuthenticator write SetAuthenticator;
+    property PostBody : String read GetPostBody;
     //methods
     function Post(Out Content:String;Out Error:String):Boolean;
     function Get(Out Content:String;Out Error:String):Boolean;

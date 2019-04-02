@@ -85,15 +85,20 @@ begin
   Result:='?';
   //if requesting a specific order id (prioritize this)
   if Trim(FOrderID).Length>0 then
-    Result:=Result+TFillEntry.PROP_ORDER+FOrderID
+    Result:=Result + TFillEntry.PROP_ORDER + '=' + FOrderID
   //append product id filter
   else
-    Result:=Result+TFillEntry.PROP_PROD+'='+FProductID;
-  //we have to check if we are being requested to "move" via paged
-  if Result.Length>1 then
-    Result:=Result+'&'+GetMovingParameters
-  else
-    Result:=Result+GetMovingParameters;
+    Result:=Result + TFillEntry.PROP_PROD +'=' + FProductID;
+
+  //only append moving parameters if we have any
+  if not GetMovingParameters.IsEmpty then
+  begin
+    //we have to check if we are being requested to "move" via paged
+    if Result.Length > 1 then
+      Result:=Result + '&' + GetMovingParameters
+    else
+      Result:=Result + GetMovingParameters;
+  end;
 end;
 
 constructor TGDAXFillsImpl.Create;

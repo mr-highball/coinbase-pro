@@ -226,9 +226,12 @@ end;
 function TGDAXOrderImpl.DoGetPostBody: string;
 var
   LJSON:TJSONVariantData;
+  LFunds: Extended;
+  LFundsDigits: Integer;
 begin
   Result:='';
   LJSON.FromJSON('{}');
+  LFundsDigits := 8;
 
   //specify price only for limit orders, otherwise market will require
   //funds OR size (we default to just use size)
@@ -238,7 +241,20 @@ begin
     LJSON.AddNameValue(PROP_SIZE, FloatToStrF(FSize, TFloatFormat.ffFixed,15,8));
   end
   else
-    LJSON.AddNameValue(PROP_FUNDS, FloatToStrF(Trunc(FSize * FPrice / Product.BaseMinSize) * Product.BaseMinSize, TFloatFormat.ffFixed,15,8)); //truncate dust
+  begin
+    LFunds := Trunc(FSize * FPrice / Product.BaseMinSize) * Product.BaseMinSize;
+
+    //not very elegant, but should save caller from "too specific" errors on cb
+    if Pos('usd', LowerCase(Product.QuoteCurrency)) > 0) then
+      LFundsDigits := 2;
+
+    //case when funds were specified but lower than min, so user probably
+    //just wants the minimum order (since they called market order in the first place)
+    if (LFunds < Product.MinMarketFunds) and (LFunds > 0) then
+      LFunds := Product.MinMarketFunds;
+
+    LJSON.AddNameValue(PROP_FUNDS, FloatToStrF(LFunds, TFloatFormat.ffFixed, 15, LFundsDigits));
+  end;
 
   LJSON.AddNameValue(PROP_SIDE,OrderSideToString(FSide));
   LJSON.AddNameValue(PROP_PROD,FProduct.ID);

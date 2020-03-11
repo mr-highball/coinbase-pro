@@ -237,7 +237,7 @@ begin
 
   //specify price only for limit orders, otherwise market will require fund
   if (FType = otLimit) then
-    LJSON.AddNameValue(PROP_PRICE, FloatToStrF(FPrice,TFloatFormat.ffFixed,15,8));
+    LJSON.AddNameValue(PROP_PRICE, FloatToStrF(FPrice,TFloatFormat.ffFixed,15,8))
   else
   begin
     LFunds := Trunc(FSize * FPrice / Product.BaseMinSize) * Product.BaseMinSize;

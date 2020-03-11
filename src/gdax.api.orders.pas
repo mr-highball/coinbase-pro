@@ -233,13 +233,11 @@ begin
   LJSON.FromJSON('{}');
   LFundsDigits := 8;
 
-  //specify price only for limit orders, otherwise market will require
-  //funds OR size (we default to just use size)
+  LJSON.AddNameValue(PROP_SIZE, FloatToStrF(FSize, TFloatFormat.ffFixed,15,8));
+
+  //specify price only for limit orders, otherwise market will require fund
   if (FType = otLimit) then
-  begin
     LJSON.AddNameValue(PROP_PRICE, FloatToStrF(FPrice,TFloatFormat.ffFixed,15,8));
-    LJSON.AddNameValue(PROP_SIZE, FloatToStrF(FSize, TFloatFormat.ffFixed,15,8));
-  end
   else
   begin
     LFunds := Trunc(FSize * FPrice / Product.BaseMinSize) * Product.BaseMinSize;

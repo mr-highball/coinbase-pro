@@ -230,7 +230,12 @@ begin
   Result:='';
   LJSON.FromJSON('{}');
   LJSON.AddNameValue(PROP_SIZE,FloatToStrF(FSize,TFloatFormat.ffFixed,15,8));
-  LJSON.AddNameValue(PROP_PRICE,FloatToStrF(FPrice,TFloatFormat.ffFixed,15,8));
+
+  //specify price only for limit orders, otherwise market will require
+  //funds OR size (we default to just use size)
+  if (FType = otLimit) then
+    LJSON.AddNameValue(PROP_PRICE,FloatToStrF(FPrice,TFloatFormat.ffFixed,15,8));
+
   LJSON.AddNameValue(PROP_SIDE,OrderSideToString(FSide));
   LJSON.AddNameValue(PROP_PROD,FProduct.ID);
   if (FType=otLimit) and FPostOnly then

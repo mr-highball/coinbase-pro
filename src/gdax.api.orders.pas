@@ -229,12 +229,16 @@ var
 begin
   Result:='';
   LJSON.FromJSON('{}');
-  LJSON.AddNameValue(PROP_SIZE,FloatToStrF(FSize,TFloatFormat.ffFixed,15,8));
 
   //specify price only for limit orders, otherwise market will require
   //funds OR size (we default to just use size)
   if (FType = otLimit) then
-    LJSON.AddNameValue(PROP_PRICE,FloatToStrF(FPrice,TFloatFormat.ffFixed,15,8));
+  begin
+    LJSON.AddNameValue(PROP_PRICE, FloatToStrF(FPrice,TFloatFormat.ffFixed,15,8));
+    LJSON.AddNameValue(PROP_SIZE, FloatToStrF(FSize, TFloatFormat.ffFixed,15,8));
+  end
+  else
+    LJSON.AddNameValue(PROP_FUNDS, FloatToStrF(FSize * FPrice, TFloatFormat.ffFixed,15,8));
 
   LJSON.AddNameValue(PROP_SIDE,OrderSideToString(FSide));
   LJSON.AddNameValue(PROP_PROD,FProduct.ID);
@@ -243,10 +247,6 @@ begin
   LJSON.AddNameValue(PROP_TYPE,OrderTypeToString(FType));
   if FStop then
   begin
-    //stop orders seem to actually require funds to be specified when market, even
-    //though docs say otherwise
-    if FType=otMarket then
-      LJSON.AddNameValue(PROP_FUNDS,FloatToStrF(FSize * FPrice,TFloatFormat.ffFixed,15,8));
     case FSide of
       osBuy: LJSON.AddNameValue(PROP_STOP,PROP_STOP_ENTRY);
       osSell: LJSON.AddNameValue(PROP_STOP,PROP_STOP_LOSS);

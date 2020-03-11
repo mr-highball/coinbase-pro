@@ -42,10 +42,14 @@ type
       PROP_BASE_MIN = 'base_min_size';
       PROP_BASE_MAX = 'base_max_size';
       PROP_QUOTE_INC = 'quote_increment';
+      PROP_MIN_MARKET_FUNDS = 'min_market_funds';
+      PROP_MAX_MARKET_FUNDS = 'max_market_funds';
   strict private
     FBaseCurrency: String;
     FBaseMaxSize: Extended;
     FBaseMinSize: Extended;
+    FMinMarketFunds,
+    FMaxMarketFunds : Extended;
     FID: String;
     FQuoteCurrency: String;
     FQuoteIncrement: Extended;
@@ -53,12 +57,16 @@ type
     function GetBaseMaxSize: Extended;
     function GetBaseMinSize: Extended;
     function GetID: String;
+    function GetMaxMarket: Extended;
+    function GetMinMarket: Extended;
     function GetQuoteCurrency: String;
     function GetQuoteIncrement: Extended;
     procedure SetBaseCurrency(Const AValue: String);
     procedure SetBaseMaxSize(Const AValue: Extended);
     procedure SetBaseMinSize(Const AValue: Extended);
     procedure SetID(Const AValue: String);
+    procedure SetMaxMarket(const AValue: Extended);
+    procedure SetMinMarket(const AValue: Extended);
     procedure SetQuoteCurrency(Const AValue: String);
     procedure SetQuoteIncrement(Const AValue: Extended);
   strict protected
@@ -74,6 +82,8 @@ type
     property BaseMaxSize : Extended read GetBaseMaxSize write SetBaseMaxSize;
     property QuoteIncrement : Extended read GetQuoteIncrement
       write SetQuoteIncrement;
+    property MinMarketFunds : Extended read GetMinMarket write SetMinMarket;
+    property MaxMarketFunds : Extended read GetMaxMarket write SetMaxMarket;
   end;
 
   { TGDAXProductsImpl }
@@ -214,6 +224,16 @@ begin
   Result:=FID;
 end;
 
+function TGDAXProductImpl.GetMaxMarket: Extended;
+begin
+  Result := FMaxMarketFunds;
+end;
+
+function TGDAXProductImpl.GetMinMarket: Extended;
+begin
+  Result := FMinMarketFunds;
+end;
+
 function TGDAXProductImpl.GetQuoteCurrency: String;
 begin
   Result:=FQuoteCurrency;
@@ -224,38 +244,48 @@ begin
   Result:=FQuoteIncrement;
 end;
 
-procedure TGDAXProductImpl.SetBaseCurrency(Const AValue: String);
+procedure TGDAXProductImpl.SetBaseCurrency(const AValue: String);
 begin
   FBaseCurrency:=AValue;
 end;
 
-procedure TGDAXProductImpl.SetBaseMaxSize(Const AValue: Extended);
+procedure TGDAXProductImpl.SetBaseMaxSize(const AValue: Extended);
 begin
   FBaseMaxSize:=AValue;
 end;
 
-procedure TGDAXProductImpl.SetBaseMinSize(Const AValue: Extended);
+procedure TGDAXProductImpl.SetBaseMinSize(const AValue: Extended);
 begin
   FBaseMinSize:=AValue;
 end;
 
-procedure TGDAXProductImpl.SetID(Const AValue: String);
+procedure TGDAXProductImpl.SetID(const AValue: String);
 begin
   FID:=AValue;
 end;
 
-procedure TGDAXProductImpl.SetQuoteCurrency(Const AValue: String);
+procedure TGDAXProductImpl.SetMaxMarket(const AValue: Extended);
+begin
+  FMaxMarketFunds := AValue;
+end;
+
+procedure TGDAXProductImpl.SetMinMarket(const AValue: Extended);
+begin
+  FMinMarketFunds := AValue;
+end;
+
+procedure TGDAXProductImpl.SetQuoteCurrency(const AValue: String);
 begin
   FQuoteCurrency:=AValue;
 end;
 
-procedure TGDAXProductImpl.SetQuoteIncrement(Const AValue: Extended);
+procedure TGDAXProductImpl.SetQuoteIncrement(const AValue: Extended);
 begin
   FQuoteIncrement:=AValue;
 end;
 
-function TGDAXProductImpl.DoLoadFromJSON(Const AJSON: String; out
-  Error: String): Boolean;
+function TGDAXProductImpl.DoLoadFromJSON(const AJSON: String; out Error: String
+  ): Boolean;
 var
   LJSON:TJSONVariantData;
 begin
@@ -267,11 +297,18 @@ begin
       Exit;
     end;
     FID:=LJSON.Value[PROP_ID];
-    FBaseCurrency:=LJSON.Value[PROP_BASE_CUR];
-    FBaseMinSize:=LJSON.Value[PROP_BASE_MIN];
-    FBaseMaxSize:=LJSON.Value[PROP_BASE_MAX];
-    FQuoteCurrency:=LJSON.Value[PROP_QUOTE_CUR];
-    FQuoteIncrement:=LJSON.Value[PROP_QUOTE_INC];
+    FBaseCurrency := LJSON.Value[PROP_BASE_CUR];
+    FBaseMinSize := LJSON.Value[PROP_BASE_MIN];
+    FBaseMaxSize := LJSON.Value[PROP_BASE_MAX];
+    FQuoteCurrency := LJSON.Value[PROP_QUOTE_CUR];
+    FQuoteIncrement := LJSON.Value[PROP_QUOTE_INC];
+
+    if LJSON.NameIndex(PROP_MIN_MARKET_FUNDS) >= 0 then
+      FMinMarketFunds := LJSON.Value[PROP_MIN_MARKET_FUNDS];
+
+    if LJSON.NameIndex(PROP_MAX_MARKET_FUNDS) >= 0 then
+      FMaxMarketFunds := LJSON.Value[PROP_MAX_MARKET_FUNDS];
+
     Result:=True;
   except on E:Exception do
     Error:=E.Message;
@@ -283,7 +320,7 @@ begin
   Result:=[roGet];
 end;
 
-function TGDAXProductImpl.GetEndpoint(Const AOperation: TRestOperation): String;
+function TGDAXProductImpl.GetEndpoint(const AOperation: TRestOperation): String;
 begin
   Result:=Format(GDAX_END_API_PRODUCTS,[FID]);
 end;

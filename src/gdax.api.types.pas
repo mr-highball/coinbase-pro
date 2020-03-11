@@ -293,12 +293,16 @@ type
     function GetBaseMaxSize: Extended;
     function GetBaseMinSize: Extended;
     function GetID: String;
+    function GetMaxMarket: Extended;
+    function GetMinMarket: Extended;
     function GetQuoteCurrency: String;
     function GetQuoteIncrement: Extended;
     procedure SetBaseCurrency(Const AValue: String);
     procedure SetBaseMaxSize(Const AValue: Extended);
     procedure SetBaseMinSize(Const AValue: Extended);
     procedure SetID(Const AValue: String);
+    procedure SetMaxMarket(const AValue: Extended);
+    procedure SetMinMarket(const AValue: Extended);
     procedure SetQuoteCurrency(Const AValue: String);
     procedure SetQuoteIncrement(Const AValue: Extended);
     //properties
@@ -309,6 +313,8 @@ type
     property BaseMaxSize : Extended read GetBaseMaxSize write SetBaseMaxSize;
     property QuoteIncrement : Extended read GetQuoteIncrement
       write SetQuoteIncrement;
+    property MinMarketFunds : Extended read GetMinMarket write SetMinMarket;
+    property MaxMarketFunds : Extended read GetMaxMarket write SetMaxMarket;
   end;
 
   { TGDAXProductList }

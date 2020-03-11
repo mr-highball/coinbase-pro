@@ -238,7 +238,7 @@ begin
     LJSON.AddNameValue(PROP_SIZE, FloatToStrF(FSize, TFloatFormat.ffFixed,15,8));
   end
   else
-    LJSON.AddNameValue(PROP_FUNDS, FloatToStrF(FSize * FPrice, TFloatFormat.ffFixed,15,8));
+    LJSON.AddNameValue(PROP_FUNDS, FloatToStrF(Trunc(FSize * FPrice), TFloatFormat.ffFixed,15,8)); //truncate dust
 
   LJSON.AddNameValue(PROP_SIDE,OrderSideToString(FSide));
   LJSON.AddNameValue(PROP_PROD,FProduct.ID);

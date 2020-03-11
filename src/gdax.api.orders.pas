@@ -245,7 +245,7 @@ begin
     LFunds := Trunc(FSize * FPrice / Product.BaseMinSize) * Product.BaseMinSize;
 
     //not very elegant, but should save caller from "too specific" errors on cb
-    if Pos('usd', LowerCase(Product.QuoteCurrency)) > 0) then
+    if Pos('usd', LowerCase(Product.QuoteCurrency)) > 0 then
       LFundsDigits := 2;
 
     //case when funds were specified but lower than min, so user probably

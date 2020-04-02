@@ -42,6 +42,7 @@ type
     FTime: TDateTime;
     FVolume: Extended;
     FPrice: Extended;
+  protected
     function GetProduct: IGDAXProduct;
     procedure SetProduct(Const Value: IGDAXProduct);
     function GetSize: Extended;
@@ -76,41 +77,43 @@ type
   end;
 implementation
 uses
-  SynCrossPlatformJSON, fpindexer;
+  fpjson,
+  jsonparser,
+  fpindexer;
 
 { TProductTicket }
 
 constructor TGDAXTickerImpl.Create;
 begin
   inherited Create;
-  FProduct:=nil;
+  FProduct := nil;
   FSize:=0;
   FAsk:=0;
   FBid:=0;
-  FTime:=Now;
+  FTime := Now;
   FVolume:=0;
   FPrice:=0;
 end;
 
 destructor TGDAXTickerImpl.Destroy;
 begin
-  FProduct:=nil;
+  FProduct := nil;
   inherited Destroy;
 end;
 
 function TGDAXTickerImpl.DoGet(Const AEndpoint: string;
   Const AHeaders: TStrings; out Content: string; out Error: string): Boolean;
 begin
-  Result:=False;
+  Result := False;
   try
     if not Assigned(FProduct) then
     begin
-      Error:=Format(E_UNKNOWN,['product',Self.ClassName]);
+      Error := Format(E_UNKNOWN,['product',Self.ClassName]);
       Exit;
     end;
-    Result:=inherited;
+    Result := inherited;
   except on E: Exception do
-    Error:=E.ClassName+': '+E.Message;
+    Error := E.ClassName+': '+E.Message;
   end;
 end;
 
@@ -122,35 +125,40 @@ end;
 function TGDAXTickerImpl.DoLoadFromJSON(Const AJSON: string;
   out Error: string): Boolean;
 var
-  LJSON:TJSONVariantData;
+  LJSON : TJSONObject;
 begin
-  Result:=False;
+  Result := False;
   try
-    if not LJSON.FromJSON(AJSON) then
-    begin
-      Error:=E_BADJSON;
-      Exit;
+    LJSON := TJSONObject(GetJSON(AJSON));
+
+    if not Assigned(LJSON) then
+      raise Exception.Create(E_BADJSON);
+
+    try
+      FPrice := LJSON.Get('price');
+      FSize := LJSON.Get('size');
+      FAsk := LJSON.Get('ask');
+      FBid := LJSON.Get('bid');
+      FVolume := LJSON.Get('volume');
+      FTime := ISO8601ToDate(LJSON.Get('time'));
+
+      Result := True;
+    finally
+      LJSON.Free;
     end;
-    FPrice:=LJSON.Value['price'];
-    FSize:=LJSON.Value['size'];
-    FAsk:=LJSON.Value['ask'];
-    FBid:=LJSON.Value['bid'];
-    FVolume:=LJSON.Value['volume'];
-    FTime:=ISO8601ToDate(LJSON.Value['time']);
-    Result:=True;
   except on E: Exception do
-    Error:=E.ClassName+': '+E.Message;
+    Error := E.ClassName+': '+E.Message;
   end;
 end;
 
 function TGDAXTickerImpl.GetAsk: Extended;
 begin
-  Result:=FAsk;
+  Result := FAsk;
 end;
 
 function TGDAXTickerImpl.GetBid: Extended;
 begin
-  Result:=FBid;
+  Result := FBid;
 end;
 
 function TGDAXTickerImpl.GetEndpoint(Const AOperation: TRestOperation): string;
@@ -159,69 +167,69 @@ begin
   if not Assigned(FProduct) then
     raise Exception.Create(Format(E_UNKNOWN,['product',Self.ClassName]));
   if AOperation=roGet then
-    Result:=Format(GDAX_END_API_TICKER,[FProduct.ID]);
+    Result := Format(GDAX_END_API_TICKER,[FProduct.ID]);
 end;
 
 function TGDAXTickerImpl.GetPrice: Extended;
 begin
-  Result:=FPrice;
+  Result := FPrice;
 end;
 
 function TGDAXTickerImpl.GetProduct: IGDAXProduct;
 begin
-  Result:=FProduct;
+  Result := FProduct;
 end;
 
 function TGDAXTickerImpl.GetSize: Extended;
 begin
-  Result:=FSize;
+  Result := FSize;
 end;
 
 function TGDAXTickerImpl.GetTime: TDateTime;
 begin
-  Result:=FTime;
+  Result := FTime;
 end;
 
 function TGDAXTickerImpl.GetVolume: Extended;
 begin
-  Result:=FVolume;
+  Result := FVolume;
 end;
 
 procedure TGDAXTickerImpl.SetAsk(Const Value: Extended);
 begin
-  FAsk:=Value;
+  FAsk := Value;
 end;
 
 procedure TGDAXTickerImpl.SetBid(Const Value: Extended);
 begin
-  FBid:=Value;
+  FBid := Value;
 end;
 
 
 procedure TGDAXTickerImpl.SetPrice(Const Value: Extended);
 begin
-  FPrice:=Value;
+  FPrice := Value;
 end;
 
 procedure TGDAXTickerImpl.SetProduct(Const Value: IGDAXProduct);
 begin
-  FProduct:=nil;
-  FProduct:=Value;
+  FProduct := nil;
+  FProduct := Value;
 end;
 
 procedure TGDAXTickerImpl.SetSize(Const Value: Extended);
 begin
-  FSize:=Value;
+  FSize := Value;
 end;
 
 procedure TGDAXTickerImpl.SetTime(Const Value: TDateTime);
 begin
-  FTime:=Value;
+  FTime := Value;
 end;
 
 procedure TGDAXTickerImpl.SetVolume(Const Value: Extended);
 begin
-  FVolume:=Value;
+  FVolume := Value;
 end;
 
 end.

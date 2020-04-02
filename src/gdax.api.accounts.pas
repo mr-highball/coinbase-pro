@@ -115,7 +115,9 @@ type
   end;
 implementation
 uses
-  SysUtils, SynCrossPlatformJSON;
+  SysUtils,
+  fpjson,
+  jsonparser;
 
 { TGDAXAccountImpl }
 
@@ -127,112 +129,125 @@ end;
 function TGDAXAccountImpl.DoLoadFromJSON(Const AJSON: string;
   out Error: string): Boolean;
 var
-  LJSON:TJSONVariantData;
+  LJSON:TJSONObject;
 begin
-  Result:=False;
-  if not LJSON.FromJSON(AJSON) then
-  begin
-    Error:=E_BADJSON;
-    Exit;
+  Result := False;
+
+  //try and parse
+  LJSON := TJSONObject(GetJSON(AJSON));
+  try
+    if not Assigned(LJSON) then
+    begin
+      Error := E_BADJSON;
+      Exit;
+    end;
+
+    //extract id from json
+    if LJSON.Find('id') <> nil then
+    begin
+      Error := Format(E_BADJSON_PROP, ['id']);
+      Exit;
+    end
+    else
+      FID := LJSON.Get('id');
+
+    //extract balance from json
+    if LJSON.Find('balance') <> nil then
+    begin
+      Error := Format(E_BADJSON_PROP,['balance']);
+      Exit;
+    end
+    else
+      FBalance := StrToFloatDef(LJSON.Get('balance'),0);
+
+    //extract holds from json
+    if LJSON.Find('hold') <> nil then
+    begin
+      Error := Format(E_BADJSON_PROP,['hold']);
+      Exit;
+    end
+    else
+      FHolds := StrToFloatDef(LJSON.Get('hold'),0);
+
+    //extract available from json
+    if LJSON.Find('available') <> nil then
+    begin
+      Error := Format(E_BADJSON_PROP,['available']);
+      Exit;
+    end
+    else
+      FAvailable := StrToFloatDef(LJSON.Get('available'),0);
+
+    //extract currency from json
+    if LJSON.Find('currency') <> nil then
+    begin
+      Error := Format(E_BADJSON_PROP,['currency']);
+      Exit;
+    end
+    else
+      FCurrency := LJSON.Get('currency');
+
+    Result := True;
+  finally
+    LJSON.Free;
   end;
-  //extract id from json
-  if LJSON.NameIndex('id')<0 then
-  begin
-    Error:=Format(E_BADJSON_PROP,['id']);
-    Exit;
-  end
-  else
-    FID:=LJSON.Value['id'];
-  //extract balance from json
-  if LJSON.NameIndex('balance')<0 then
-  begin
-    Error:=Format(E_BADJSON_PROP,['balance']);
-    Exit;
-  end
-  else
-    FBalance:=StrToFloatDef(LJSON.Value['balance'],0);
-  //extract holds from json
-  if LJSON.NameIndex('hold')<0 then
-  begin
-    Error:=Format(E_BADJSON_PROP,['hold']);
-    Exit;
-  end
-  else
-    FHolds:=StrToFloatDef(LJSON.Value['hold'],0);
-  //extract available from json
-  if LJSON.NameIndex('available')<0 then
-  begin
-    Error:=Format(E_BADJSON_PROP,['available']);
-    Exit;
-  end
-  else
-    FAvailable:=StrToFloatDef(LJSON.Value['available'],0);
-  //extract currency from json
-  if LJSON.NameIndex('currency')<0 then
-  begin
-    Error:=Format(E_BADJSON_PROP,['currency']);
-    Exit;
-  end
-  else
-    FCurrency:=LJSON.Value['currency'];
-  Result:=True;
 end;
 
 function TGDAXAccountImpl.GetAcctID: String;
 begin
-  Result:=FID;
+  Result := FID;
 end;
 
 function TGDAXAccountImpl.GetAvailable: Extended;
 begin
-  Result:=FAvailable;
+  Result := FAvailable;
 end;
 
 function TGDAXAccountImpl.GetBalance: Extended;
 begin
-  Result:=FBalance;
+  Result := FBalance;
 end;
 
 function TGDAXAccountImpl.GetCurrency: String;
 begin
-  Result:=FCurrency;
+  Result := FCurrency;
 end;
 
 function TGDAXAccountImpl.GetEndpoint(Const AOperation: TRestOperation): string;
 begin
   Result:='';
   if AOperation = roGet then
-    Result:=Format(GDAX_END_API_ACCT,[FID]);
+    Result := Format(GDAX_END_API_ACCT,[FID]);
 end;
 
 function TGDAXAccountImpl.GetHolds: Extended;
 begin
-  Result:=FHolds;
+  Result := FHolds;
 end;
 
 procedure TGDAXAccountImpl.SetAcctID(Const AValue: String);
 begin
-  FID:=AValue;
+  FID := AValue;
 end;
 
 procedure TGDAXAccountImpl.SetAvailable(Const AValue: Extended);
 begin
-  FAvailable:=AValue;
+  FAvailable := AValue;
 end;
 
 procedure TGDAXAccountImpl.SetBalance(Const AValue: Extended);
 begin
-  FBalance:=AValue;
+  FBalance := AValue;
 end;
 
 procedure TGDAXAccountImpl.SetCurrency(Const AValue: String);
 begin
-  FCurrency:=AValue;
+  FCurrency := AValue;
 end;
 
 procedure TGDAXAccountImpl.SetHolds(Const AValue: Extended);
 begin
-  FHolds:=AValue;
+  FHolds := AValue;
 end;
 
 { TGDAXAccountsImpl }
@@ -240,7 +255,7 @@ end;
 constructor TGDAXAccountsImpl.Create;
 begin
   inherited;
-  FAccounts:=TGDAXAccountList.Create;
+  FAccounts := TGDAXAccountList.Create;
 end;
 
 destructor TGDAXAccountsImpl.Destroy;
@@ -257,53 +272,55 @@ end;
 function TGDAXAccountsImpl.DoLoadFromJSON(Const AJSON: string;
   out Error: string): Boolean;
 var
-  LJSON: TJSONVariantData;
+  LJSON: TJSONArray;
   I: Integer;
   LAcct: IGDAXAccount;
 begin
-  Result:=False;
+  Result := False;
   try
     FAccounts.Clear;
-    if not LJSON.FromJSON(AJSON) then
-    begin
-      Error:=E_BADJSON;
-      Exit;
-    end;
-    if (LJSON.Kind<> jvArray) then
-    begin
-      Error:=Format(E_BADJSON_PROP,['main account array']);
-      Exit;
-    end;
-    for I := 0 to Pred(LJSON.Count) do
-    begin
-      LAcct:=TGDAXAccountImpl.Create;
-      //if we can't load this via json, then terminate
-      if not LAcct.LoadFromJSON(
-          TJSONVariantData(LJSON.Item[I]).ToJSON,
-          Error
-        )
-      then
+
+    LJSON := TJSONArray(GetJSON(AJSON));
+
+    if not Assigned(LJSON) then
+      raise Exception.Create(E_BADJSON);
+
+    try
+      //iterate items
+      for I := 0 to Pred(LJSON.Count) do
       begin
-        Error:=Format(E_BADJSON_PROP,['account index:'+IntToStr(I)]);
-        Exit;
+        LAcct := TGDAXAccountImpl.Create;
+        //if we can't load this via json, then terminate
+        if not LAcct.LoadFromJSON(
+            LJSON.Items[I].AsJSON,
+            Error
+          )
+        then
+        begin
+          Error := Format(E_BADJSON_PROP,['account index:'+IntToStr(I)]);
+          Exit;
+        end;
+        //otherwise we can add this to our list
+        FAccounts.Add(LAcct);
       end;
-      //otherwise we can add this to our list
-      FAccounts.Add(LAcct);
+      Result := True;
+
+    finally
+      LJSON.Free;
     end;
-    Result:=True;
   except on E: Exception do
-    Error:=E.Message;
+    Error := E.Message;
   end;
 end;
 
 function TGDAXAccountsImpl.GetAccounts: TGDAXAccountList;
 begin
-  Result:=FAccounts;
+  Result := FAccounts;
 end;
 
 function TGDAXAccountsImpl.GetEndpoint(Const AOperation: TRestOperation): string;
 begin
-  Result:=GDAX_END_API_ACCTS;
+  Result := GDAX_END_API_ACCTS;
 end;
 
 { TGDAXAccountLedgerImpl }
@@ -311,36 +328,36 @@ end;
 function TGDAXAccountLedgerImpl.DoLoadFromJSON(Const AJSON: string;
   out Error: string): Boolean;
 var
-  I:Integer;
-  LJSON:TJSONVariantData;
-  LEntryJSON:String;
-  LEntry:TLedgerEntry;
+  I : Integer;
+  LJSON : TJSONArray;
+  LEntryJSON : String;
+  LEntry : TLedgerEntry;
 begin
-  Result:=False;
+  Result := False;
   try
     //clear entries on load
     SetLength(FEntries,0);
-    if not LJSON.FromJSON(AJSON) then
-    begin
-      Error:=E_BADJSON;
-      Exit;
+    LJSON := TJSONArray(GetJSON(AJSON));
+
+    if not Assigned(LJSON) then
+      raise Exception.Create(E_BADJSON);
+
+    try
+      //for all of the records returned, build a new ledger entry from json
+      for I := 0 to Pred(LJSON.Count) do
+      begin
+        SetLength(FEntries, Succ(Length(FEntries)));
+        LEntryJSON := LJSON.Items[I].AsJSON;
+        LEntry := TLedgerEntry.Create(LEntryJSON);
+        FEntries[High(FEntries)]:=LEntry;
+      end;
+
+      Result := True;
+    finally
+      LJSON.Free;
     end;
-    if LJSON.Kind<>jvArray then
-    begin
-      Error:=Format(E_BADJSON_PROP,['main json array']);
-      Exit;
-    end;
-    //for all of the records returned, build a new ledger entry from json
-    for I:=0 to Pred(LJSON.Count) do
-    begin
-      SetLength(FEntries,Succ(Length(FEntries)));
-      LEntryJSON:=TJSONVariantData(LJSON.Item[I]).ToJSON;
-      LEntry:=TLedgerEntry.Create(LEntryJSON);
-      FEntries[High(FEntries)]:=LEntry;
-    end;
-    Result:=True;
   except on E: Exception do
-    Error:=E.Message;
+    Error := E.Message;
   end;
 end;
 
@@ -359,18 +376,23 @@ begin
   //as of now, not a big deal since caller can also specifically before and
   //after specific id's
   SetLength(LEntries,0);
+
   if Length(FEntries)>0 then
-    LEntries:=FEntries;
-  Result:=inherited DoMove(ADirection, Error, ALastBeforeID, ALastAfterID,ALimit);
+    LEntries := FEntries;
+
+  Result := inherited DoMove(ADirection, Error, ALastBeforeID, ALastAfterID,ALimit);
+
   if not Result then
     Exit;
+
   //only if we have a local array that needs to be appended somewhere do we
   //do this logic
   if (Length(LEntries)>0) then
   begin
     //use length because we want the index "after" the highest entry
-    I:=Length(LEntries);
+    I := Length(LEntries);
     SetLength(LEntries,Length(LEntries)+Length(FEntries));
+
     if ADirection=pdBefore then
     begin
       if Length(FEntries)>0 then
@@ -378,12 +400,14 @@ begin
         //slide old entries ahead of new entries
         for J:=0 to High(LEntries) - I do
           LEntries[I + J]:=LEntries[J];
+
         //now move new entries to start
         for J:=0 to High(FEntries) do
-          LEntries[J]:=FEntries[J];
+          LEntries[J] := FEntries[J];
       end;
+
       //lastly, assign our merged array to private var
-      FEntries:=LEntries;
+      FEntries := LEntries;
     end
     else
     begin
@@ -391,29 +415,30 @@ begin
       if Length(FEntries)>0 then
         for J:=0 to High(FEntries) do
           LEntries[I + J]:=FEntries[J];
-      FEntries:=LEntries;
+
+      FEntries := LEntries;
     end;
   end;
 end;
 
 function TGDAXAccountLedgerImpl.GetAcctID: String;
 begin
-  Result:=FID;
+  Result := FID;
 end;
 
 function TGDAXAccountLedgerImpl.GetCount: Cardinal;
 begin
-  Result:=Length(FEntries);
+  Result := Length(FEntries);
 end;
 
 function TGDAXAccountLedgerImpl.GetEntries: TLedgerEntryArray;
 begin
-  Result:=FEntries;
+  Result := FEntries;
 end;
 
 function TGDAXAccountLedgerImpl.GetPaged: IGDAXPaged;
 begin
-  Result:=Self as IGDAXPaged;
+  Result := Self as IGDAXPaged;
 end;
 
 function TGDAXAccountLedgerImpl.GetEndpoint(
@@ -424,11 +449,11 @@ begin
   Result:='';
   //since this is a paged endpoint, we need to check for any move requests
   //made by caller
-  LMoving:=GetMovingParameters;
+  LMoving := GetMovingParameters;
   if not LMoving.IsEmpty then
     LMoving:='?'+LMoving;
   if AOperation=roGet then
-    Result:=Format(GDAX_END_API_ACCT_HIST,[FID])+LMoving;
+    Result := Format(GDAX_END_API_ACCT_HIST,[FID])+LMoving;
 end;
 
 function TGDAXAccountLedgerImpl.DoGetSupportedOperations: TRestOperations;
@@ -443,7 +468,7 @@ end;
 
 procedure TGDAXAccountLedgerImpl.SetAcctID(Const Value: String);
 begin
-  FID:=Value;
+  FID := Value;
 end;
 
 function TGDAXAccountLedgerImpl.DoGet(Const AEndpoint: string;
@@ -451,10 +476,10 @@ function TGDAXAccountLedgerImpl.DoGet(Const AEndpoint: string;
 begin
   if FID.IsEmpty then
   begin
-    Error:=Format(E_INVALID,['account id','a valid identifier']);
+    Error := Format(E_INVALID,['account id','a valid identifier']);
     Exit;
   end;
-  Result:=inherited DoGet(AEndpoint, AHeaders, Content, Error);
+  Result := inherited DoGet(AEndpoint, AHeaders, Content, Error);
 end;
 
 end.

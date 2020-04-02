@@ -166,20 +166,20 @@ implementation
 function BuildFullEndpoint(Const AResource:String; Const AMode:TGDAXApi):String;
 begin
   if AMode=gdSand then
-    Result:=GDAX_END_API_BASE_SAND+AResource
+    Result := GDAX_END_API_BASE_SAND+AResource
   else
-    Result:=GDAX_END_API_BASE+AResource;
+    Result := GDAX_END_API_BASE+AResource;
 end;
 
 function StringToOrderStatus(Const AStatus:String):TOrderStatus;
 var
   I: Integer;
 begin
-  Result:=stUnknown;
+  Result := stUnknown;
   for I := Low(ORDER_STATUS) to High(ORDER_STATUS) do
     if LowerCase(ORDER_STATUS[I])=LowerCase(AStatus) then
     begin
-      Result:=TOrderStatus(I);
+      Result := TOrderStatus(I);
       Exit;
     end;
 end;
@@ -188,18 +188,18 @@ function LedgerTypeToString(Const AType: TLedgerType): String;
 begin
   Result:='';
   if Ord(AType)<=High(LEDGER_TYPES) then
-    Result:=LEDGER_TYPES[Ord(AType)];
+    Result := LEDGER_TYPES[Ord(AType)];
 end;
 
 function StringToLedgerType(Const AType: String): TLedgerType;
 var
   I: Integer;
 begin
-  Result:=ltTransfer;
+  Result := ltTransfer;
   for I := Low(LEDGER_TYPES) to High(LEDGER_TYPES) do
     if LowerCase(LEDGER_TYPES[I])=LowerCase(AType) then
     begin
-      Result:=TLedgerType(I);
+      Result := TLedgerType(I);
       Exit;
     end;
 end;
@@ -208,11 +208,11 @@ function StringToOrderSide(Const ASide:String):TOrderSide;
 var
   I: Integer;
 begin
-  Result:=osUnknown;
+  Result := osUnknown;
   for I := Low(ORDER_SIDES) to High(ORDER_SIDES) do
     if LowerCase(ORDER_SIDES[I])=LowerCase(ASide) then
     begin
-      Result:=TOrderSide(I);
+      Result := TOrderSide(I);
       Exit;
     end;
 end;
@@ -221,11 +221,11 @@ function StringToOrderType(Const AType:String):TOrderType;
 var
   I: Integer;
 begin
-  Result:=otUnknown;
+  Result := otUnknown;
   for I := Low(ORDER_TYPES) to High(ORDER_TYPES) do
     if LowerCase(ORDER_TYPES[I])=LowerCase(AType) then
     begin
-      Result:=TOrderType(I);
+      Result := TOrderType(I);
       Exit;
     end;
 end;
@@ -235,7 +235,7 @@ begin
   Result:='';
   if AStatus=stUnknown then
     Exit;
-  Result:=ORDER_STATUS[Ord(AStatus)];
+  Result := ORDER_STATUS[Ord(AStatus)];
 end;
 
 function OrderSideToString(Const ASide:TOrderSide):String;
@@ -243,7 +243,7 @@ begin
   Result:='';
   if ASide=osUnknown then
     Exit;
-  Result:=ORDER_SIDES[Ord(ASide)];
+  Result := ORDER_SIDES[Ord(ASide)];
 end;
 
 function OrderTypeToString(Const AType:TOrderType):String;
@@ -251,7 +251,7 @@ begin
   Result:='';
   if AType=otUnknown then
     Exit;
-  Result:=ORDER_TYPES[Ord(AType)];
+  Result := ORDER_TYPES[Ord(AType)];
 end;
 end.
 

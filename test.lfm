@@ -1,95 +1,87 @@
 object GDAXTester: TGDAXTester
   Left = 444
-  Height = 322
+  Height = 644
   Top = 299
-  Width = 546
+  Width = 1092
   Align = alBottom
   Caption = 'GDAXTester'
-  ClientHeight = 322
-  ClientWidth = 546
+  ClientHeight = 644
+  ClientWidth = 1092
+  DesignTimePPI = 192
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  LCLVersion = '1.8.2.0'
+  LCLVersion = '2.1.0.0'
   object pctrl_main: TPageControl
-    Left = 5
-    Height = 292
-    Top = 5
-    Width = 536
+    Left = 10
+    Height = 584
+    Top = 10
+    Width = 1072
     ActivePage = ts_auth
     Align = alClient
-    BorderSpacing.Left = 5
-    BorderSpacing.Top = 5
-    BorderSpacing.Right = 5
-    BorderSpacing.Bottom = 25
+    BorderSpacing.Left = 10
+    BorderSpacing.Top = 10
+    BorderSpacing.Right = 10
+    BorderSpacing.Bottom = 50
+    ParentFont = False
     TabIndex = 0
     TabOrder = 0
     OnChange = pctrl_mainChange
     object ts_auth: TTabSheet
       Caption = 'Authenticator'
-      ClientHeight = 264
-      ClientWidth = 528
+      ClientHeight = 526
+      ClientWidth = 1056
+      ParentFont = False
       object edit_auth_key: TLabeledEdit
-        Left = 16
-        Height = 23
-        Top = 32
-        Width = 200
-        EditLabel.AnchorSideLeft.Control = edit_auth_key
-        EditLabel.AnchorSideRight.Control = edit_auth_key
-        EditLabel.AnchorSideRight.Side = asrBottom
-        EditLabel.AnchorSideBottom.Control = edit_auth_key
-        EditLabel.Left = 16
-        EditLabel.Height = 15
-        EditLabel.Top = 14
-        EditLabel.Width = 200
+        Left = 32
+        Height = 40
+        Top = 64
+        Width = 400
+        EditLabel.Height = 32
+        EditLabel.Width = 400
         EditLabel.Caption = 'Key'
         EditLabel.ParentColor = False
+        EditLabel.ParentFont = False
+        ParentFont = False
         TabOrder = 0
       end
       object edit_auth_secret: TLabeledEdit
-        Left = 16
-        Height = 23
-        Top = 92
-        Width = 200
-        EditLabel.AnchorSideLeft.Control = edit_auth_secret
-        EditLabel.AnchorSideRight.Control = edit_auth_secret
-        EditLabel.AnchorSideRight.Side = asrBottom
-        EditLabel.AnchorSideBottom.Control = edit_auth_secret
-        EditLabel.Left = 16
-        EditLabel.Height = 15
-        EditLabel.Top = 74
-        EditLabel.Width = 200
+        Left = 32
+        Height = 40
+        Top = 184
+        Width = 400
+        EditLabel.Height = 32
+        EditLabel.Width = 400
         EditLabel.Caption = 'Secret'
         EditLabel.ParentColor = False
+        EditLabel.ParentFont = False
+        ParentFont = False
         TabOrder = 1
       end
       object edit_auth_pass: TLabeledEdit
-        Left = 16
-        Height = 23
-        Top = 152
-        Width = 200
-        EditLabel.AnchorSideLeft.Control = edit_auth_pass
-        EditLabel.AnchorSideRight.Control = edit_auth_pass
-        EditLabel.AnchorSideRight.Side = asrBottom
-        EditLabel.AnchorSideBottom.Control = edit_auth_pass
-        EditLabel.Left = 16
-        EditLabel.Height = 15
-        EditLabel.Top = 134
-        EditLabel.Width = 200
+        Left = 32
+        Height = 40
+        Top = 304
+        Width = 400
+        EditLabel.Height = 32
+        EditLabel.Width = 400
         EditLabel.Caption = 'Passphrase'
         EditLabel.ParentColor = False
+        EditLabel.ParentFont = False
+        ParentFont = False
         TabOrder = 2
       end
       object btn_auth_test: TButton
         AnchorSideRight.Control = ts_auth
         AnchorSideRight.Side = asrBottom
-        Left = 448
-        Height = 25
-        Top = 232
-        Width = 75
+        Left = 896
+        Height = 50
+        Top = 490
+        Width = 150
         Anchors = [akRight]
-        BorderSpacing.Right = 5
+        BorderSpacing.Right = 10
         Caption = 'Test'
         OnClick = btn_auth_testClick
+        ParentFont = False
         TabOrder = 3
       end
       object memo_auth_result: TMemo
@@ -100,12 +92,13 @@ object GDAXTester: TGDAXTester
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = edit_auth_pass
         AnchorSideBottom.Side = asrBottom
-        Left = 226
-        Height = 143
-        Top = 32
-        Width = 297
+        Left = 452
+        Height = 280
+        Top = 64
+        Width = 594
         Anchors = [akTop, akLeft, akRight, akBottom]
-        BorderSpacing.Left = 10
+        BorderSpacing.Left = 20
+        ParentFont = False
         ScrollBars = ssAutoBoth
         TabOrder = 4
       end
@@ -113,13 +106,14 @@ object GDAXTester: TGDAXTester
         AnchorSideLeft.Control = edit_auth_pass
         AnchorSideTop.Control = edit_auth_pass
         AnchorSideTop.Side = asrBottom
-        Left = 16
-        Height = 19
-        Top = 185
-        Width = 100
-        BorderSpacing.Top = 10
+        Left = 32
+        Height = 36
+        Top = 364
+        Width = 196
+        BorderSpacing.Top = 20
         Caption = 'Use Local Time'
         Checked = True
+        ParentFont = False
         State = cbChecked
         TabOrder = 5
       end
@@ -128,20 +122,22 @@ object GDAXTester: TGDAXTester
       Caption = 'Base Web Client'
       ClientHeight = 264
       ClientWidth = 432
+      ParentFont = False
       object btn_base_web_test: TButton
         AnchorSideRight.Control = ts_fpc_web
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = ts_fpc_web
         AnchorSideBottom.Side = asrBottom
-        Left = 352
-        Height = 25
-        Top = 234
-        Width = 75
+        Left = 277
+        Height = 50
+        Top = 209
+        Width = 150
         Anchors = [akRight, akBottom]
-        BorderSpacing.Right = 5
-        BorderSpacing.Bottom = 5
+        BorderSpacing.Right = 10
+        BorderSpacing.Bottom = 10
         Caption = 'Test'
         OnClick = btn_base_web_testClick
+        ParentFont = False
         TabOrder = 0
       end
       object memo_base_web: TMemo
@@ -151,10 +147,11 @@ object GDAXTester: TGDAXTester
         Top = 5
         Width = 422
         Align = alClient
-        BorderSpacing.Left = 5
-        BorderSpacing.Top = 5
-        BorderSpacing.Right = 5
-        BorderSpacing.Bottom = 50
+        BorderSpacing.Left = 10
+        BorderSpacing.Top = 10
+        BorderSpacing.Right = 10
+        BorderSpacing.Bottom = 100
+        ParentFont = False
         ScrollBars = ssAutoBoth
         TabOrder = 1
       end
@@ -163,21 +160,18 @@ object GDAXTester: TGDAXTester
       Caption = 'Products'
       ClientHeight = 264
       ClientWidth = 432
+      ParentFont = False
       object edit_product_quote: TLabeledEdit
-        Left = 15
+        Left = 30
         Height = 23
-        Top = 39
-        Width = 136
-        EditLabel.AnchorSideLeft.Control = edit_product_quote
-        EditLabel.AnchorSideRight.Control = edit_product_quote
-        EditLabel.AnchorSideRight.Side = asrBottom
-        EditLabel.AnchorSideBottom.Control = edit_product_quote
-        EditLabel.Left = 15
+        Top = 78
+        Width = 272
         EditLabel.Height = 15
-        EditLabel.Top = 21
         EditLabel.Width = 136
         EditLabel.Caption = 'Quote Currency Filter'
         EditLabel.ParentColor = False
+        EditLabel.ParentFont = False
+        ParentFont = False
         TabOrder = 0
       end
       object list_products: TListBox
@@ -187,14 +181,15 @@ object GDAXTester: TGDAXTester
         AnchorSideRight.Control = btn_product_test
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = btn_product_test
-        Left = 176
+        Left = 352
         Height = 170
-        Top = 39
+        Top = 78
         Width = 251
         Anchors = [akTop, akLeft, akRight, akBottom]
-        BorderSpacing.Left = 25
-        BorderSpacing.Bottom = 25
+        BorderSpacing.Left = 50
+        BorderSpacing.Bottom = 50
         ItemHeight = 0
+        ParentFont = False
         TabOrder = 1
       end
       object btn_product_test: TButton
@@ -202,15 +197,16 @@ object GDAXTester: TGDAXTester
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = ts_products
         AnchorSideBottom.Side = asrBottom
-        Left = 352
-        Height = 25
-        Top = 234
-        Width = 75
+        Left = 277
+        Height = 50
+        Top = 209
+        Width = 150
         Anchors = [akRight, akBottom]
-        BorderSpacing.Right = 5
-        BorderSpacing.Bottom = 5
+        BorderSpacing.Right = 10
+        BorderSpacing.Bottom = 10
         Caption = 'Test'
         OnClick = btn_product_testClick
+        ParentFont = False
         TabOrder = 2
       end
     end
@@ -218,20 +214,22 @@ object GDAXTester: TGDAXTester
       Caption = 'Accounts'
       ClientHeight = 264
       ClientWidth = 432
+      ParentFont = False
       object btn_accounts_test: TButton
         AnchorSideRight.Control = ts_accounts
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = ts_accounts
         AnchorSideBottom.Side = asrBottom
-        Left = 352
-        Height = 25
-        Top = 234
-        Width = 75
+        Left = 277
+        Height = 50
+        Top = 209
+        Width = 150
         Anchors = [akRight, akBottom]
-        BorderSpacing.Right = 5
-        BorderSpacing.Bottom = 5
+        BorderSpacing.Right = 10
+        BorderSpacing.Bottom = 10
         Caption = 'Test'
         OnClick = btn_accounts_testClick
+        ParentFont = False
         TabOrder = 0
       end
       object grid_accounts: TStringGrid
@@ -240,20 +238,21 @@ object GDAXTester: TGDAXTester
         AnchorSideRight.Control = btn_accounts_test
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = btn_accounts_test
-        Left = 5
+        Left = 10
         Height = 224
-        Top = 5
+        Top = 10
         Width = 422
         Anchors = [akTop, akLeft, akRight, akBottom]
-        BorderSpacing.Left = 5
-        BorderSpacing.Top = 5
-        BorderSpacing.Bottom = 5
+        BorderSpacing.Left = 10
+        BorderSpacing.Top = 10
+        BorderSpacing.Bottom = 10
         ColumnClickSorts = True
-        DefaultColWidth = 75
-        DefaultRowHeight = 25
+        DefaultColWidth = 150
+        DefaultRowHeight = 50
         Flat = True
         GridLineWidth = 2
         Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goRangeSelect, goRowSizing, goColSizing, goDblClickAutoSize, goSmoothScroll]
+        ParentFont = False
         RowCount = 1
         TabOrder = 1
       end
@@ -262,28 +261,30 @@ object GDAXTester: TGDAXTester
       Caption = 'Order'
       ClientHeight = 264
       ClientWidth = 528
+      ParentFont = False
       object btn_test_order: TButton
         AnchorSideRight.Control = ts_order
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = ts_order
         AnchorSideBottom.Side = asrBottom
-        Left = 448
-        Height = 25
-        Top = 234
-        Width = 75
+        Left = 373
+        Height = 50
+        Top = 209
+        Width = 150
         Anchors = [akRight, akBottom]
-        BorderSpacing.Right = 5
-        BorderSpacing.Bottom = 5
+        BorderSpacing.Right = 10
+        BorderSpacing.Bottom = 10
         Caption = 'Test'
         OnClick = btn_test_orderClick
+        ParentFont = False
         TabOrder = 0
       end
       object combo_order_ids: TComboBox
-        Left = 8
-        Height = 23
-        Top = 24
-        Width = 128
-        ItemHeight = 15
+        Left = 16
+        Height = 40
+        Top = 48
+        Width = 256
+        ItemHeight = 32
         ItemIndex = 0
         Items.Strings = (
           'BTC-USD'
@@ -294,6 +295,7 @@ object GDAXTester: TGDAXTester
           'ETH-BTC'
           'BCH-BTC'
         )
+        ParentFont = False
         TabOrder = 1
         Text = 'BTC-USD'
       end
@@ -304,72 +306,79 @@ object GDAXTester: TGDAXTester
         AnchorSideRight.Control = btn_test_order
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = btn_test_order
-        Left = 161
+        Left = 322
         Height = 185
-        Top = 24
+        Top = 48
         Width = 362
         Anchors = [akTop, akLeft, akRight, akBottom]
-        BorderSpacing.Left = 25
-        BorderSpacing.Bottom = 25
+        BorderSpacing.Left = 50
+        BorderSpacing.Bottom = 50
+        ParentFont = False
         TabOrder = 2
       end
       object edit_order_price: TEdit
-        Left = 8
+        Left = 16
         Height = 23
-        Top = 64
-        Width = 128
+        Top = 128
+        Width = 256
+        ParentFont = False
         TabOrder = 3
         TextHint = 'input price'
       end
       object edit_order_size: TEdit
-        Left = 8
+        Left = 16
         Height = 23
-        Top = 104
-        Width = 128
+        Top = 208
+        Width = 256
+        ParentFont = False
         TabOrder = 4
         TextHint = 'input size'
       end
       object combo_order_type: TComboBox
-        Left = 8
-        Height = 23
-        Top = 186
-        Width = 128
-        ItemHeight = 15
+        Left = 16
+        Height = 40
+        Top = 372
+        Width = 256
+        ItemHeight = 32
         ItemIndex = 0
         Items.Strings = (
           'limit'
           'market'
         )
+        ParentFont = False
         TabOrder = 5
         Text = 'limit'
       end
       object combo_order_side: TComboBox
-        Left = 8
-        Height = 23
-        Top = 144
-        Width = 128
-        ItemHeight = 15
+        Left = 16
+        Height = 40
+        Top = 288
+        Width = 256
+        ItemHeight = 32
         Items.Strings = (
           'buy'
           'sell'
         )
+        ParentFont = False
         TabOrder = 6
         Text = 'limit'
       end
       object chk_order_stop: TCheckBox
-        Left = 8
+        Left = 16
         Height = 19
-        Top = 234
+        Top = 468
         Width = 77
         Caption = 'Stop Order'
+        ParentFont = False
         TabOrder = 7
       end
       object chk_order_post: TCheckBox
-        Left = 161
+        Left = 322
         Height = 19
-        Top = 234
+        Top = 468
         Width = 71
         Caption = 'Post Only'
+        ParentFont = False
         TabOrder = 8
       end
     end
@@ -377,20 +386,22 @@ object GDAXTester: TGDAXTester
       Caption = 'Ledger'
       ClientHeight = 264
       ClientWidth = 528
+      ParentFont = False
       object btn_test_ledger: TButton
         AnchorSideRight.Control = ts_order
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = ts_order
         AnchorSideBottom.Side = asrBottom
-        Left = 448
-        Height = 25
-        Top = 234
-        Width = 75
+        Left = 373
+        Height = 50
+        Top = 209
+        Width = 150
         Anchors = [akRight, akBottom]
-        BorderSpacing.Right = 5
-        BorderSpacing.Bottom = 5
+        BorderSpacing.Right = 10
+        BorderSpacing.Bottom = 10
         Caption = 'Test'
         OnClick = btn_test_ledgerClick
+        ParentFont = False
         TabOrder = 0
       end
       object list_ledger: TListBox
@@ -401,16 +412,17 @@ object GDAXTester: TGDAXTester
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = ts_ledger
         AnchorSideBottom.Side = asrBottom
-        Left = 5
+        Left = 10
         Height = 146
-        Top = 38
+        Top = 76
         Width = 518
         Anchors = [akTop, akLeft, akRight, akBottom]
-        BorderSpacing.Left = 5
-        BorderSpacing.Top = 5
-        BorderSpacing.Right = 5
-        BorderSpacing.Bottom = 80
+        BorderSpacing.Left = 10
+        BorderSpacing.Top = 10
+        BorderSpacing.Right = 10
+        BorderSpacing.Bottom = 160
         ItemHeight = 0
+        ParentFont = False
         TabOrder = 1
       end
       object arrow_ledger_forward: TShape
@@ -420,10 +432,10 @@ object GDAXTester: TGDAXTester
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = list_ledger
         AnchorSideBottom.Side = asrBottom
-        Left = 498
-        Height = 25
+        Left = 473
+        Height = 50
         Top = 189
-        Width = 25
+        Width = 50
         Anchors = [akRight]
         Brush.Color = clGreen
         Pen.Color = 4433210
@@ -435,12 +447,12 @@ object GDAXTester: TGDAXTester
         AnchorSideRight.Control = arrow_ledger_forward
         AnchorSideBottom.Control = arrow_ledger_forward
         AnchorSideBottom.Side = asrBottom
-        Left = 463
-        Height = 25
-        Top = 189
-        Width = 25
+        Left = 438
+        Height = 50
+        Top = 164
+        Width = 50
         Anchors = [akRight, akBottom]
-        BorderSpacing.Right = 10
+        BorderSpacing.Right = 20
         Brush.Color = clGreen
         Pen.Color = 4433210
         Shape = stTriangleLeft
@@ -448,13 +460,14 @@ object GDAXTester: TGDAXTester
       object combo_ledger_accounts: TComboBox
         AnchorSideRight.Control = ts_ledger
         AnchorSideRight.Side = asrBottom
-        Left = 273
-        Height = 23
+        Left = 23
+        Height = 40
         Top = 10
-        Width = 250
+        Width = 500
         Anchors = [akRight]
-        BorderSpacing.Right = 5
-        ItemHeight = 15
+        BorderSpacing.Right = 10
+        ItemHeight = 32
+        ParentFont = False
         TabOrder = 2
       end
       object lbl_ledger_ids: TLabel
@@ -464,17 +477,19 @@ object GDAXTester: TGDAXTester
         Top = 10
         Width = 70
         Anchors = [akRight]
-        BorderSpacing.Right = 5
+        BorderSpacing.Right = 10
         Caption = 'Account ID''s:'
         ParentColor = False
+        ParentFont = False
       end
       object lbl_ledger_count: TLabel
-        Left = 5
+        Left = 10
         Height = 15
-        Top = 8
+        Top = 16
         Width = 6
         Caption = '0'
         ParentColor = False
+        ParentFont = False
       end
     end
     object ts_fills: TTabSheet
@@ -482,6 +497,7 @@ object GDAXTester: TGDAXTester
       ClientHeight = 264
       ClientWidth = 528
       OnShow = ts_fillsShow
+      ParentFont = False
       object list_fills: TListBox
         AnchorSideLeft.Control = ts_ledger
         AnchorSideTop.Control = combo_ledger_accounts
@@ -490,16 +506,17 @@ object GDAXTester: TGDAXTester
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = ts_ledger
         AnchorSideBottom.Side = asrBottom
-        Left = 5
+        Left = 10
         Height = 146
-        Top = 38
+        Top = 76
         Width = 518
         Anchors = [akTop, akLeft, akRight, akBottom]
-        BorderSpacing.Left = 5
-        BorderSpacing.Top = 5
-        BorderSpacing.Right = 5
-        BorderSpacing.Bottom = 80
+        BorderSpacing.Left = 10
+        BorderSpacing.Top = 10
+        BorderSpacing.Right = 10
+        BorderSpacing.Bottom = 160
         ItemHeight = 0
+        ParentFont = False
         TabOrder = 0
       end
       object arrow_fills_back: TShape
@@ -508,12 +525,12 @@ object GDAXTester: TGDAXTester
         AnchorSideRight.Control = arrow_fills_forward
         AnchorSideBottom.Control = arrow_fills_forward
         AnchorSideBottom.Side = asrBottom
-        Left = 463
-        Height = 25
-        Top = 189
-        Width = 25
+        Left = 438
+        Height = 50
+        Top = 164
+        Width = 50
         Anchors = [akRight, akBottom]
-        BorderSpacing.Right = 10
+        BorderSpacing.Right = 20
         Brush.Color = clGreen
         Pen.Color = 4433210
         Shape = stTriangleLeft
@@ -525,10 +542,10 @@ object GDAXTester: TGDAXTester
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = list_fills
         AnchorSideBottom.Side = asrBottom
-        Left = 498
-        Height = 25
+        Left = 473
+        Height = 50
         Top = 189
-        Width = 25
+        Width = 50
         Anchors = [akRight]
         Brush.Color = clGreen
         Pen.Color = 4433210
@@ -539,15 +556,16 @@ object GDAXTester: TGDAXTester
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = ts_order
         AnchorSideBottom.Side = asrBottom
-        Left = 448
-        Height = 25
-        Top = 234
-        Width = 75
+        Left = 373
+        Height = 50
+        Top = 209
+        Width = 150
         Anchors = [akRight, akBottom]
-        BorderSpacing.Right = 5
-        BorderSpacing.Bottom = 5
+        BorderSpacing.Right = 10
+        BorderSpacing.Bottom = 10
         Caption = 'Test'
         OnClick = btn_test_fillsClick
+        ParentFont = False
         TabOrder = 1
       end
       object lbl_fills_total: TLabel
@@ -555,26 +573,28 @@ object GDAXTester: TGDAXTester
         AnchorSideTop.Control = arrow_fills_forward
         AnchorSideBottom.Control = arrow_fills_forward
         AnchorSideBottom.Side = asrBottom
-        Left = 5
+        Left = 10
         Height = 15
         Top = 199
         Width = 29
         Anchors = [akLeft, akBottom]
-        BorderSpacing.Left = 5
+        BorderSpacing.Left = 10
         Caption = 'Total:'
         ParentColor = False
+        ParentFont = False
       end
       object lbl_fills_total_size: TLabel
         AnchorSideLeft.Control = lbl_fills_total
         AnchorSideTop.Control = lbl_fills_total
         AnchorSideTop.Side = asrBottom
-        Left = 5
+        Left = 10
         Height = 15
-        Top = 219
+        Top = 438
         Width = 49
-        BorderSpacing.Top = 5
+        BorderSpacing.Top = 10
         Caption = 'TotalSize:'
         ParentColor = False
+        ParentFont = False
       end
       object lbl_fills_total_price: TLabel
         AnchorSideLeft.Control = lbl_fills_total
@@ -582,23 +602,25 @@ object GDAXTester: TGDAXTester
         AnchorSideTop.Control = lbl_fills_total
         AnchorSideRight.Control = lbl_fills_total
         AnchorSideRight.Side = asrBottom
-        Left = 134
+        Left = 268
         Height = 15
-        Top = 199
+        Top = 398
         Width = 55
-        BorderSpacing.Left = 100
+        BorderSpacing.Left = 200
         Caption = 'TotalPrice:'
         ParentColor = False
+        ParentFont = False
       end
       object lbl_fills_total_fees: TLabel
         AnchorSideLeft.Control = lbl_fills_total_price
         AnchorSideTop.Control = lbl_fills_total_size
-        Left = 134
+        Left = 268
         Height = 15
-        Top = 219
+        Top = 438
         Width = 52
         Caption = 'TotalFees:'
         ParentColor = False
+        ParentFont = False
       end
       object lbl_fills_prods: TLabel
         AnchorSideRight.Control = combo_fills_products
@@ -607,20 +629,22 @@ object GDAXTester: TGDAXTester
         Top = 10
         Width = 50
         Anchors = [akRight]
-        BorderSpacing.Right = 5
+        BorderSpacing.Right = 10
         Caption = 'Products:'
         ParentColor = False
+        ParentFont = False
       end
       object combo_fills_products: TComboBox
         AnchorSideRight.Control = ts_ledger
         AnchorSideRight.Side = asrBottom
-        Left = 273
-        Height = 23
+        Left = 23
+        Height = 40
         Top = 10
-        Width = 250
+        Width = 500
         Anchors = [akRight]
-        BorderSpacing.Right = 5
-        ItemHeight = 15
+        BorderSpacing.Right = 10
+        ItemHeight = 32
+        ParentFont = False
         TabOrder = 2
       end
     end
@@ -632,15 +656,16 @@ object GDAXTester: TGDAXTester
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
-    Left = 437
-    Height = 19
-    Top = 303
-    Width = 99
+    Left = 874
+    Height = 36
+    Top = 608
+    Width = 198
     Alignment = taLeftJustify
     Anchors = [akRight, akBottom]
-    BorderSpacing.Right = 5
+    BorderSpacing.Right = 10
     Caption = 'SandBox Mode'
     Checked = True
+    ParentFont = False
     State = cbChecked
     TabOrder = 1
   end

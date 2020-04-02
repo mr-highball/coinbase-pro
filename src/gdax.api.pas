@@ -42,11 +42,11 @@ type
   TBaseGDAXRestApiImpl = class(TInterfacedObject,IGDAXRestAPI)
   strict private
     FAuthenticator:IGDAXAuthenticator;
+  protected
     function GetAuthenticator: IGDAXAuthenticator;
     function GetPostBody: String;
     function GetSupportedOperations: TRestOperations;
     procedure SetAuthenticator(Const AValue: IGDAXAuthenticator);
-  strict protected
     function GetEndpoint(Const AOperation:TRestOperation) : String;virtual;abstract;
     function GetHeadersForOperation(Const AOperation:TRestOperation;
       Const AHeaders:TStrings;Out Error:String):Boolean;virtual;
@@ -140,9 +140,10 @@ type
     FLastBeforeID:Integer;
     FMoving:Boolean;
     FMovingParams:String;
+    procedure ExtractPageIDs(Const AHeaders:TStrings);
+  protected
     function GetLastAfterID: Integer;
     function GetLastBeforeID: Integer;
-    procedure ExtractPageIDs(Const AHeaders:TStrings);
   strict protected
     function DoMove(Const ADirection:TGDAXPageDirection;Out Error:String;
       Const ALastBeforeID,ALastAfterID:Integer;
@@ -164,19 +165,18 @@ type
 
 implementation
 uses
-  SynCrossPlatformJSON
   {$IFDEF FPC}
     {$IFDEF MSWINDOWS}
-    ,w32internetaccess
+    w32internetaccess
     {$ELSE}
       {$IFDEF ANDROID}
-      ,androidinternetaccess
+      androidinternetaccess
       {$ELSE}
-      ,synapseinternetaccess
+      synapseinternetaccess
       {$ENDIF}
     {$ENDIF}
   {$ELSE}
-  ,System.Generics.Collections, System.Net.UrlClient, System.Net.HttpClient
+  System.Generics.Collections, System.Net.UrlClient, System.Net.HttpClient
   {$ENDIF};
 
 { TGDAXPagedApi }

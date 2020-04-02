@@ -53,6 +53,7 @@ type
     FID: String;
     FQuoteCurrency: String;
     FQuoteIncrement: Extended;
+  protected
     function GetBaseCurrency: String;
     function GetBaseMaxSize: Extended;
     function GetBaseMinSize: Extended;
@@ -108,23 +109,24 @@ type
 
 implementation
 uses
-  SynCrossPlatformJSON;
+  fpjson,
+  jsonparser;
 
 { TGDAXProductsImpl }
 
 function TGDAXProductsImpl.GetProducts: TGDAXProductList;
 begin
-  Result:=FProducts;
+  Result := FProducts;
 end;
 
 function TGDAXProductsImpl.GetQuoteCurrency: String;
 begin
-  Result:=FQuoteCurrency;
+  Result := FQuoteCurrency;
 end;
 
 procedure TGDAXProductsImpl.SetQuoteCurrency(Const AValue: String);
 begin
-  FQuoteCurrency:=AValue;
+  FQuoteCurrency := AValue;
 end;
 
 function TGDAXProductsImpl.DoGetSupportedOperations: TRestOperations;
@@ -135,65 +137,76 @@ end;
 function TGDAXProductsImpl.GetEndpoint(
   Const AOperation: TRestOperation): String;
 begin
-  Result:=GDAX_END_API_PRODUCT;
+  Result := GDAX_END_API_PRODUCT;
 end;
 
 function TGDAXProductsImpl.DoLoadFromJSON(Const AJSON: String; out
   Error: String): Boolean;
 var
-  I:Integer;
-  LJSON:TJSONVariantData;
-  LProdJSON:TJSONVariantData;
-  LProdCur:String;
-  LProduct:IGDAXProduct;
+  I : Integer;
+  LJSON : TJSONArray;
+  LProdJSON : TJSONObject;
+  LProdCur : String;
+  LProduct : IGDAXProduct;
 begin
-  Result:=False;
+  Result := False;
   try
-    if not LJSON.FromJSON(AJSON) then
-    begin
-      Error:=E_BADJSON;
-      Exit;
-    end;
-    //iterate returned array of products
-    for I:=0 to Pred(LJSON.Count) do
-    begin
-      //check to make sure we can parse this object
-      if not LProdJSON.FromJSON(LJSON.Item[I]) then
+    LJSON := TJSONArray(GetJSON(AJSON));
+
+    if not Assigned(LJSON) then
+      raise Exception.Create(E_BADJSON);
+
+    try
+      //iterate returned array of products
+      for I := 0 to Pred(LJSON.Count) do
       begin
-        Error:=Format(E_BADJSON_PROP,['product index:'+IntToStr(I)]);
-        Exit;
-      end;
-      //we can filter for a particular quote currency, so check this here
-      if not FQuoteCurrency.IsEmpty then
-      begin
-        LProdCur:=LProdJSON.Value[TGDAXProductImpl.PROP_QUOTE_CUR];
-        LProdCur:=LProdCur.Trim.ToLower;
-        //have a matching quote currency means this index is valid
-        if LProdCur = FQuoteCurrency.Trim.ToLower then
+        LProdJSON := TJSONObject(LJSON.Items[I]);
+
+        //check to make sure we can parse this object
+        if not Assigned(LProdJSON) then
         begin
-          LProduct:=TGDAXProductImpl.Create;
-          if LProduct.LoadFromJSON(LProdJSON.ToJSON,Error) then
+          Error := Format(E_BADJSON_PROP,['product index:'+IntToStr(I)]);
+          Exit;
+        end;
+
+        //we can filter for a particular quote currency, so check this here
+        if not FQuoteCurrency.IsEmpty then
+        begin
+          LProdCur := LProdJSON.Get(TGDAXProductImpl.PROP_QUOTE_CUR);
+          LProdCur := LProdCur.Trim.ToLower;
+
+          //have a matching quote currency means this index is valid
+          if LProdCur = FQuoteCurrency.Trim.ToLower then
+          begin
+            LProduct := TGDAXProductImpl.Create;
+
+            if LProduct.LoadFromJSON(LProdJSON.AsJSON, Error) then
+              FProducts.Add(LProduct);
+          end;
+        end
+        //all products
+        else
+        begin
+          LProduct := TGDAXProductImpl.Create;
+
+          if LProduct.LoadFromJSON(LProdJSON.AsJson, Error) then
             FProducts.Add(LProduct);
         end;
-      end
-      //all products
-      else
-      begin
-        LProduct:=TGDAXProductImpl.Create;
-        if LProduct.LoadFromJSON(LProdJSON.ToJSON,Error) then
-          FProducts.Add(LProduct);
       end;
+
+    Result := True;
+    finally
+      LJSON.Free;
     end;
-    Result:=True;
   except on E:Exception do
-    Error:=E.Message;
+    Error := E.Message;
   end;
 end;
 
 constructor TGDAXProductsImpl.Create;
 begin
   inherited Create;
-  FProducts:=TGDAXProductList.Create;
+  FProducts := TGDAXProductList.Create;
 end;
 
 destructor TGDAXProductsImpl.Destroy;
@@ -206,22 +219,22 @@ end;
 
 function TGDAXProductImpl.GetBaseCurrency: String;
 begin
-  Result:=FBaseCurrency;
+  Result := FBaseCurrency;
 end;
 
 function TGDAXProductImpl.GetBaseMaxSize: Extended;
 begin
-  Result:=FBaseMaxSize;
+  Result := FBaseMaxSize;
 end;
 
 function TGDAXProductImpl.GetBaseMinSize: Extended;
 begin
-  Result:=FBaseMinSize;
+  Result := FBaseMinSize;
 end;
 
 function TGDAXProductImpl.GetID: String;
 begin
-  Result:=FID;
+  Result := FID;
 end;
 
 function TGDAXProductImpl.GetMaxMarket: Extended;
@@ -236,32 +249,32 @@ end;
 
 function TGDAXProductImpl.GetQuoteCurrency: String;
 begin
-  Result:=FQuoteCurrency;
+  Result := FQuoteCurrency;
 end;
 
 function TGDAXProductImpl.GetQuoteIncrement: Extended;
 begin
-  Result:=FQuoteIncrement;
+  Result := FQuoteIncrement;
 end;
 
 procedure TGDAXProductImpl.SetBaseCurrency(const AValue: String);
 begin
-  FBaseCurrency:=AValue;
+  FBaseCurrency := AValue;
 end;
 
 procedure TGDAXProductImpl.SetBaseMaxSize(const AValue: Extended);
 begin
-  FBaseMaxSize:=AValue;
+  FBaseMaxSize := AValue;
 end;
 
 procedure TGDAXProductImpl.SetBaseMinSize(const AValue: Extended);
 begin
-  FBaseMinSize:=AValue;
+  FBaseMinSize := AValue;
 end;
 
 procedure TGDAXProductImpl.SetID(const AValue: String);
 begin
-  FID:=AValue;
+  FID := AValue;
 end;
 
 procedure TGDAXProductImpl.SetMaxMarket(const AValue: Extended);
@@ -276,42 +289,46 @@ end;
 
 procedure TGDAXProductImpl.SetQuoteCurrency(const AValue: String);
 begin
-  FQuoteCurrency:=AValue;
+  FQuoteCurrency := AValue;
 end;
 
 procedure TGDAXProductImpl.SetQuoteIncrement(const AValue: Extended);
 begin
-  FQuoteIncrement:=AValue;
+  FQuoteIncrement := AValue;
 end;
 
 function TGDAXProductImpl.DoLoadFromJSON(const AJSON: String; out Error: String
   ): Boolean;
 var
-  LJSON:TJSONVariantData;
+  LJSON : TJSONObject;
 begin
-  Result:=False;
+  Result := False;
   try
-    if not LJSON.FromJSON(AJSON) then
-    begin
-      Error:=E_BADJSON;
-      Exit;
+    LJSON := TJSONObject(GetJSON(AJSON));
+
+    if not Assigned(LJSON) then
+      raise Exception.Create(E_BADJSON);
+
+    try
+      FID := LJSON.Get(PROP_ID);
+      FBaseCurrency := LJSON.Get(PROP_BASE_CUR);
+      FBaseMinSize := LJSON.Get(PROP_BASE_MIN);
+      FBaseMaxSize := LJSON.Get(PROP_BASE_MAX);
+      FQuoteCurrency := LJSON.Get(PROP_QUOTE_CUR);
+      FQuoteIncrement := LJSON.Get(PROP_QUOTE_INC);
+
+      if Assigned(LJSON.Find(PROP_MIN_MARKET_FUNDS)) then
+        FMinMarketFunds := LJSON.Get(PROP_MIN_MARKET_FUNDS);
+
+      if Assigned(LJSON.Find(PROP_MAX_MARKET_FUNDS)) then
+        FMaxMarketFunds := LJSON.Get(PROP_MAX_MARKET_FUNDS);
+
+      Result := True;
+    finally
+      LJSON.Free;
     end;
-    FID:=LJSON.Value[PROP_ID];
-    FBaseCurrency := LJSON.Value[PROP_BASE_CUR];
-    FBaseMinSize := LJSON.Value[PROP_BASE_MIN];
-    FBaseMaxSize := LJSON.Value[PROP_BASE_MAX];
-    FQuoteCurrency := LJSON.Value[PROP_QUOTE_CUR];
-    FQuoteIncrement := LJSON.Value[PROP_QUOTE_INC];
-
-    if LJSON.NameIndex(PROP_MIN_MARKET_FUNDS) >= 0 then
-      FMinMarketFunds := LJSON.Value[PROP_MIN_MARKET_FUNDS];
-
-    if LJSON.NameIndex(PROP_MAX_MARKET_FUNDS) >= 0 then
-      FMaxMarketFunds := LJSON.Value[PROP_MAX_MARKET_FUNDS];
-
-    Result:=True;
   except on E:Exception do
-    Error:=E.Message;
+    Error := E.Message;
   end;
 end;
 
@@ -322,7 +339,7 @@ end;
 
 function TGDAXProductImpl.GetEndpoint(const AOperation: TRestOperation): String;
 begin
-  Result:=Format(GDAX_END_API_PRODUCTS,[FID]);
+  Result := Format(GDAX_END_API_PRODUCTS,[FID]);
 end;
 
 end.

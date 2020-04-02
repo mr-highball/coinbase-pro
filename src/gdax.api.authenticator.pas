@@ -41,6 +41,7 @@ type
     FTime: IGDAXTime;
     FUseLocalTime: Boolean;
     FMode: TGDAXApi;
+  protected
     function GetKey: String;
     function GetMode: TGDAXApi;
     function GetPassphrase: String;
@@ -74,8 +75,13 @@ type
   end;
 implementation
 uses
-  DateUtils, SynCommons, SbpBase64, gdax.api.time, HlpIHashInfo, HlpConverters,
+  DateUtils,
+  SbpBase64,
+  gdax.api.time,
+  HlpIHashInfo,
+  HlpConverters,
   HlpHashFactory;
+
 { TGDAXAuthenticatorImpl }
 
 procedure TGDAXAuthenticatorImpl.BuildHeaders(Const AOutput: TStrings;
@@ -86,70 +92,70 @@ end;
 
 constructor TGDAXAuthenticatorImpl.Create;
 begin
-  FTime:=TGDAXTimeImpl.Create;
-  FTime.Authenticator:=Self;
-  FUseLocalTime:=True;
+  FTime := TGDAXTimeImpl.Create;
+  FTime.Authenticator := Self;
+  FUseLocalTime := True;
 end;
 
 destructor TGDAXAuthenticatorImpl.Destroy;
 begin
-  FTime:=nil;
+  FTime := nil;
   inherited;
 end;
 
 function TGDAXAuthenticatorImpl.GetKey: String;
 begin
-  Result:=FKey;
+  Result := FKey;
 end;
 
 function TGDAXAuthenticatorImpl.GetMode: TGDAXApi;
 begin
-  Result:=FMode;
+  Result := FMode;
 end;
 
 function TGDAXAuthenticatorImpl.GetPassphrase: String;
 begin
-  Result:=FPass;
+  Result := FPass;
 end;
 
 function TGDAXAuthenticatorImpl.GetSecret: String;
 begin
-  Result:=FSecret;
+  Result := FSecret;
 end;
 
 function TGDAXAuthenticatorImpl.GetTime: IGDAXTime;
 begin
-  Result:=FTime;
+  Result := FTime;
 end;
 
 function TGDAXAuthenticatorImpl.GetUseLocalTime: Boolean;
 begin
-  Result:=FUseLocalTime;
+  Result := FUseLocalTime;
 end;
 
 procedure TGDAXAuthenticatorImpl.SetKey(Const AValue: String);
 begin
-  FKey:=AValue;
+  FKey := AValue;
 end;
 
 procedure TGDAXAuthenticatorImpl.SetMode(Const AValue: TGDAXApi);
 begin
-  FMode:=AValue;
+  FMode := AValue;
 end;
 
 procedure TGDAXAuthenticatorImpl.SetPassphrase(Const AValue: String);
 begin
-  FPass:=AValue;
+  FPass := AValue;
 end;
 
 procedure TGDAXAuthenticatorImpl.SetSecret(Const AValue: String);
 begin
-  FSecret:=AValue;
+  FSecret := AValue;
 end;
 
 procedure TGDAXAuthenticatorImpl.SetUseLocalTime(Const AValue: Boolean);
 begin
-  FUseLocalTime:=AValue;
+  FUseLocalTime := AValue;
 end;
 
 procedure TGDAXAuthenticatorImpl.DoBuildHeaders(Const AOutput: TStrings;
@@ -177,29 +183,29 @@ var
 begin
   //https://docs.gdax.com/#creating-a-request
   Result:='';
-  LHMAC:=THashFactory.THMAC.CreateHMAC(THashFactory.TCrypto.CreateSHA2_256);
+  LHMAC := THashFactory.THMAC.CreateHMAC(THashFactory.TCrypto.CreateSHA2_256);
   if not FUseLocalTime then
   begin
     if not FTime.Get(LContent,LError) then
       raise Exception.Create(LError);
-    Epoch:=Trunc(FTime.Epoch);
+    Epoch := Trunc(FTime.Epoch);
   end
   else
     Epoch := DateTimeToUnix(LocalTimeToUniversal(Now));
-  LMessage:=IntToStr(Trunc(Epoch));
+  LMessage := IntToStr(Trunc(Epoch));
   //then append the operation
   case AOperation of
-    roGet: LMessage:=LMessage+OP_GET;
-    roPost: LMessage:=LMessage+OP_POST;
-    roDelete: LMessage:=LMessage+OP_DELETE;
+    roGet: LMessage := LMessage+OP_GET;
+    roPost: LMessage := LMessage+OP_POST;
+    roDelete: LMessage := LMessage+OP_DELETE;
   end;
   //now add the request path
-  LMessage:=Trim(LMessage+ARequestPath);
+  LMessage := Trim(LMessage+ARequestPath);
   //now if there is a body, add it
   if AOperation=roPost then
-    LMessage:=LMessage+Trim(ARequestBody);
+    LMessage := LMessage+Trim(ARequestBody);
   //decode the base64 encoded secret and record to key
-  LHMAC.Key:=TBase64.Default.Decode(
+  LHMAC.Key := TBase64.Default.Decode(
     String(
       TEncoding.UTF8.GetString(
         TConverters.ConvertStringToBytes(FSecret, TEncoding.UTF8)
@@ -207,7 +213,7 @@ begin
     )
   );
   //using decoded key and message, sign using HMAC
-  Result:=TBase64.Default.Encode(
+  Result := TBase64.Default.Encode(
     LHMAC.ComputeString(LMessage, TEncoding.UTF8).GetBytes()
   );
 end;

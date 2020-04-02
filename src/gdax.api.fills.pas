@@ -37,6 +37,7 @@ type
     FEntries: TFillEntryArray;
     FOrderID: String;
     FProductID: String;
+  protected
     function GetCount: Cardinal;
     function GetEntries: TFillEntryArray;
     function GetOrderID: String;
@@ -70,7 +71,9 @@ type
   end;
 implementation
 uses
-  SynCrossPlatformJSON, SysUtils;
+  fpjson,
+  jsonparser,
+  SysUtils;
 
 { TGDAXFillsImpl }
 
@@ -85,19 +88,19 @@ begin
   Result:='?';
   //if requesting a specific order id (prioritize this)
   if Trim(FOrderID).Length>0 then
-    Result:=Result + TFillEntry.PROP_ORDER + '=' + FOrderID
+    Result := Result + TFillEntry.PROP_ORDER + '=' + FOrderID
   //append product id filter
   else
-    Result:=Result + TFillEntry.PROP_PROD +'=' + FProductID;
+    Result := Result + TFillEntry.PROP_PROD +'=' + FProductID;
 
   //only append moving parameters if we have any
   if not GetMovingParameters.IsEmpty then
   begin
     //we have to check if we are being requested to "move" via paged
     if Result.Length > 1 then
-      Result:=Result + '&' + GetMovingParameters
+      Result := Result + '&' + GetMovingParameters
     else
-      Result:=Result + GetMovingParameters;
+      Result := Result + GetMovingParameters;
   end;
 end;
 
@@ -115,34 +118,34 @@ end;
 
 function TGDAXFillsImpl.DoLoadFromJSON(Const AJSON: string; out Error: string): Boolean;
 var
-  LJSON:TJSONVariantData;
-  I: Integer;
+  LJSON : TJSONArray;
+  I : Integer;
 begin
-  Result:=False;
+  Result := False;
   try
     //clear fill entries
     SetLength(FEntries,0);
+
     //determine if we can load the array
-    if not LJSON.FromJSON(AJSON) then
-    begin
-      Error:=E_BADJSON;
-      Exit;
+    LJSON := TJSONArray(GetJSON(AJSON));
+
+    if not Assigned(LJSON) then
+      raise Exception.Create(E_BADJSON);
+
+    try
+      //deserialize fill entries
+      for I := 0 to Pred(LJSON.Count) do
+      begin
+        SetLength(FEntries,Succ(Length(FEntries)));
+        FEntries[High(FEntries)]:=TFillEntry.Create(LJSON.Items[I].AsJSON);
+      end;
+
+      Result := True;
+    finally
+      LJSON.Free;
     end;
-    //determine if we are an array
-    if not (LJSON.Kind = jvArray) then
-    begin
-      Error:=Format(E_BADJSON_PROP,['main fills array']);
-      Exit;
-    end;
-    //deserialize fill entries
-    for I := 0 to Pred(LJSON.Count) do
-    begin
-      SetLength(FEntries,Succ(Length(FEntries)));
-      FEntries[High(FEntries)]:=TFillEntry.Create(LJSON.Item[I]);
-    end;
-    Result:=True;
   except on E: Exception do
-    Error:=E.Message;
+    Error := E.Message;
   end;
 end;
 
@@ -155,8 +158,8 @@ var
 begin
   SetLength(LEntries,0);
   if Length(FEntries)>0 then
-    LEntries:=FEntries;
-  Result:=inherited DoMove(ADirection, Error, ALastBeforeID, ALastAfterID,ALimit);
+    LEntries := FEntries;
+  Result := inherited DoMove(ADirection, Error, ALastBeforeID, ALastAfterID,ALimit);
   if not Result then
     Exit;
   //only if we have a local array that needs to be appended somewhere do we
@@ -164,7 +167,7 @@ begin
   if (Length(LEntries)>0) then
   begin
     //use length because we want the index "after" the highest entry
-    I:=Length(LEntries);
+    I := Length(LEntries);
     SetLength(LEntries,Length(LEntries)+Length(FEntries));
     if ADirection=pdBefore then
     begin
@@ -178,7 +181,7 @@ begin
           LEntries[J]:=FEntries[J];
       end;
       //lastly, assign our merged array to private var
-      FEntries:=LEntries;
+      FEntries := LEntries;
     end
     else
     begin
@@ -186,7 +189,7 @@ begin
       if Length(FEntries)>0 then
         for J:=0 to High(FEntries) do
           LEntries[I + J]:=FEntries[J];
-      FEntries:=LEntries;
+      FEntries := LEntries;
     end;
   end;
 end;
@@ -200,32 +203,32 @@ function TGDAXFillsImpl.GetEndpoint(Const AOperation: TRestOperation): string;
 begin
   Result:='';
   if AOperation=roGet then
-    Result:=GDAX_END_API_FILLS+BuildQueryParams;
+    Result := GDAX_END_API_FILLS+BuildQueryParams;
 end;
 
 function TGDAXFillsImpl.GetOrderID: String;
 begin
-  Result:=FOrderID;
+  Result := FOrderID;
 end;
 
 function TGDAXFillsImpl.GetEntries: TFillEntryArray;
 begin
-  Result:=FEntries;
+  Result := FEntries;
 end;
 
 function TGDAXFillsImpl.GetCount: Cardinal;
 begin
-  Result:=Length(FEntries);
+  Result := Length(FEntries);
 end;
 
 function TGDAXFillsImpl.GetPaged: IGDAXPaged;
 begin
-  Result:=Self as IGDAXPaged;
+  Result := Self as IGDAXPaged;
 end;
 
 function TGDAXFillsImpl.GetProductID: String;
 begin
-  Result:=FProductID;
+  Result := FProductID;
 end;
 
 function TGDAXFillsImpl.GetTotalFees(Const ASides: TOrderSides): Extended;
@@ -235,12 +238,12 @@ begin
   Result:=0;
   for I := 0 to High(FEntries) do
     if FEntries[I].Side in ASides then
-      Result:=Result + FEntries[I].Fee;
+      Result := Result + FEntries[I].Fee;
 end;
 
 procedure TGDAXFillsImpl.SetProductID(Const AValue: String);
 begin
-  FProductID:=AValue;
+  FProductID := AValue;
 end;
 
 function TGDAXFillsImpl.GetTotalPrice(Const ASides: TOrderSides): Extended;
@@ -250,7 +253,7 @@ begin
   Result:=0;
   for I := 0 to High(FEntries) do
     if FEntries[I].Side in ASides then
-      Result:=Result + FEntries[I].Price;
+      Result := Result + FEntries[I].Price;
 end;
 
 function TGDAXFillsImpl.GetTotalSize(Const ASides: TOrderSides): Extended;
@@ -260,12 +263,12 @@ begin
   Result:=0;
   for I := 0 to High(FEntries) do
     if FEntries[I].Side in ASides then
-      Result:=Result + FEntries[I].Size;
+      Result := Result + FEntries[I].Size;
 end;
 
 procedure TGDAXFillsImpl.SetOrderID(Const Value: String);
 begin
-  FOrderID:=Value;
+  FOrderID := Value;
 end;
 
 end.

@@ -1,6 +1,6 @@
 program tester;
 
-{$mode objfpc}{$H+}
+{$mode delphi}{$H+}
 
 uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
@@ -14,7 +14,8 @@ uses
 {$R *.res}
 
 begin
-  RequireDerivedFormResource:=True;
+  RequireDerivedFormResource := True;
+  Application.Scaled:=True;
   Application.Initialize;
   Application.CreateForm(TGDAXTester, GDAXTester);
   Application.Run;

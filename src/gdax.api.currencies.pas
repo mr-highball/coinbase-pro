@@ -13,6 +13,7 @@ type
   TGDAXCurrenciesImpl = class(TGDAXRestApi,IGDAXCurrencies)
   strict private
     FCurrencies: TCurrencyArray;
+  protected
     function GetCount: Cardinal;
     function GetCurrencies: TCurrencyArray;
   strict protected
@@ -27,25 +28,26 @@ type
 
 implementation
 uses
-  SynCrossPlatformJSON;
+  fpjson,
+  jsonparser;
 
 { TGDAXCurrenciesImpl }
 
 function TGDAXCurrenciesImpl.GetCount: Cardinal;
 begin
-  Result:=Length(FCurrencies);
+  Result := Length(FCurrencies);
 end;
 
 function TGDAXCurrenciesImpl.GetCurrencies: TCurrencyArray;
 begin
-  Result:=FCurrencies;
+  Result := FCurrencies;
 end;
 
 function TGDAXCurrenciesImpl.GetEndpoint(Const AOperation: TRestOperation): String;
 begin
   Result:='';
   if AOperation=roGet then
-    Result:=GDAX_END_API_CURRENCIES;
+    Result := GDAX_END_API_CURRENCIES;
 end;
 
 function TGDAXCurrenciesImpl.DoGetSupportedOperations: TRestOperations;
@@ -56,34 +58,34 @@ end;
 function TGDAXCurrenciesImpl.DoLoadFromJSON(Const AJSON: String; out
   Error: String): Boolean;
 var
-  I:Integer;
-  LJSON:TJSONVariantData;
-  LCurrency:TCurrency;
+  I : Integer;
+  LJSON : TJSONArray;
+  LCurrency : TCurrency;
 begin
-  Result:=False;
+  Result := False;
   try
     //clear old entries
     SetLength(FCurrencies,0);
-    if not LJSON.FromJSON(AJSON) then
-    begin
-      Error:=E_BADJSON;
-      Exit;
+    LJSON := TJSONArray(GetJSON(AJSON));
+
+    if not Assigned(LJSON) then
+      raise Exception.Create(E_BADJSON);
+
+    try
+      //iterate and load currencies by json
+      for I:=0 to Pred(LJSON.Count) do
+      begin
+        LCurrency := TCurrency.Create(LJSON.Items[I].AsJSON);
+        SetLength(FCurrencies, Succ(Length(FCurrencies)));
+        FCurrencies[High(FCurrencies)]:=LCurrency;
+      end;
+
+      Result := True;
+    finally
+      LJSON.Free;
     end;
-    if not (LJSON.Kind=jvArray) then
-    begin
-      Error:=Format(E_BADJSON_PROP,['main json array']);
-      Exit;
-    end;
-    //iterate and load currencies by json
-    for I:=0 to Pred(LJSON.Count) do
-    begin
-      LCurrency:=TCurrency.Create(LJSON.Item[I]);
-      SetLength(FCurrencies,Succ(Length(FCurrencies)));
-      FCurrencies[High(FCurrencies)]:=LCurrency;
-    end;
-    Result:=True;
   except on E:Exception do
-    Error:=E.Message;
+    Error := E.Message;
   end;
 end;
 

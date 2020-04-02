@@ -40,6 +40,7 @@ type
     FStartTime: TDatetime;
     FEndTime: TDatetime;
     FGranularity: Cardinal;
+  protected
     function GetProduct: IGDAXProduct;
     procedure SetProduct(Const Value: IGDAXProduct);
     function GetStartTime: TDatetime;
@@ -69,7 +70,11 @@ type
 implementation
 
 uses
-  SysUtils,SynCrossPlatformJSON,Dateutils;
+  SysUtils,
+  fpjson,
+  jsonparser,
+  Dateutils,
+  fpindexer;
 
 { TGDAXCandlesImpl }
 
@@ -78,24 +83,28 @@ var
   LGran:Integer;
 begin
   Result:='';
-  if FGranularity<ACCEPTED_GRANULARITY[Low(ACCEPTED_GRANULARITY)] then
+
+  if FGranularity < ACCEPTED_GRANULARITY[Low(ACCEPTED_GRANULARITY)] then
   begin
-    FGranularity:=SecondsBetween(FStartTime,FEndTime);
+    FGranularity := SecondsBetween(FStartTime,FEndTime);
+
     //if still less than 1, then just set it to the lowest accepted
-    if FGranularity<1 then
-      FGranularity:=ACCEPTED_GRANULARITY[Low(ACCEPTED_GRANULARITY)];
+    if FGranularity < 1 then
+      FGranularity := ACCEPTED_GRANULARITY[Low(ACCEPTED_GRANULARITY)];
   end;
+
   //find if we aren't above the maximum candles
   if Round(SecondsBetween(FStartTime,FEndTime) / FGranularity)>MAX_CANDLES then
-    LGran:=Round(SecondsBetween(FStartTime,FEndTime) / FGranularity)
+    LGran := Round(SecondsBetween(FStartTime, FEndTime) / FGranularity)
   else
-    LGran:=FGranularity;
+    LGran := FGranularity;
+
   //finally return the query params
-  Result:=Format(
+  Result := Format(
     '?start=%s&end=%s&granularity=%d',
     [
-      DateTimeToIso8601(FStartTime),
-      DateTimeToIso8601(FEndTime),
+      DateToISO8601(FStartTime),
+      DateToISO8601(FEndTime),
       LGran
     ]
   );
@@ -104,13 +113,13 @@ end;
 constructor TGDAXCandlesImpl.Create;
 begin
   inherited;
-  FList:=TGDAXCandleBucketList.Create;
-  FGranularity:=ACCEPTED_GRANULARITY[Low(ACCEPTED_GRANULARITY)];
+  FList := TGDAXCandleBucketList.Create;
+  FGranularity := ACCEPTED_GRANULARITY[Low(ACCEPTED_GRANULARITY)];
 end;
 
 destructor TGDAXCandlesImpl.Destroy;
 begin
-  FProduct:=nil;
+  FProduct := nil;
   FList.Free;
   inherited;
 end;
@@ -118,13 +127,15 @@ end;
 function TGDAXCandlesImpl.DoGet(Const AEndpoint: string; Const AHeaders: TStrings;
   out Content, Error: string): Boolean;
 begin
-  Result:=False;
+  Result := False;
+
   if not Assigned(FProduct) then
   begin
-    Error:=Format(E_UNKNOWN,['candles product','TGDAXCandlesImpl DoGet']);
+    Error := Format(E_UNKNOWN,['candles product', 'TGDAXCandlesImpl DoGet']);
     Exit;
   end;
-  Result:=inherited;
+
+  Result := inherited;
 end;
 
 function TGDAXCandlesImpl.DoGetSupportedOperations: TRestOperations;
@@ -135,7 +146,7 @@ end;
 function TGDAXCandlesImpl.DoLoadFromJSON(Const AJSON: string;
   out Error: string): Boolean;
 var
-  LJSON:TJSONVariantData;
+  LJSON : TJSONArray;
   I: Integer;
 const
   T_IX = 0;
@@ -145,37 +156,35 @@ const
   C_IX = 4;
   V_IX = 5;
 begin
-  Result:=False;
+  Result := False;
   try
     FList.Clear;
-    //valid json?
-    if not LJSON.FromJSON(AJSON) then
-    begin
-      Error:=E_BADJSON;
-      Exit;
+    LJSON := TJSONArray(GetJSON(AJSON));
+
+    if not Assigned(LJSON) then
+      raise Exception.Create(E_BADJSON);
+
+    try
+      for I := 0 to Pred(LJSON.Count) do
+      begin
+        FList.Add(
+          TCandleBucket.create(
+            TJSONArray(LJSON.Items[I]).Items[T_IX].AsFloat,
+            TJSONArray(LJSON.Items[I]).Items[L_IX].AsFloat,
+            TJSONArray(LJSON.Items[I]).Items[H_IX].AsFloat,
+            TJSONArray(LJSON.Items[I]).Items[O_IX].AsFloat,
+            TJSONArray(LJSON.Items[I]).Items[C_IX].AsFloat,
+            TJSONArray(LJSON.Items[I]).Items[V_IX].AsFloat
+          )
+        );
+      end;
+
+      Result := True;
+    finally
+      LJSON.Free;
     end;
-    //this object returns an array of arrays (buckets)
-    if not (LJSON.Kind=jvArray) then
-    begin
-      Error:=Format(E_BADJSON_PROP,['main array']);
-      Exit;
-    end;
-    for I := 0 to Pred(LJSON.Count) do
-    begin
-      FList.Add(
-        TCandleBucket.create(
-          TJSONVariantData(LJSON.Item[I]).Item[T_IX],
-          TJSONVariantData(LJSON.Item[I]).Item[L_IX],
-          TJSONVariantData(LJSON.Item[I]).Item[H_IX],
-          TJSONVariantData(LJSON.Item[I]).Item[O_IX],
-          TJSONVariantData(LJSON.Item[I]).Item[C_IX],
-          TJSONVariantData(LJSON.Item[I]).Item[V_IX]
-        )
-      );
-    end;
-    Result:=True;
   except on E: Exception do
-    Error:=E.Message;
+    Error := E.Message;
   end;
 end;
 
@@ -184,44 +193,44 @@ begin
   Result:='';
   if not Assigned(FProduct) then
     raise Exception.Create(Format(E_UNKNOWN,['product',Self.ClassName]));
-  Result:=Format(GDAX_END_API_CANDLES,[FProduct.ID])+BuildQueryParams;
+  Result := Format(GDAX_END_API_CANDLES,[FProduct.ID])+BuildQueryParams;
 end;
 
 function TGDAXCandlesImpl.GetEndTime: TDatetime;
 begin
-  Result:=FEndTime;
+  Result := FEndTime;
 end;
 
 function TGDAXCandlesImpl.GetGranularity: Cardinal;
 begin
-  Result:=FGranularity;
+  Result := FGranularity;
 end;
 
 function TGDAXCandlesImpl.GetList: TGDAXCandleBucketList;
 begin
-  Result:=FList;
+  Result := FList;
 end;
 
 function TGDAXCandlesImpl.GetProduct: IGDAXProduct;
 begin
-  Result:=FProduct;
+  Result := FProduct;
 end;
 
 function TGDAXCandlesImpl.GetStartTime: TDatetime;
 begin
-  Result:=FStartTime;
+  Result := FStartTime;
 end;
 
 procedure TGDAXCandlesImpl.SetEndTime(Const Value: TDatetime);
 begin
-  FEndTime:=Value;
+  FEndTime := Value;
 end;
 
 procedure TGDAXCandlesImpl.SetGranularity(Const Value: Cardinal);
 var
   I:Integer;
 begin
-  FGranularity:=Value;
+  FGranularity := Value;
   //we have to check for valid granularities otherwise
   //the request will get ignored
   for I:=0 to High(ACCEPTED_GRANULARITY) do
@@ -229,22 +238,22 @@ begin
       Continue
     else
     begin
-      FGranularity:=ACCEPTED_GRANULARITY[I];
+      FGranularity := ACCEPTED_GRANULARITY[I];
       Exit;
     end;
   //if we couldn't find a match, set to the highest accepted granularity
-  FGranularity:=ACCEPTED_GRANULARITY[High(ACCEPTED_GRANULARITY)];
+  FGranularity := ACCEPTED_GRANULARITY[High(ACCEPTED_GRANULARITY)];
 end;
 
 procedure TGDAXCandlesImpl.SetProduct(Const Value: IGDAXProduct);
 begin
-  FProduct:=nil;
-  FProduct:=Value;
+  FProduct := nil;
+  FProduct := Value;
 end;
 
 procedure TGDAXCandlesImpl.SetStartTime(Const Value: TDatetime);
 begin
-  FStartTime:=Value;
+  FStartTime := Value;
 end;
 
 end.

@@ -38,6 +38,7 @@ type
   strict private
     FISO: String;
     FEpoch: Extended;
+  protected
     function GetEpoch: Extended;
     function GetISO: String;
     procedure SetEpoch(Const AValue: Extended);
@@ -55,7 +56,10 @@ type
   end;
 implementation
 uses
-  DateUtils, SysUtils, SynCrossPlatformJSON;
+  DateUtils,
+  SysUtils,
+  fpjson,
+  jsonparser;
 
 { TGDAXTimeImpl }
 
@@ -67,71 +71,83 @@ end;
 function TGDAXTimeImpl.GetHeadersForOperation(Const AOperation: TRestOperation;
   Const AHeaders: TStrings; out Error: String): Boolean;
 begin
-  Result:=False;
+  Result := False;
   try
     //to avoid circular dependency between authenticator and time,
     //we put the minimal headers here
     AHeaders.Add('%s=%s',['Content-Type','application/json']);
     AHeaders.Add('%s=%s',['User-Agent',USER_AGENT_MOZILLA]);
-    Result:=True;
+    Result := True;
   except on E:Exception do
-    Error:=E.Message;
+    Error := E.Message;
   end;
 end;
 
 function TGDAXTimeImpl.DoLoadFromJSON(Const AJSON: String;
   out Error: String): Boolean;
 var
-  LJSON:TJSONVariantData;
+  LJSON : TJSONObject;
 begin
-  Result:=False;
+  Result := False;
+
   try
-    if not LJSON.FromJSON(AJSON) then
-    begin
-      Error:=E_BADJSON;
-      Exit;
+    LJSON := TJSONObject(GetJSON(AJSON));
+
+    if not Assigned(LJSON) then
+      raise Exception.Create(E_BADJSON);
+
+    try
+      if not Assigned(LJSON) then
+      begin
+        Error := E_BADJSON;
+        Exit;
+      end;
+
+      if LJSON.Find(PROP_ISO) <> nil then
+      begin
+        Error := E_BADJSON;
+        Exit;
+      end;
+      FISO := LJSON.Get(PROP_ISO);
+      if LJSON.Find(PROP_EPOCH) <> nil then
+      begin
+        Error := E_BADJSON;
+        Exit;
+      end;
+      FEpoch := LJSON.Get(PROP_EPOCH);
+      Result := True;
+
+    finally
+      LJSON.Free;
     end;
-    if LJSON.NameIndex(PROP_ISO)<0 then
-    begin
-      Error:=E_BADJSON;
-      Exit;
-    end;
-    FISO:=LJSON.Value[PROP_ISO];
-    if LJSON.NameIndex(PROP_EPOCH)<0 then
-    begin
-      Error:=E_BADJSON;
-      Exit;
-    end;
-    FEpoch:=LJSON.Value[PROP_EPOCH];
-    Result:=True;
   except on E: Exception do
-    Error:=E.Message;
+    Error := E.Message;
   end;
 end;
 
 function TGDAXTimeImpl.GetEndpoint(Const AOperation: TRestOperation): String;
 begin
-  Result:=GDAX_END_API_TIME;
+  Result := GDAX_END_API_TIME;
 end;
 
 function TGDAXTimeImpl.GetEpoch: Extended;
 begin
-  Result:=FEpoch;
+  Result := FEpoch;
 end;
 
 function TGDAXTimeImpl.GetISO: String;
 begin
-  Result:=FISO;
+  Result := FISO;
 end;
 
 procedure TGDAXTimeImpl.SetEpoch(Const AValue: Extended);
 begin
-  FEpoch:=AValue;
+  FEpoch := AValue;
 end;
 
 procedure TGDAXTimeImpl.SetISO(Const AValue: String);
 begin
-  FISO:=AValue;
+  FISO := AValue;
 end;
 
 end.

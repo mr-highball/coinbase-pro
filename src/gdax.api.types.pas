@@ -651,123 +651,150 @@ type
 
 implementation
 uses
-  SynCrossPlatformJSON, fpIndexer;
+  fpjson,
+  jsonparser,
+  fpIndexer;
 
 { TCurrency }
 
 constructor TCurrency.Create(Const AJSON: String);
 var
-  LJSON:TJSONVariantData;
+  LJSON : TJSONObject;
 begin
-  if not LJSON.FromJSON(AJSON) then
+  LJSON := TJSONObject(GetJSON(AJSON));
+
+  if not Assigned(LJSON) then
     raise Exception.Create(E_BADJSON);
-  if not (LJSON.Kind=jvObject) then
-    raise Exception.Create(Format(E_BADJSON_PROP,['main json object']));
-  FID:=LJSON.Value[PROP_ID];
-  FMinSize:=LJSON.Value[PROP_MIN_SIZE];
-  FName:=LJSON.Value[PROP_NAME];
-  FStatus:=LJSON.Value[PROP_STATUS];
-  FMessage:='';
-  if not (TJSONVariantData(LJSON.Value[PROP_MESSAGE]).Kind=jvUndefined) then
-    FMessage:=LJSON.Value[PROP_MESSAGE];
+
+  try
+    FID := LJSON.Get(PROP_ID);
+    FMinSize := LJSON.Get(PROP_MIN_SIZE);
+    FName := LJSON.Get(PROP_NAME);
+    FStatus := LJSON.Get(PROP_STATUS);
+    FMessage := '';
+
+    if Assigned(LJSON.Find(PROP_MESSAGE)) then
+      FMessage := LJSON.Get(PROP_MESSAGE);
+  finally
+    LJSON.Free;
+  end;
 end;
 
 { TFillEntry }
 
 constructor TFillEntry.Create(Const AJSON: String);
 var
-  LJSON:TJSONVariantData;
+  LJSON : TJSONObject;
 begin
-  if not LJSON.FromJSON(AJSON) then
+  LJSON := TJSONObject(GetJSON(AJSON));
+
+  if not Assigned(LJSON) then
     raise Exception.Create(E_BADJSON);
-  if LJSON.Kind<>jvObject then
-    raise Exception.Create(E_BADJSON);
-  FTradeID:=LJSON.Value[PROP_ID];
-  FProductID:=LJSON.Value[PROP_PROD];
-  FPrice:=LJSON.Value[PROP_PRICE];
-  FSize:=LJSON.Value[PROP_SIZE];
-  FOrderID:=LJSON.Value[PROP_ORDER];
-  FCreatedAt:=fpIndexer.ISO8601ToDate(LJSON.Value[PROP_CREATE]);
-  FLiquidity:=LJSON.Value[PROP_LIQUID];
-  FFee:=LJSON.Value[PROP_FEE];
-  FSettled:=LJSON.Value[PROP_SETTLED];
-  FSide:=StringToOrderSide(LJSON.Value[PROP_SIDE]);
+
+  try
+    FTradeID := LJSON.Get(PROP_ID);
+    FProductID := LJSON.Get(PROP_PROD);
+    FPrice := LJSON.Get(PROP_PRICE);
+    FSize := LJSON.Get(PROP_SIZE);
+    FOrderID := LJSON.Get(PROP_ORDER);
+    FCreatedAt := fpIndexer.ISO8601ToDate(LJSON.Get(PROP_CREATE));
+    FLiquidity := LJSON.Get(PROP_LIQUID);
+    FFee := LJSON.Get(PROP_FEE);
+    FSettled := LJSON.Get(PROP_SETTLED);
+    FSide := StringToOrderSide(LJSON.Get(PROP_SIDE));
+  finally
+    LJSON.Free;
+  end;
 end;
 
 { TLedgerEntry.TDetails }
 
 constructor TLedgerEntry.TDetails.Create(Const AJSON: String);
 var
-  LJSON:TJSONVariantData;
+  LJSON : TJSONObject;
 begin
-  if not LJSON.FromJSON(AJSON) then
+  LJSON := TJSONObject(GetJSON(AJSON));
+
+  if not Assigned(LJSON) then
     raise Exception.Create(E_BADJSON);
-  if LJSON.Kind<>jvObject then
-    raise Exception.Create(E_BADJSON);
-  FOrderID:=LJSON.Value[PROP_ORDER_ID];
-  FTradeID:=LJSON.Value[PROP_TRADE_ID];
-  FProductID:=LJSON.Value[PROP_PROD_ID];
+
+  try
+    FOrderID := LJSON.Get(PROP_ORDER_ID);
+    FTradeID := LJSON.Get(PROP_TRADE_ID);
+    FProductID := LJSON.Get(PROP_PROD_ID);
+
+  finally
+    LJSON.Free;
+  end;
 end;
 
 { TLedgerEntry }
 
 constructor TLedgerEntry.Create(Const AJSON: String);
 var
-  LJSON:TJSONVariantData;
-  LDetails:TJSONVariantData;
+  LJSON,
+  LDetails : TJSONObject;
 begin
-  if not LJSON.FromJSON(AJSON) then
+  LJSON := TJSONObject(GetJSON(AJSON));
+
+  if not Assigned(LJSON) then
     raise Exception.Create(E_BADJSON);
-  if LJSON.Kind<>jvObject then
-    raise Exception.Create(E_BADJSON);
-  FID:=LJSON.Value[PROP_ID];
-  FCreatedAt:=fpIndexer.ISO8601ToDate(LJSON.Value[PROP_CREATE]);
-  FAmount:=LJSON.Value[PROP_AMOUNT];
-  FBalance:=LJSON.Value[PROP_BALANCE];
-  FLedgerType:=StringToLedgerType(LJSON.Value[PROP_TYPE]);
-  if LJSON.NameIndex(PROP_DETAILS)>=0 then
-    if not LDetails.FromJSON(LJSON.Data(PROP_DETAILS)^.ToJSON) then
+
+  try
+    FID := LJSON.Get(PROP_ID);
+    FCreatedAt := fpIndexer.ISO8601ToDate(LJSON.Get(PROP_CREATE));
+    FAmount := LJSON.Get(PROP_AMOUNT);
+    FBalance := LJSON.Get(PROP_BALANCE);
+    FLedgerType := StringToLedgerType(LJSON.Get(PROP_TYPE));
+
+    if Assigned(LJSON.Find(PROP_DETAILS)) then
       raise Exception.Create(Format(E_INVALID,['details json','json object']));
-  //deserialize details object
-  FDetails:=TDetails.Create(LDetails.ToJSON);
+
+    LDetails := LJSON.Objects[PROP_DETAILS];
+
+    //deserialize details object
+    FDetails := TDetails.Create(LDetails.AsJSON);
+  finally
+    LJSON.Free;
+  end;
 end;
 
 { TBookEntry }
 
 constructor TBookEntry.Create(Const APrice: Single; Const ASize: Extended);
 begin
-  FPrice:=APrice;
-  FSize:=ASize;
+  FPrice := APrice;
+  FSize := ASize;
 end;
 
 function TBookEntry.GetPrice: Extended;
 begin
-  Result:=FPrice;
+  Result := FPrice;
 end;
 
 function TBookEntry.GetSide: TOrderSide;
 begin
-  Result:=FSide;
+  Result := FSide;
 end;
 
 function TBookEntry.GetSize: Extended;
 begin
-  Result:=FSize;
+  Result := FSize;
 end;
 
 procedure TBookEntry.SetPrice(Const Value: Extended);
 begin
-  FPrice:=Value;
+  FPrice := Value;
 end;
 
 procedure TBookEntry.SetSide(Const Value: TOrderSide);
 begin
-  FSide:=Value;
+  FSide := Value;
 end;
 
 procedure TBookEntry.SetSize(Const Value: Extended);
 begin
-  FSize:=Value;
+  FSize := Value;
 end;
 
 { TAggregatedEntry }
@@ -776,17 +803,17 @@ constructor TAggregatedEntry.Create(Const APrice: Extended; Const ASize: Extende
   Const ANumberOrders: Cardinal);
 begin
   inherited create(APrice,ASize);
-  FNumberOrders:=ANumberOrders;
+  FNumberOrders := ANumberOrders;
 end;
 
 function TAggregatedEntry.GetNumberOrders: Integer;
 begin
-  Result:=FNumberOrders;
+  Result := FNumberOrders;
 end;
 
 procedure TAggregatedEntry.SetNumberOrders(Const Value: Integer);
 begin
-  FNumberOrders:=Value;
+  FNumberOrders := Value;
 end;
 
 { TFullEntry }
@@ -795,17 +822,17 @@ constructor TFullEntry.Create(Const APrice: Single; Const ASize: Extended;
   Const AOrderID: String);
 begin
   inherited create(APrice,ASize);
-  FOrderID:=AOrderID;
+  FOrderID := AOrderID;
 end;
 
 function TFullEntry.GetOrderID: String;
 begin
-  Result:=FOrderID;
+  Result := FOrderID;
 end;
 
 procedure TFullEntry.SetOrderID(Const Value: String);
 begin
-  FOrderID:=Value;
+  FOrderID := Value;
 end;
 
 { TCandleBucket }
@@ -813,77 +840,77 @@ end;
 constructor TCandleBucket.create(Const ATime: Extended; ALow, AHigh, AOpen,
  AClose: Extended; AVolume: Extended);
 begin
- Self.FTime:=ATime;
- Self.FLow:=ALow;
- Self.FHigh:=AHigh;
- Self.FOpen:=AOpen;
- Self.FClose:=AClose;
- Self.FVolume:=AVolume;
+ Self.FTime := ATime;
+ Self.FLow := ALow;
+ Self.FHigh := AHigh;
+ Self.FOpen := AOpen;
+ Self.FClose := AClose;
+ Self.FVolume := AVolume;
 end;
 
 class operator TCandleBucket.Equal(Const A, B: TCandleBucket): Boolean;
 begin
-  Result:=A.Time=B.Time;
+  Result := A.Time=B.Time;
 end;
 
 function TCandleBucket.GetClose: Extended;
 begin
- Result:=FClose;
+ Result := FClose;
 end;
 
 function TCandleBucket.GetHigh: Extended;
 begin
- Result:=FHigh;
+ Result := FHigh;
 end;
 
 function TCandleBucket.GetLow: Extended;
 begin
- Result:=FLow;
+ Result := FLow;
 end;
 
 function TCandleBucket.GetOpen: Extended;
 begin
- Result:=FOpen;
+ Result := FOpen;
 end;
 
 function TCandleBucket.GetTime: Extended;
 begin
- Result:=FTime;
+ Result := FTime;
 end;
 
 function TCandleBucket.GetVolume: Extended;
 begin
- Result:=FVolume;
+ Result := FVolume;
 end;
 
 procedure TCandleBucket.SetClose(Const Value: Extended);
 begin
- FClose:=Value;
+ FClose := Value;
 end;
 
 procedure TCandleBucket.SetHigh(Const Value: Extended);
 begin
- FHigh:=Value;
+ FHigh := Value;
 end;
 
 procedure TCandleBucket.SetLow(Const Value: Extended);
 begin
- FLow:=Value;
+ FLow := Value;
 end;
 
 procedure TCandleBucket.SetOpen(Const Value: Extended);
 begin
-  FOpen:=Value;
+  FOpen := Value;
 end;
 
 procedure TCandleBucket.SetTime(Const Value: Extended);
 begin
- FTime:=Value;
+ FTime := Value;
 end;
 
 procedure TCandleBucket.SetVolume(Const Value: Extended);
 begin
- FVolume:=Value;
+ FVolume := Value;
 end;
 end.
 

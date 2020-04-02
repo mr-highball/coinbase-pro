@@ -130,7 +130,9 @@ var
 
 implementation
 uses
-  SynCrossPlatformJSON, gdax.api.time, gdax.api.products, gdax.api.fills,
+  gdax.api.time,
+  gdax.api.products,
+  gdax.api.fills,
   gdax.api.currencies;
 {$R *.lfm}
 
@@ -138,9 +140,9 @@ uses
 
 procedure TGDAXTester.FormCreate(Sender: TObject);
 begin
-  FAccountsLoaded:=False;;
-  FAuthenticator:=TGDAXAuthenticatorImpl.Create;
-  pctrl_main.ActivePage:=ts_auth;
+  FAccountsLoaded := False;;
+  FAuthenticator := TGDAXAuthenticatorImpl.Create;
+  pctrl_main.ActivePage := ts_auth;
   InitOrderTab;
   InitLedgerTab;
   InitFillsTab;
@@ -153,7 +155,7 @@ var
 begin
   InitAuthenticator;
   memo_auth_result.Lines.Clear;
-  LSig:=FAuthenticator.GenerateAccessSignature(
+  LSig := FAuthenticator.GenerateAccessSignature(
     roGET,
     BuildFullEndpoint(GDAX_END_API_ACCTS,gdSand),
     LEpoch
@@ -169,18 +171,18 @@ var
 begin
   grid_accounts.Clear;
   grid_accounts.ColCount:=5;
-  LCol:=grid_accounts.Columns.Add;
+  LCol := grid_accounts.Columns.Add;
   LCol.Title.Caption:='Account ID';
-  LCol:=grid_accounts.Columns.Add;
+  LCol := grid_accounts.Columns.Add;
   LCol.Title.Caption:='Available';
-  LCol:=grid_accounts.Columns.Add;
+  LCol := grid_accounts.Columns.Add;
   LCol.Title.Caption:='Balance';
-  LCol:=grid_accounts.Columns.Add;
+  LCol := grid_accounts.Columns.Add;
   LCol.Title.Caption:='Currency';
-  LCol:=grid_accounts.Columns.Add;
+  LCol := grid_accounts.Columns.Add;
   LCol.Title.Caption:='Holds';
-  LAccts:=TestAccounts;
-  grid_accounts.RowCount:=LAccts.Accounts.Count;
+  LAccts := TestAccounts;
+  grid_accounts.RowCount := LAccts.Accounts.Count;
   for I:=1 to Pred(LAccts.Accounts.Count) do
   begin
     grid_accounts.Cells[1,I]:=LAccts.Accounts[I].AcctID;
@@ -199,15 +201,15 @@ var
   LError,LContent:String;
 begin
   InitAuthenticator;
-  LTicker:=TGDAXTickerImpl.Create;
-  LTicker.Product:=TGDAXProductImpl.Create;
+  LTicker := TGDAXTickerImpl.Create;
+  LTicker.Product := TGDAXProductImpl.Create;
   LTicker.Product.ID:='btc-usd';
-  LCandles:=TGDAXCandlesImpl.Create;
-  LCandles.Product:=LTicker.Product;
-  LCurrencies:=TGDAXCurrenciesImpl.Create;
-  LCurrencies.Authenticator:=FAuthenticator;
-  LTicker.Authenticator:=FAuthenticator;
-  LCandles.Authenticator:=FAuthenticator;
+  LCandles := TGDAXCandlesImpl.Create;
+  LCandles.Product := LTicker.Product;
+  LCurrencies := TGDAXCurrenciesImpl.Create;
+  LCurrencies.Authenticator := FAuthenticator;
+  LTicker.Authenticator := FAuthenticator;
+  LCandles.Authenticator := FAuthenticator;
   memo_base_web.Lines.Clear;
   memo_base_web.Lines.Add(TestTimeEndpoint);
   memo_base_web.Lines.Add('ticker test');
@@ -230,7 +232,7 @@ var
   LProducts:IGDAXProducts;
 begin
   list_products.Clear;
-  LProducts:=TestProducts(edit_product_quote.Text);
+  LProducts := TestProducts(edit_product_quote.Text);
   for I:=0 to Pred(LProducts.Products.Count) do
     list_products.Items.Add(LProducts.Products[I].ID);
 end;
@@ -245,15 +247,15 @@ begin
   list_fills.Clear;
   if not ((Sender=arrow_fills_back) or (Sender=arrow_fills_forward)) then
   begin
-    FFills:=nil;
-    FFills:=TestFills(
+    FFills := nil;
+    FFills := TestFills(
       combo_fills_products.Items.ValueFromIndex[combo_fills_products.ItemIndex],
       LContent,
       LError,
       LSuccess
     );
   end;
-  LEntries:=FFills.Entries;
+  LEntries := FFills.Entries;
   for I:=0 to High(LEntries) do
   begin
     list_fills.Items.Add(
@@ -278,13 +280,12 @@ var
   I:Integer;
   LContent,LError:String;
   LSuccess:Boolean;
-  LJSON:TJSONVariantData;
 begin
   list_ledger.Clear;
   if not ((Sender=arrow_ledger_back) or (Sender=arrow_ledger_forward)) then
   begin
-    FLedger:=nil;
-    FLedger:=TestLedger(
+    FLedger := nil;
+    FLedger := TestLedger(
       combo_ledger_accounts.Items.ValueFromIndex[combo_ledger_accounts.ItemIndex],
       LContent,
       LError,
@@ -303,7 +304,7 @@ begin
       )
     );
   end;
-  lbl_ledger_count.Caption:=IntToStr(Length(FLedger.Entries));
+  lbl_ledger_count.Caption := IntToStr(Length(FLedger.Entries));
 end;
 
 procedure TGDAXTester.btn_test_orderClick(Sender: TObject);
@@ -315,9 +316,9 @@ var
   LSuccess:Boolean;
   LError:string;
 begin
-  LType:=StringToOrderType(combo_order_type.Text);
-  LSide:=StringToOrderSide(combo_order_side.Text);
-  LOrder:=TestOrder(
+  LType := StringToOrderType(combo_order_type.Text);
+  LSide := StringToOrderSide(combo_order_side.Text);
+  LOrder := TestOrder(
     combo_order_ids.Items[combo_order_ids.ItemIndex],
     LSide,
     LType,
@@ -332,10 +333,10 @@ begin
   if not LSuccess then
   begin
     memo_order_output.Lines.Add('order not successful');
-    memo_order_output.Text:=LContent;
+    memo_order_output.Text := LContent;
     Exit;
   end;
-  memo_order_output.Text:=LContent;
+  memo_order_output.Text := LContent;
   while not (
     LOrder.OrderStatus in [stActive,stOpen,stDone,stCancelled,stRejected]
   ) do
@@ -354,7 +355,7 @@ end;
 
 procedure TGDAXTester.FormDestroy(Sender: TObject);
 begin
-  FAuthenticator:=nil;
+  FAuthenticator := nil;
 end;
 
 procedure TGDAXTester.pctrl_mainChange(Sender: TObject);
@@ -365,13 +366,13 @@ begin
   if not FAccountsLoaded then
   begin
     combo_ledger_accounts.Clear;
-    LAccounts:=TestAccounts;
+    LAccounts := TestAccounts;
     for I:=0 to Pred(LAccounts.Accounts.Count) do
       combo_ledger_accounts.Items.Add(
         LAccounts.Accounts[I].Currency + '=' +
         LAccounts.Accounts[I].AcctID
       );
-    FAccountsLoaded:=True;
+    FAccountsLoaded := True;
   end;
 end;
 
@@ -383,10 +384,10 @@ begin
   if not FFillsLoaded then
   begin
     combo_fills_products.Clear;
-    LProducts:=TestProducts('');
+    LProducts := TestProducts('');
     for I:=0 to Pred(LProducts.Products.Count) do
       combo_fills_products.Items.Add(LProducts.Products[I].ID);
-    FFillsLoaded:=True;
+    FFillsLoaded := True;
   end;
 end;
 
@@ -452,14 +453,14 @@ end;
 
 procedure TGDAXTester.InitAuthenticator;
 begin
-  FAuthenticator.Key:=edit_auth_key.Text;
-  FAuthenticator.Passphrase:=edit_auth_pass.Text;
-  FAuthenticator.Secret:=edit_auth_secret.Text;
+  FAuthenticator.Key := edit_auth_key.Text;
+  FAuthenticator.Passphrase := edit_auth_pass.Text;
+  FAuthenticator.Secret := edit_auth_secret.Text;
   if chk_sandbox.Checked then
-    FAuthenticator.Mode:=gdSand
+    FAuthenticator.Mode := gdSand
   else
-    FAuthenticator.Mode:=gdProd;
-  FAuthenticator.UseLocalTime:=chk_auth_time.Checked;
+    FAuthenticator.Mode := gdProd;
+  FAuthenticator.UseLocalTime := chk_auth_time.Checked;
 end;
 
 procedure TGDAXTester.InitOrderTab;
@@ -468,22 +469,22 @@ var
 begin
   combo_order_type.Clear;
   combo_order_side.Clear;
-  for I:=Low(ORDER_SIDES) to High(ORDER_SIDES) do
+  for I := Low(ORDER_SIDES) to High(ORDER_SIDES) do
     combo_order_side.Items.Add(ORDER_SIDES[I]);
-  for I:=Low(ORDER_TYPES) to High(ORDER_TYPES) do
+  for I := Low(ORDER_TYPES) to High(ORDER_TYPES) do
     combo_order_type.Items.Add(ORDER_TYPES[I]);
 end;
 
 procedure TGDAXTester.InitLedgerTab;
 begin
-  arrow_ledger_forward.OnClick:=LedgerMoveForward;
-  arrow_ledger_back.OnClick:=LedgerMoveBack;
+  arrow_ledger_forward.OnClick := LedgerMoveForward;
+  arrow_ledger_back.OnClick := LedgerMoveBack;
 end;
 
 procedure TGDAXTester.InitFillsTab;
 begin
-  arrow_fills_back.OnClick:=FillsMoveBack;
-  arrow_fills_forward.OnClick:=FillsMoveForward;
+  arrow_fills_back.OnClick := FillsMoveBack;
+  arrow_fills_forward.OnClick := FillsMoveForward;
 end;
 
 function TGDAXTester.TestTimeEndpoint: String;
@@ -492,8 +493,8 @@ var
   LError:String;
 begin
   InitAuthenticator;
-  LTime:=TGDAXTimeImpl.Create;
-  LTime.Authenticator:=FAuthenticator;
+  LTime := TGDAXTimeImpl.Create;
+  LTime.Authenticator := FAuthenticator;
   if not LTime.Get(Result,LError) then
     Result:=
       LError + sLineBreak +
@@ -507,9 +508,9 @@ var
   LContent,LError:String;
 begin
   InitAuthenticator;
-  Result:=TGDAXProductsImpl.Create;
-  Result.Authenticator:=FAuthenticator;
-  Result.QuoteCurrency:=AQuoteCurrencyFilter;
+  Result := TGDAXProductsImpl.Create;
+  Result.Authenticator := FAuthenticator;
+  Result.QuoteCurrency := AQuoteCurrencyFilter;
   if not Result.Get(LContent,LError) then
     raise Exception.Create(LError);
 end;
@@ -519,8 +520,8 @@ var
   LContent,LError:String;
 begin
   InitAuthenticator;
-  Result:=TGDAXAccountsImpl.Create;
-  Result.Authenticator:=FAuthenticator;
+  Result := TGDAXAccountsImpl.Create;
+  Result.Authenticator := FAuthenticator;
   if not Result.Get(LContent,LError) then
     raise Exception.Create(LError);
 end;
@@ -532,20 +533,20 @@ function TGDAXTester.TestOrder(Const AProductID: String;
 var
   LError:String;
 begin
-  Success:=False;
+  Success := False;
   InitAuthenticator;
-  Result:=TGDAXOrderImpl.Create;
-  Result.Authenticator:=FAuthenticator;
-  Result.Product.ID:=AProductID;
-  Result.Side:=ASide;
-  Result.OrderType:=AType;
-  Result.Size:=ASize;
-  Result.Price:=APrice;
-  Result.StopOrder:=AStop;
-  Result.PostOnly:=APostOnly;
+  Result := TGDAXOrderImpl.Create;
+  Result.Authenticator := FAuthenticator;
+  Result.Product.ID := AProductID;
+  Result.Side := ASide;
+  Result.OrderType := AType;
+  Result.Size := ASize;
+  Result.Price := APrice;
+  Result.StopOrder := AStop;
+  Result.PostOnly := APostOnly;
   if not Result.Post(Content,LError) then
   begin
-    Content:=LError;
+    Content := LError;
     Exit;
   end;
   //if we made a successful web call, check the status to see if the order
@@ -553,44 +554,44 @@ begin
   case Result.OrderStatus of
     stUnknown:
       begin
-        Success:=False;
+        Success := False;
         Content:='order status is unknown after web call' + sLineBreak + Content;
         Exit;
       end;
     stRejected:
       begin
-        Success:=False;
+        Success := False;
         Content:='Rejected: ' + Result.RejectReason + sLineBreak + Content;
         Exit;
       end;
   end;
-  Success:=True;
+  Success := True;
 end;
 
 function TGDAXTester.TestLedger(Const AAcctID: String; out Content,
   Error: String; out Success: Boolean): IGDAXAccountLedger;
 begin
-  Success:=False;
+  Success := False;
   InitAuthenticator;
-  Result:=TGDAXAccountLedgerImpl.Create;
-  Result.Authenticator:=FAuthenticator;
-  Result.AcctID:=AAcctID;
+  Result := TGDAXAccountLedgerImpl.Create;
+  Result.Authenticator := FAuthenticator;
+  Result.AcctID := AAcctID;
   if not Result.Get(Content,Error) then
     Exit;
-  Success:=True;
+  Success := True;
 end;
 
 function TGDAXTester.TestFills(Const AProductID: String; out Content,
   Error: String; out Success: Boolean): IGDAXFills;
 begin
-  Success:=False;
+  Success := False;
   InitAuthenticator;
-  Result:=TGDAXFillsImpl.Create;
-  Result.Authenticator:=FAuthenticator;
-  Result.ProductID:=AProductID;
+  Result := TGDAXFillsImpl.Create;
+  Result.Authenticator := FAuthenticator;
+  Result.ProductID := AProductID;
   if not Result.Get(Content,Error) then
     Exit;
-  Success:=True;
+  Success := True;
 end;
 
 end.

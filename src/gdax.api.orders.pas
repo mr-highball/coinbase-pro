@@ -70,6 +70,7 @@ type
     FRejectReason: String;
     FCreatedAt: TDateTime;
     FStop: Boolean;
+  protected
     function GetCreatedAt: TDateTime;
     function GetProduct: IGDAXProduct;
     function GetStopOrder: Boolean;
@@ -163,111 +164,125 @@ type
   end;
 implementation
 uses
-  SysUtils, SynCrossPlatformJSON, fpindexer, gdax.api.products;
+  SysUtils,
+  fpjson,
+  jsonparser,
+  fpindexer,
+  gdax.api.products;
 
 { TGDAXOrderImpl }
 
 constructor TGDAXOrderImpl.Create;
 begin
   inherited;
-  FStatus:=stUnknown;
-  FProduct:=TGDAXProductImpl.Create;
-  FPostOnly:=True;
-  FType:=otLimit;
+  FStatus := stUnknown;
+  FProduct := TGDAXProductImpl.Create;
+  FPostOnly := True;
+  FType := otLimit;
   FSize:=0;
   FID:='';
   FFillFees:=0;
   FFilledSize:=0;
   FExecutedValue:=0;
-  FSettled:=False;
-  FSide:=osUnknown;
+  FSettled := False;
+  FSide := osUnknown;
   FPrice:=0;
   FRejectReason:='';
-  FCreatedAt:=Now;
-  FStop:=False;
+  FCreatedAt := Now;
+  FStop := False;
 end;
 
 destructor TGDAXOrderImpl.Destroy;
 begin
-  FProduct:=nil;
+  FProduct := nil;
   inherited;
 end;
 
 function TGDAXOrderImpl.DoDelete(Const AEndpoint: string; Const AHeaders: TStrings; out
   Content: string; out Error: string): Boolean;
 begin
-  Result:=False;
+  Result := False;
   try
     if Trim(FID)='' then
     begin
-      Error:=Format(E_INVALID,['id','a long ass string']);
+      Error := Format(E_INVALID,['id','a long ass string']);
       Exit;
     end;
-    Result:=inherited;
+    Result := inherited;
     if not Result then
       Exit;
   except on E: Exception do
-    Error:=E.Message;
+    Error := E.Message;
   end;
 end;
 
 function TGDAXOrderImpl.DoGet(Const AEndpoint: string; Const AHeaders: TStrings; out
   Content: string; out Error: string): Boolean;
 begin
-  Result:=False;
+  Result := False;
   if Trim(FID)='' then
   begin
-    Error:=Format(E_INVALID,['id','a long ass string']);
+    Error := Format(E_INVALID,['id','a long ass string']);
     Exit;
   end;
-  Result:=inherited;
+  Result := inherited;
 end;
 
 function TGDAXOrderImpl.DoGetPostBody: string;
 var
-  LJSON:TJSONVariantData;
+  LJSON : TJSONObject;
   LFunds: Extended;
   LFundsDigits: Integer;
 begin
   Result:='';
-  LJSON.FromJSON('{}');
-  LFundsDigits := 8;
+  LJSON := TJSONObject(GetJSON('{}'));
 
-  LJSON.AddNameValue(PROP_SIZE, FloatToStrF(FSize, TFloatFormat.ffFixed,15,8));
+  try
+    LFundsDigits := 8;
 
-  //specify price only for limit orders, otherwise market will require fund
-  if (FType = otLimit) then
-    LJSON.AddNameValue(PROP_PRICE, FloatToStrF(FPrice,TFloatFormat.ffFixed,15,8))
-  else
-  begin
-    LFunds := Trunc(FSize * FPrice / Product.BaseMinSize) * Product.BaseMinSize;
+    LJSON.Add(PROP_SIZE, FloatToStrF(FSize, TFloatFormat.ffFixed,15,8));
 
-    //not very elegant, but should save caller from "too specific" errors on cb
-    if Pos('usd', LowerCase(Product.QuoteCurrency)) > 0 then
-      LFundsDigits := 2;
+    //specify price only for limit orders, otherwise market will require fund
+    if (FType = otLimit) then
+      LJSON.Add(PROP_PRICE, FloatToStrF(FPrice,TFloatFormat.ffFixed,15,8))
+    else
+    begin
+      LFunds := Trunc(FSize * FPrice / Product.BaseMinSize) * Product.BaseMinSize;
 
-    //case when funds were specified but lower than min, so user probably
-    //just wants the minimum order (since they called market order in the first place)
-    if (LFunds < Product.MinMarketFunds) and (LFunds > 0) then
-      LFunds := Product.MinMarketFunds;
+      //not very elegant, but should save caller from "too specific" errors on cb
+      if Pos('usd', LowerCase(Product.QuoteCurrency)) > 0 then
+        LFundsDigits := 2;
 
-    LJSON.AddNameValue(PROP_FUNDS, FloatToStrF(LFunds, TFloatFormat.ffFixed, 15, LFundsDigits));
-  end;
+      //case when funds were specified but lower than min, so user probably
+      //just wants the minimum order (since they called market order in the first place)
+      if (LFunds < Product.MinMarketFunds) and (LFunds > 0) then
+        LFunds := Product.MinMarketFunds;
 
-  LJSON.AddNameValue(PROP_SIDE,OrderSideToString(FSide));
-  LJSON.AddNameValue(PROP_PROD,FProduct.ID);
-  if (FType=otLimit) and FPostOnly then
-    LJSON.AddNameValue(PROP_POST,FPostOnly);
-  LJSON.AddNameValue(PROP_TYPE,OrderTypeToString(FType));
-  if FStop then
-  begin
-    case FSide of
-      osBuy: LJSON.AddNameValue(PROP_STOP,PROP_STOP_ENTRY);
-      osSell: LJSON.AddNameValue(PROP_STOP,PROP_STOP_LOSS);
+      LJSON.Add(PROP_FUNDS, FloatToStrF(LFunds, TFloatFormat.ffFixed, 15, LFundsDigits));
     end;
-    LJSON.AddNameValue(PROP_STOP_PRICE,FloatToStrF(FPrice,TFloatFormat.ffFixed,15,8))
+
+    LJSON.Add(PROP_SIDE, OrderSideToString(FSide));
+    LJSON.Add(PROP_PROD, FProduct.ID);
+
+    if (FType = otLimit) and FPostOnly then
+      LJSON.Add(PROP_POST,FPostOnly);
+
+    LJSON.Add(PROP_TYPE,OrderTypeToString(FType));
+
+    if FStop then
+    begin
+      case FSide of
+        osBuy: LJSON.Add(PROP_STOP,PROP_STOP_ENTRY);
+        osSell: LJSON.Add(PROP_STOP,PROP_STOP_LOSS);
+      end;
+
+      LJSON.Add(PROP_STOP_PRICE,FloatToStrF(FPrice,TFloatFormat.ffFixed,15,8))
+    end;
+
+    Result := LJSON.AsJSON;
+  finally
+    LJSON.Free;
   end;
-  Result:=LJSON.ToJSON;
 end;
 
 function TGDAXOrderImpl.DoGetSupportedOperations: TRestOperations;
@@ -277,322 +292,341 @@ end;
 
 function TGDAXOrderImpl.DoLoadFromJSON(Const AJSON: string; out Error: string): Boolean;
 var
-  LJSON:TJSONVariantData;
+  LJSON : TJSONObject;
 begin
-  Result:=False;
+  Result := False;
   try
-    if not LJSON.FromJSON(AJSON) then
-    begin
-      Error:=E_BADJSON;
-      Exit;
-    end;
+    LJSON := TJSONObject(GetJSON(AJSON));
+
+    if not Assigned(LJSON) then
+      raise Exception.Create(E_BADJSON);
+
+    try
+
     //id is required in all situations
-    if LJSON.NameIndex(PROP_ID)<0 then
+    if LJSON.Find(PROP_ID) <> nil then
     begin
-      Error:=Format(E_BADJSON_PROP,[PROP_ID]);
+      Error := Format(E_BADJSON_PROP,[PROP_ID]);
       Exit;
     end
     else
-      FID:=LJSON.Value[PROP_ID];
+      FID := LJSON.Get(PROP_ID);
+
     //Price per bitcoin (not required)
-    if LJSON.NameIndex(PROP_PRICE)<0 then
+    if LJSON.Find(PROP_PRICE) <> nil then
       FPrice:=0
     else
-      FPrice:=StrToFloat(LJSON.Value[PROP_PRICE]);
+      FPrice := StrToFloat(LJSON.Get(PROP_PRICE));
+
     //Amount of BTC to buy or sell
-    if LJSON.NameIndex(PROP_SIZE)<0 then
+    if LJSON.Find(PROP_SIZE) <> nil then
     begin
-      Error:=Format(E_BADJSON_PROP,[PROP_SIZE]);
+      Error := Format(E_BADJSON_PROP,[PROP_SIZE]);
       Exit;
     end
     else
-      FSize:=StrToFloat(LJSON.Value[PROP_SIZE]);
+      FSize := StrToFloat(LJSON.Get(PROP_SIZE));
+
     //product id is the type of currency
-    if LJSON.NameIndex(PROP_PROD)<0 then
+    if LJSON.Find(PROP_PROD) <> nil then
     begin
-      Error:=Format(E_BADJSON_PROP,[PROP_PROD]);
+      Error := Format(E_BADJSON_PROP,[PROP_PROD]);
       Exit;
     end
     else
-      FProduct.ID:=LJSON.Value[PROP_PROD];
+      FProduct.ID := LJSON.Get(PROP_PROD);
+
     //side is buying or selling
-    if LJSON.NameIndex(PROP_SIDE)<0 then
+    if LJSON.Find(PROP_SIDE) <> nil then
     begin
-      Error:=Format(E_BADJSON_PROP,[PROP_SIDE]);
+      Error := Format(E_BADJSON_PROP,[PROP_SIDE]);
       Exit;
     end
     else
-      FSide:=StringToOrderSide(LJSON.Value[PROP_SIDE]);
+      FSide := StringToOrderSide(LJSON.Get(PROP_SIDE));
+
     //type of the order (limit/market)
-    if LJSON.NameIndex(PROP_TYPE)<0 then
+    if LJSON.Find(PROP_TYPE) <> nil then
     begin
-      Error:=Format(E_BADJSON_PROP,[PROP_TYPE]);
+      Error := Format(E_BADJSON_PROP,[PROP_TYPE]);
       Exit;
     end
     else
-      FType:=StringToOrderType(LJSON.Value[PROP_TYPE]);
+      FType := StringToOrderType(LJSON.Get(PROP_TYPE));
+
     //status of the order
-    if LJSON.NameIndex(PROP_STATUS)<0 then
+    if LJSON.Find(PROP_STATUS) <> nil then
     begin
-      Error:=Format(E_BADJSON_PROP,[PROP_STATUS]);
+      Error := Format(E_BADJSON_PROP,[PROP_STATUS]);
       Exit;
     end
     else
-      FStatus:=StringToOrderStatus(LJSON.Value[PROP_STATUS]);
+      FStatus := StringToOrderStatus(LJSON.Get(PROP_STATUS));
+
     //post only is for limit orders, but should still come back in response
-    if LJSON.NameIndex(PROP_POST)<0 then
+    if LJSON.Find(PROP_POST) <> nil then
     begin
-      Error:=Format(E_BADJSON_PROP,[PROP_POST]);
+      Error := Format(E_BADJSON_PROP,[PROP_POST]);
       Exit;
     end
     else
-      FPostOnly:=LJSON.Value[PROP_POST];
+      FPostOnly := LJSON.Get(PROP_POST);
+
     //settled
-    if LJSON.NameIndex(PROP_SETTLED)<0 then
+    if LJSON.Find(PROP_SETTLED) <> nil then
     begin
-      Error:=Format(E_BADJSON_PROP,[PROP_SETTLED]);
+      Error := Format(E_BADJSON_PROP,[PROP_SETTLED]);
       Exit;
     end
     else
-      FSettled:=LJSON.Value[PROP_SETTLED];
+      FSettled := LJSON.Get(PROP_SETTLED);
+
     //fill fees
-    if LJSON.NameIndex(PROP_FEE)<0 then
+    if LJSON.Find(PROP_FEE) <> nil then
     begin
-      Error:=Format(E_BADJSON_PROP,[PROP_FEE]);
+      Error := Format(E_BADJSON_PROP,[PROP_FEE]);
       Exit;
     end
     else
-      FFillFees:=StrToFloat(LJSON.Value[PROP_FEE]);
+      FFillFees := StrToFloat(LJSON.Get(PROP_FEE));
+
     //filled size is how much of size is actually filled
-    if LJSON.NameIndex(PROP_FILL)<0 then
+    if LJSON.Find(PROP_FILL) <> nil then
     begin
-      Error:=Format(E_BADJSON_PROP,[PROP_FILL]);
+      Error := Format(E_BADJSON_PROP,[PROP_FILL]);
       Exit;
     end
     else
-      FFilledSize:=StrToFloat(LJSON.Value[PROP_FILL]);
+      FFilledSize := StrToFloat(LJSON.Get(PROP_FILL));
+
     //executed value
-    if LJSON.NameIndex(PROP_EXEC)<0 then
+    if LJSON.Find(PROP_EXEC) <> nil then
     begin
-      Error:=Format(E_BADJSON_PROP,[PROP_EXEC]);
+      Error := Format(E_BADJSON_PROP,[PROP_EXEC]);
       Exit;
     end
     else
-      FExecutedValue:=StrToFloat(LJSON.Value[PROP_EXEC]);
+      FExecutedValue := StrToFloat(LJSON.Get(PROP_EXEC));
+
     //rejected reason may or may not be here
-    if LJSON.NameIndex(PROP_REJECT)<0 then
+    if LJSON.Find(PROP_REJECT) <> nil then
       FRejectReason:=''
     else
-      FRejectReason:=LJSON.Value[PROP_REJECT];
+      FRejectReason := LJSON.Get(PROP_REJECT);
+
     //create time in utc of the order
-    if LJSON.NameIndex(PROP_CREATE)<0 then
+    if LJSON.Find(PROP_CREATE) <> nil then
     begin
-      Error:=Format(E_BADJSON_PROP,[PROP_CREATE]);
+      Error := Format(E_BADJSON_PROP,[PROP_CREATE]);
       Exit;
     end
     else
-      FCreatedAt:=fpindexer.ISO8601ToDate(LJSON.Value[PROP_CREATE]);
-    Result:=True;
+      FCreatedAt := fpindexer.ISO8601ToDate(LJSON.Get(PROP_CREATE));
+
+    Result := True;
+    finally
+      LJSON.Free;
+    end;
   except on E: Exception do
-    Error:=E.Message;
+    Error := E.Message;
   end;
 end;
 
 function TGDAXOrderImpl.DoPost(Const AEndPoint: string; Const AHeaders: TStrings;
   Const ABody: string; out Content: string; out Error: string): Boolean;
 begin
-  Result:=False;
+  Result := False;
   if FType=otUnknown then
   begin
-    Error:=Format(E_UNKNOWN,['order type',Self.ClassName]);
+    Error := Format(E_UNKNOWN,['order type',Self.ClassName]);
     Exit;
   end;
   if FSide=TOrderSide.osUnknown then
   begin
-    Error:=Format(E_UNKNOWN,['order side',Self.ClassName]);
+    Error := Format(E_UNKNOWN,['order side',Self.ClassName]);
     Exit;
   end;
   if FSize<=0 then
   begin
-    Error:=Format(E_INVALID,['size '+FloatToStr(FSize),'0.01 and 10000.0']);
+    Error := Format(E_INVALID,['size '+FloatToStr(FSize),'0.01 and 10000.0']);
     Exit;
   end;
   if FProduct.ID.IsEmpty then
   begin
-    Error:=Format(E_UNKNOWN,['product',Self.ClassName]);
+    Error := Format(E_UNKNOWN,['product',Self.ClassName]);
     Exit;
   end;
-  Result:=inherited;
+  Result := inherited;
 end;
 
 function TGDAXOrderImpl.GetEndpoint(Const AOperation: TRestOperation): string;
 begin
   Result:='';
   if (AOperation=roGet) or (AOperation=roDelete) then
-    Result:=Format(GDAX_END_API_ORDER,[FID])
+    Result := Format(GDAX_END_API_ORDER,[FID])
   else if AOperation=roPost then
-    Result:=GDAX_END_API_ORDERS
+    Result := GDAX_END_API_ORDERS
   else if AOperation=roDelete then
-    Result:=Format(GDAX_END_API_ORDER,[FID]);
+    Result := Format(GDAX_END_API_ORDER,[FID]);
 end;
 
 function TGDAXOrderImpl.GetExecutedValue: Extended;
 begin
-  Result:=FExecutedValue;
+  Result := FExecutedValue;
 end;
 
 function TGDAXOrderImpl.GetFilledSized: Extended;
 begin
-  Result:=FFilledSize;
+  Result := FFilledSize;
 end;
 
 function TGDAXOrderImpl.GetFillFees: Extended;
 begin
-  Result:=FFillFees;
+  Result := FFillFees;
 end;
 
 function TGDAXOrderImpl.GetID: String;
 begin
-  Result:=FID;
+  Result := FID;
 end;
 
 function TGDAXOrderImpl.GetOrderStatus: TOrderStatus;
 begin
-  Result:=FStatus;
+  Result := FStatus;
 
   //when an order is "done" and the settled propery is true, return
   //that this order is "settled". this is done here, because the orderstatus
   //won't get mapped correctly by name from cbpro since it's a separate bool
   //property
   if (Result = stDone) and FSettled then
-    Result:=stSettled;
+    Result := stSettled;
 end;
 
 function TGDAXOrderImpl.GetOrderType: TOrderType;
 begin
-  Result:=FType;
+  Result := FType;
 end;
 
 function TGDAXOrderImpl.GetPostOnly: Boolean;
 begin
-  Result:=FPostOnly;
+  Result := FPostOnly;
 end;
 
 function TGDAXOrderImpl.GetPrice: Extended;
 begin
-  Result:=FPrice;
+  Result := FPrice;
 end;
 
 function TGDAXOrderImpl.GetProduct: IGDAXProduct;
 begin
-  Result:=FProduct;
+  Result := FProduct;
 end;
 
 function TGDAXOrderImpl.GetStopOrder: Boolean;
 begin
-  Result:=FStop;
+  Result := FStop;
 end;
 
 function TGDAXOrderImpl.GetCreatedAt: TDateTime;
 begin
-  Result:=FCreatedAt;
+  Result := FCreatedAt;
 end;
 
 procedure TGDAXOrderImpl.SetCreatedAt(Const AValue: TDateTime);
 begin
-  FCreatedAt:=AValue;
+  FCreatedAt := AValue;
 end;
 
 function TGDAXOrderImpl.GetRejectReason: String;
 begin
-  Result:=FRejectReason;
+  Result := FRejectReason;
 end;
 
 function TGDAXOrderImpl.GetSettled: Boolean;
 begin
-  Result:=FSettled;
+  Result := FSettled;
 end;
 
 function TGDAXOrderImpl.GetSide: TOrderSide;
 begin
-  Result:=FSide;
+  Result := FSide;
 end;
 
 function TGDAXOrderImpl.GetSize: Extended;
 begin
-  Result:=FSize;
+  Result := FSize;
 end;
 
 procedure TGDAXOrderImpl.SetExecutedValue(Const Value: Extended);
 begin
-  FExecutedValue:=Value;
+  FExecutedValue := Value;
 end;
 
 procedure TGDAXOrderImpl.SetFilledSized(Const Value: Extended);
 begin
-  FFilledSize:=Value;
+  FFilledSize := Value;
 end;
 
 procedure TGDAXOrderImpl.SetFillFees(Const Value: Extended);
 begin
-  FFillFees:=Value;
+  FFillFees := Value;
 end;
 
 procedure TGDAXOrderImpl.SetID(Const Value: String);
 begin
-  FID:=Value;
+  FID := Value;
 end;
 
 procedure TGDAXOrderImpl.SetOrderStatus(Const Value: TOrderStatus);
 begin
-  FStatus:=Value;
+  FStatus := Value;
 end;
 
 procedure TGDAXOrderImpl.SetOrderType(Const Value: TOrderType);
 begin
-  FType:=Value;
+  FType := Value;
 end;
 
 procedure TGDAXOrderImpl.SetPostOnly(Const Value: Boolean);
 begin
-  FPostOnly:=Value;
+  FPostOnly := Value;
 end;
 
 procedure TGDAXOrderImpl.SetPrice(Const Value: Extended);
 begin
-  FPrice:=Value;
+  FPrice := Value;
 end;
 
 procedure TGDAXOrderImpl.SetProduct(Const Value: IGDAXProduct);
 begin
   //free reference first
-  FProduct:=nil;
-  FProduct:=Value;
+  FProduct := nil;
+  FProduct := Value;
 end;
 
 procedure TGDAXOrderImpl.SetRejectReason(Const Value: String);
 begin
-  FRejectReason:=Value;
+  FRejectReason := Value;
 end;
 
 procedure TGDAXOrderImpl.SetStopOrder(Const AValue: Boolean);
 begin
-  FStop:=AValue;
+  FStop := AValue;
 end;
 
 procedure TGDAXOrderImpl.SetSettled(Const Value: Boolean);
 begin
-  FSettled:=Value;
+  FSettled := Value;
 end;
 
 procedure TGDAXOrderImpl.SetSide(Const Value: TOrderSide);
 begin
-  FSide:=Value;
+  FSide := Value;
 end;
 
 procedure TGDAXOrderImpl.SetSize(Const Value: Extended);
 begin
-  FSize:=Value;
+  FSize := Value;
 end;
 
 { TGDAXOrdersImpl }
@@ -605,51 +639,51 @@ begin
   Result:='';
   if FStatuses=[] then
   begin
-    Result:=Format(QUERY,['all']);
+    Result := Format(QUERY,['all']);
     Exit;
   end;
   if stPending in FStatuses then
-    Result:=Format(Query,[OrderStatusToString(stPending)]);
+    Result := Format(Query,[OrderStatusToString(stPending)]);
   if stOpen in FStatuses then
   begin
     if Result='' then
-      Result:=Result+Format(QUERY,[OrderStatusToString(stOpen)])
+      Result := Result+Format(QUERY,[OrderStatusToString(stOpen)])
     else
-      Result:=Result+Format(QUERY_ADD,[OrderStatusToString(stOpen)]);
+      Result := Result+Format(QUERY_ADD,[OrderStatusToString(stOpen)]);
   end;
   if stActive in FStatuses then
   begin
     if Result='' then
-      Result:=Result+Format(QUERY,[OrderStatusToString(stActive)])
+      Result := Result+Format(QUERY,[OrderStatusToString(stActive)])
     else
-      Result:=Result+Format(QUERY_ADD,[OrderStatusToString(stActive)]);
+      Result := Result+Format(QUERY_ADD,[OrderStatusToString(stActive)]);
   end;
   if stDone in FStatuses then
   begin
     if Result='' then
-      Result:=Result+Format(QUERY,[OrderStatusToString(stDone)])
+      Result := Result+Format(QUERY,[OrderStatusToString(stDone)])
     else
-      Result:=Result+Format(QUERY_ADD,[OrderStatusToString(stDone)]);
+      Result := Result+Format(QUERY_ADD,[OrderStatusToString(stDone)]);
   end;
   if stRejected in FStatuses then
   begin
     if Result='' then
-      Result:=Result+Format(QUERY,[OrderStatusToString(stRejected)])
+      Result := Result+Format(QUERY,[OrderStatusToString(stRejected)])
     else
-      Result:=Result+Format(QUERY_ADD,[OrderStatusToString(stRejected)]);
+      Result := Result+Format(QUERY_ADD,[OrderStatusToString(stRejected)]);
   end;
 end;
 
 constructor TGDAXOrdersImpl.Create;
 begin
   inherited;
-  FProduct:=TGDAXProductImpl.Create;
-  FOrders:=TGDAXOrderList.Create;
+  FProduct := TGDAXProductImpl.Create;
+  FOrders := TGDAXOrderList.Create;
 end;
 
 destructor TGDAXOrdersImpl.Destroy;
 begin
-  FProduct:=nil;
+  FProduct := nil;
   FOrders.Free;
   inherited;
 end;
@@ -662,34 +696,35 @@ end;
 function TGDAXOrdersImpl.DoLoadFromJSON(Const AJSON: string;
   out Error: string): Boolean;
 var
-  LJSON:TJSONVariantData;
+  LJSON : TJSONObject;
   I: Integer;
   LOrder: IGDAXOrder;
 begin
-  Result:=False;
+  Result := False;
   try
     FOrders.Clear;
-    if not LJSON.FromJSON(AJSON) then
-    begin
-      Error:=E_BADJSON;
-      Exit;
+    LJSON := TJSONObject(GetJSON(AJSON));
+
+    if not Assigned(LJSON) then
+      raise Exception.Create(E_BADJSON);
+
+    try
+      for I := 0 to Pred(LJSON.Count) do
+      begin
+        LOrder := TGDAXOrderImpl.Create;
+
+        //try to deserialzie order
+        if not LOrder.LoadFromJSON(TJSONObject(LJSON.Items[I]).AsJSON, Error) then
+          Exit;
+        FOrders.Add(LOrder);
+      end;
+
+      Result := True;
+    finally
+      LJSON.Free;
     end;
-    if LJSON.Kind<>jvArray then
-    begin
-      Error:=Format(E_BADJSON_PROP,['main json array']);
-      Exit;
-    end;
-    for I := 0 to Pred(LJSON.Count) do
-    begin
-      LOrder:=TGDAXOrderImpl.Create;
-      //try to deserialzie order
-      if not LOrder.LoadFromJSON(TJSONVariantData(LJSON.Item[I]).ToJSON,Error) then
-        Exit;
-      FOrders.Add(LOrder);
-    end;
-    Result:=True;
   except on E: Exception do
-    Error:=E.Message;
+    Error := E.Message;
   end;
 end;
 
@@ -699,14 +734,14 @@ var
 begin
   Result:='';
   //filters for statuses
-  Result:=GDAX_END_API_ORDERS+BuildQueryStringForStatus;
+  Result := GDAX_END_API_ORDERS+BuildQueryStringForStatus;
   //specific product
   if not FProduct.ID.IsEmpty then
-    Result:=Result+'&product_id='+FProduct.ID;
+    Result := Result+'&product_id='+FProduct.ID;
   //paging params
-  LMoving:=GetMovingParameters;
+  LMoving := GetMovingParameters;
   if LMoving.Length>0 then
-    Result:=Result+LMoving;
+    Result := Result+LMoving;
 end;
 
 function TGDAXOrdersImpl.DoMove(Const ADirection: TGDAXPageDirection; out Error: String;
@@ -716,19 +751,19 @@ var
   I:Integer;
   LList:TGDAXOrderList;
 begin
-  LList:=TGDAXOrderList.Create;
+  LList := TGDAXOrderList.Create;
   try
     try
       //keep old orders on page move
       LList.Assign(FOrders);
-      Result:=inherited DoMove(ADirection, Error, ALastBeforeID,
+      Result := inherited DoMove(ADirection, Error, ALastBeforeID,
         ALastAfterID,ALimit
       );
       //add all the previous orders
       for I:=0 to Pred(LList.Count) do
         FOrders.Add(LList[I]);
     except on E:Exception do
-      Error:=E.Message;
+      Error := E.Message;
     end;
   finally
     LList.Free;
@@ -737,32 +772,32 @@ end;
 
 function TGDAXOrdersImpl.GetOrders: TGDAXOrderList;
 begin
-  Result:=FOrders;
+  Result := FOrders;
 end;
 
 function TGDAXOrdersImpl.GetProduct: IGDAXProduct;
 begin
-  Result:=FProduct;
+  Result := FProduct;
 end;
 
 function TGDAXOrdersImpl.GetStatuses: TOrderStatuses;
 begin
-  Result:=FStatuses;
+  Result := FStatuses;
 end;
 
 procedure TGDAXOrdersImpl.SetProduct(Const Value: IGDAXProduct);
 begin
-  FProduct:=Value;
+  FProduct := Value;
 end;
 
 procedure TGDAXOrdersImpl.SetStatuses(Const Value: TOrderStatuses);
 begin
-  FStatuses:=Value;
+  FStatuses := Value;
 end;
 
 function TGDAXOrdersImpl.GetPaged: IGDAXPaged;
 begin
-  Result:=Self as IGDAXPaged;
+  Result := Self as IGDAXPaged;
 end;
 
 end.

@@ -38,6 +38,7 @@ type
     FMarketType: TMarketType;
     FAskSize: Single;
     FBidSize: Single;
+  protected
     function GetLevel: TGDAXBookLevel;
     procedure SetLevel(Const Value: TGDAXBookLevel);
     function GetProduct: IGDAXProduct;
@@ -68,7 +69,8 @@ type
   end;
 implementation
 uses
-  SynCrossPlatformJSON;
+  fpjson,
+  jsonparser;
 
 { TGDAXBookImpl }
 
@@ -76,7 +78,7 @@ procedure TGDAXBookImpl.ClearMetaData;
 begin
   FAskList.Clear;
   FBidList.Clear;
-  FMarketType:=mtUnknown;
+  FMarketType := mtUnknown;
   FBidSize:=0;
   FAskSize:=0;
 end;
@@ -84,9 +86,9 @@ end;
 constructor TGDAXBookImpl.Create;
 begin
   inherited;
-  FAskList:=TGDAXBookEntryList.Create;
-  FBidList:=TGDAXBookEntryList.Create;
-  FLevel:=blOne;
+  FAskList := TGDAXBookEntryList.Create;
+  FBidList := TGDAXBookEntryList.Create;
+  FLevel := blOne;
 end;
 
 destructor TGDAXBookImpl.Destroy;
@@ -99,13 +101,13 @@ end;
 function TGDAXBookImpl.DoGet(Const AEndpoint: string; Const AHeaders: TStrings;
   out Content, Error: string): Boolean;
 begin
-  Result:=False;
+  Result := False;
   if not Assigned(FProduct) then
   begin
-    Error:=Format(E_UNKNOWN,['OrderProduct',Self.ClassName]);
+    Error := Format(E_UNKNOWN,['OrderProduct',Self.ClassName]);
     Exit;
   end;
-  Result:=inherited;
+  Result := inherited;
 end;
 
 function TGDAXBookImpl.DoGetSupportedOperations: TRestOperations;
@@ -116,7 +118,9 @@ end;
 function TGDAXBookImpl.DoLoadFromJSON(Const AJSON: string;
   out Error: string): Boolean;
 var
-  LJSON,LAsks,LBids:TJSONVariantData;
+  LJSON : TJSONObject;
+  LAsks,
+  LBids : TJSONArray;
   LEntry:TBookEntry;
   I: Integer;
 const
@@ -126,145 +130,158 @@ const
   SZ_IX = 1;
   OTHER_IX = 2;
 begin
-  Result:=False;
+  Result := False;
   try
-    LEntry:=nil;
+    LEntry := nil;
     FAskList.Clear;
     FBidList.Clear;
     ClearMetaData;
-    if not LJSON.FromJSON(AJSON) then
-    begin
-      Error:=E_BADJSON;
-      Exit;
-    end;
-    if LJSON.NameIndex(ENTRY_BID)<0 then
-    begin
-      Error:=Format(E_BADJSON_PROP,[ENTRY_BID]);
-      Exit;
-    end;
-    if LJSON.NameIndex(ENTRY_ASK)<0 then
-    begin
-      Error:=Format(E_BADJSON_PROP,[ENTRY_ASK]);
-      Exit;
-    end;
-    LBids:=LJSON.Data(ENTRY_BID)^;
-    LAsks:=LJSON.Data(ENTRY_ASK)^;
-    //fill out book for bids
-    for I:=0 to Pred(LBids.Count) do
-    begin
-      case FLevel of
-        blOne,blTwo:
-          begin
-            LEntry:=TAggregatedEntry.create(
-              TJSONVariantData(LBids.Item[I]).Item[PR_IX],
-              TJSONVariantData(LBids.Item[I]).Item[SZ_IX],
-              TJSONVariantData(LBids.Item[I]).Item[OTHER_IX]
-            );
-            FBidList.Add(LEntry);
-          end;
-        blThree:
-          begin
-            LEntry:=TFullEntry.create(
-              TJSONVariantData(LBids.Item[I]).Item[PR_IX],
-              TJSONVariantData(LBids.Item[I]).Item[SZ_IX],
-              TJSONVariantData(LBids.Item[I]).Item[OTHER_IX]
-            );
-            FBidList.Add(LEntry);
-          end;
+    LJSON := TJSONObject(GetJSON(AJSON));
+
+    if not Assigned(LJSON) then
+      raise Exception.Create(E_BADJSON);
+
+    try
+      if LJSON.Find(ENTRY_BID) <> nil then
+      begin
+        Error := Format(E_BADJSON_PROP,[ENTRY_BID]);
+        Exit;
       end;
-      LEntry.Side:=osBuy;
-      FBidSize:=FBidSize+LEntry.Size;
-    end;
-    //fill out book for asks
-    for I:=0 to Pred(LAsks.Count) do
-    begin
-      case FLevel of
-        blOne,blTwo:
-          begin
-            LEntry:=TAggregatedEntry.create(
-              TJSONVariantData(LAsks.Item[I]).Item[PR_IX],
-              TJSONVariantData(LAsks.Item[I]).Item[SZ_IX],
-              TJSONVariantData(LAsks.Item[I]).Item[OTHER_IX]
-            );
-            FAskList.Add(LEntry);
-          end;
-        blThree:
-          begin
-            LEntry:=TFullEntry.create(
-              TJSONVariantData(LAsks.Item[I]).Item[PR_IX],
-              TJSONVariantData(LAsks.Item[I]).Item[SZ_IX],
-              TJSONVariantData(LAsks.Item[I]).Item[OTHER_IX]
-            );
-            FAskList.Add(LEntry);
-          end;
+
+      if LJSON.Find(ENTRY_ASK) <> nil then
+      begin
+        Error := Format(E_BADJSON_PROP,[ENTRY_ASK]);
+        Exit;
       end;
-      LEntry.Side:=osSell;
-      FAskSize:=FAskSize+LEntry.Size;
+
+      LBids := LJSON.Arrays[ENTRY_BID];
+      LAsks := LJSON.Arrays[ENTRY_ASK];
+
+      //fill out book for bids
+      for I:=0 to Pred(LBids.Count) do
+      begin
+        case FLevel of
+          blOne,blTwo:
+            begin
+              LEntry := TAggregatedEntry.create(
+                TJSONArray(LBids.Items[I]).Items[PR_IX].AsFloat,
+                TJSONArray(LBids.Items[I]).Items[SZ_IX].AsFloat,
+                TJSONArray(LBids.Items[I]).Items[OTHER_IX].AsInt64
+              );
+              FBidList.Add(LEntry);
+            end;
+          blThree:
+            begin
+              LEntry := TFullEntry.create(
+                TJSONArray(LBids.Items[I]).Items[PR_IX].AsFloat,
+                TJSONArray(LBids.Items[I]).Items[SZ_IX].AsFloat,
+                TJSONArray(LBids.Items[I]).Items[OTHER_IX].AsString
+              );
+              FBidList.Add(LEntry);
+            end;
+        end;
+        LEntry.Side := osBuy;
+        FBidSize := FBidSize+LEntry.Size;
+      end;
+
+      //fill out book for asks
+      for I:=0 to Pred(LAsks.Count) do
+      begin
+        case FLevel of
+          blOne,blTwo:
+            begin
+              LEntry := TAggregatedEntry.create(
+                TJSONArray(LAsks.Items[I]).Items[PR_IX].AsFloat,
+                TJSONArray(LAsks.Items[I]).Items[SZ_IX].AsFloat,
+                TJSONArray(LAsks.Items[I]).Items[OTHER_IX].AsInt64
+              );
+
+              FAskList.Add(LEntry);
+            end;
+          blThree:
+            begin
+              LEntry := TFullEntry.create(
+                TJSONArray(LAsks.Items[I]).Items[PR_IX].AsFloat,
+                TJSONArray(LAsks.Items[I]).Items[SZ_IX].AsFloat,
+                TJSONArray(LAsks.Items[I]).Items[OTHER_IX].AsString
+              );
+
+              FAskList.Add(LEntry);
+            end;
+        end;
+
+        LEntry.Side := osSell;
+        FAskSize := FAskSize+LEntry.Size;
+      end;
+
+      //more buying than selling means its a sellers market
+      if FBidSize > FAskSize then
+        FMarketType := mtSellers
+      else if FBidSize < FAskSize then
+        FMarketType := mtBuyers
+      else
+        FMarketType := mtUnknown;
+
+      Result := True;
+    finally
+      LJSON.Free;
     end;
-    //more buying than selling means its a sellers market
-    if FBidSize>FAskSize then
-      FMarketType:=mtSellers
-    else if FBidSize<FAskSize then
-      FMarketType:=mtBuyers
-    else
-      FMarketType:=mtUnknown;
-    Result:=True;
   except on E: Exception do
-    Error:=E.Message;
+    Error := E.Message;
   end;
 end;
 
 function TGDAXBookImpl.GetAskList: TGDAXBookEntryList;
 begin
-  Result:=FAskList;
+  Result := FAskList;
 end;
 
 function TGDAXBookImpl.GetAskSize: Single;
 begin
-  Result:=FAskSize;
+  Result := FAskSize;
 end;
 
 function TGDAXBookImpl.GetBidList: TGDAXBookEntryList;
 begin
-  Result:=FBidList;
+  Result := FBidList;
 end;
 
 function TGDAXBookImpl.GetBidSize: Single;
 begin
-  Result:=FBidSize;
+  Result := FBidSize;
 end;
 
 function TGDAXBookImpl.GetEndpoint(Const AOperation: TRestOperation): string;
 begin
   if AOperation=roGet then
-    Result:=Format(GDAX_END_API_BOOK,[FProduct.ID,Ord(FLevel)]);
+    Result := Format(GDAX_END_API_BOOK,[FProduct.ID,Ord(FLevel)]);
 end;
 
 function TGDAXBookImpl.GetLevel: TGDAXBookLevel;
 begin
-  Result:=FLevel;
+  Result := FLevel;
 end;
 
 function TGDAXBookImpl.GetMarketType: TMarketType;
 begin
-  Result:=FMarketType;
+  Result := FMarketType;
 end;
 
 function TGDAXBookImpl.GetProduct: IGDAXProduct;
 begin
-  Result:=FProduct;
+  Result := FProduct;
 end;
 
 procedure TGDAXBookImpl.SetLevel(Const Value: TGDAXBookLevel);
 begin
   ClearMetaData;
-  FLevel:=Value;
+  FLevel := Value;
 end;
 
 procedure TGDAXBookImpl.SetProduct(Const Value: IGDAXProduct);
 begin
   ClearMetaData;
-  FProduct:=Value;
+  FProduct := Value;
 end;
 
 end.

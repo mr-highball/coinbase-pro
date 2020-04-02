@@ -1,6 +1,3 @@
-[submodule "src/mORMot"]
-	path = src/mORMot
-	url = https://github.com/synopse/mORMot.git
 [submodule "src/HashLib4Pascal"]
 	path = src/HashLib4Pascal
 	url = https://github.com/Xor-el/HashLib4Pascal.git

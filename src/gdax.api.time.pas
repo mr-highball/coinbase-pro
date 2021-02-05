@@ -103,13 +103,13 @@ begin
         Exit;
       end;
 
-      if LJSON.Find(PROP_ISO) <> nil then
+      if LJSON.Find(PROP_ISO) = nil then
       begin
         Error := E_BADJSON;
         Exit;
       end;
       FISO := LJSON.Get(PROP_ISO);
-      if LJSON.Find(PROP_EPOCH) <> nil then
+      if LJSON.Find(PROP_EPOCH) = nil then
       begin
         Error := E_BADJSON;
         Exit;

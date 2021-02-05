@@ -142,13 +142,13 @@ begin
       raise Exception.Create(E_BADJSON);
 
     try
-      if LJSON.Find(ENTRY_BID) <> nil then
+      if LJSON.Find(ENTRY_BID) = nil then
       begin
         Error := Format(E_BADJSON_PROP,[ENTRY_BID]);
         Exit;
       end;
 
-      if LJSON.Find(ENTRY_ASK) <> nil then
+      if LJSON.Find(ENTRY_ASK) = nil then
       begin
         Error := Format(E_BADJSON_PROP,[ENTRY_ASK]);
         Exit;

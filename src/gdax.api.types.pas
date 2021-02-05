@@ -747,7 +747,7 @@ begin
     FBalance := LJSON.Get(PROP_BALANCE);
     FLedgerType := StringToLedgerType(LJSON.Get(PROP_TYPE));
 
-    if Assigned(LJSON.Find(PROP_DETAILS)) then
+    if not Assigned(LJSON.Find(PROP_DETAILS)) then
       raise Exception.Create(Format(E_INVALID,['details json','json object']));
 
     LDetails := LJSON.Objects[PROP_DETAILS];

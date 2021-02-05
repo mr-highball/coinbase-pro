@@ -143,7 +143,7 @@ begin
     end;
 
     //extract id from json
-    if LJSON.Find('id') <> nil then
+    if LJSON.Find('id') = nil then
     begin
       Error := Format(E_BADJSON_PROP, ['id']);
       Exit;
@@ -152,7 +152,7 @@ begin
       FID := LJSON.Get('id');
 
     //extract balance from json
-    if LJSON.Find('balance') <> nil then
+    if LJSON.Find('balance') = nil then
     begin
       Error := Format(E_BADJSON_PROP,['balance']);
       Exit;
@@ -161,7 +161,7 @@ begin
       FBalance := StrToFloatDef(LJSON.Get('balance'),0);
 
     //extract holds from json
-    if LJSON.Find('hold') <> nil then
+    if LJSON.Find('hold') = nil then
     begin
       Error := Format(E_BADJSON_PROP,['hold']);
       Exit;
@@ -170,7 +170,7 @@ begin
       FHolds := StrToFloatDef(LJSON.Get('hold'),0);
 
     //extract available from json
-    if LJSON.Find('available') <> nil then
+    if LJSON.Find('available') = nil then
     begin
       Error := Format(E_BADJSON_PROP,['available']);
       Exit;
@@ -179,7 +179,7 @@ begin
       FAvailable := StrToFloatDef(LJSON.Get('available'),0);
 
     //extract currency from json
-    if LJSON.Find('currency') <> nil then
+    if LJSON.Find('currency') = nil then
     begin
       Error := Format(E_BADJSON_PROP,['currency']);
       Exit;

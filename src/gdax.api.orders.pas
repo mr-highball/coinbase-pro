@@ -304,7 +304,7 @@ begin
     try
 
     //id is required in all situations
-    if LJSON.Find(PROP_ID) <> nil then
+    if LJSON.Find(PROP_ID) = nil then
     begin
       Error := Format(E_BADJSON_PROP,[PROP_ID]);
       Exit;
@@ -313,13 +313,13 @@ begin
       FID := LJSON.Get(PROP_ID);
 
     //Price per bitcoin (not required)
-    if LJSON.Find(PROP_PRICE) <> nil then
+    if LJSON.Find(PROP_PRICE) = nil then
       FPrice:=0
     else
       FPrice := StrToFloat(LJSON.Get(PROP_PRICE));
 
     //Amount of BTC to buy or sell
-    if LJSON.Find(PROP_SIZE) <> nil then
+    if LJSON.Find(PROP_SIZE) = nil then
     begin
       Error := Format(E_BADJSON_PROP,[PROP_SIZE]);
       Exit;
@@ -328,7 +328,7 @@ begin
       FSize := StrToFloat(LJSON.Get(PROP_SIZE));
 
     //product id is the type of currency
-    if LJSON.Find(PROP_PROD) <> nil then
+    if LJSON.Find(PROP_PROD) = nil then
     begin
       Error := Format(E_BADJSON_PROP,[PROP_PROD]);
       Exit;
@@ -337,7 +337,7 @@ begin
       FProduct.ID := LJSON.Get(PROP_PROD);
 
     //side is buying or selling
-    if LJSON.Find(PROP_SIDE) <> nil then
+    if LJSON.Find(PROP_SIDE) = nil then
     begin
       Error := Format(E_BADJSON_PROP,[PROP_SIDE]);
       Exit;
@@ -346,7 +346,7 @@ begin
       FSide := StringToOrderSide(LJSON.Get(PROP_SIDE));
 
     //type of the order (limit/market)
-    if LJSON.Find(PROP_TYPE) <> nil then
+    if LJSON.Find(PROP_TYPE) = nil then
     begin
       Error := Format(E_BADJSON_PROP,[PROP_TYPE]);
       Exit;
@@ -355,7 +355,7 @@ begin
       FType := StringToOrderType(LJSON.Get(PROP_TYPE));
 
     //status of the order
-    if LJSON.Find(PROP_STATUS) <> nil then
+    if LJSON.Find(PROP_STATUS) = nil then
     begin
       Error := Format(E_BADJSON_PROP,[PROP_STATUS]);
       Exit;
@@ -364,7 +364,7 @@ begin
       FStatus := StringToOrderStatus(LJSON.Get(PROP_STATUS));
 
     //post only is for limit orders, but should still come back in response
-    if LJSON.Find(PROP_POST) <> nil then
+    if LJSON.Find(PROP_POST) = nil then
     begin
       Error := Format(E_BADJSON_PROP,[PROP_POST]);
       Exit;
@@ -373,7 +373,7 @@ begin
       FPostOnly := LJSON.Get(PROP_POST);
 
     //settled
-    if LJSON.Find(PROP_SETTLED) <> nil then
+    if LJSON.Find(PROP_SETTLED) = nil then
     begin
       Error := Format(E_BADJSON_PROP,[PROP_SETTLED]);
       Exit;
@@ -382,7 +382,7 @@ begin
       FSettled := LJSON.Get(PROP_SETTLED);
 
     //fill fees
-    if LJSON.Find(PROP_FEE) <> nil then
+    if LJSON.Find(PROP_FEE) = nil then
     begin
       Error := Format(E_BADJSON_PROP,[PROP_FEE]);
       Exit;
@@ -391,7 +391,7 @@ begin
       FFillFees := StrToFloat(LJSON.Get(PROP_FEE));
 
     //filled size is how much of size is actually filled
-    if LJSON.Find(PROP_FILL) <> nil then
+    if LJSON.Find(PROP_FILL) = nil then
     begin
       Error := Format(E_BADJSON_PROP,[PROP_FILL]);
       Exit;
@@ -400,7 +400,7 @@ begin
       FFilledSize := StrToFloat(LJSON.Get(PROP_FILL));
 
     //executed value
-    if LJSON.Find(PROP_EXEC) <> nil then
+    if LJSON.Find(PROP_EXEC) = nil then
     begin
       Error := Format(E_BADJSON_PROP,[PROP_EXEC]);
       Exit;
@@ -409,13 +409,13 @@ begin
       FExecutedValue := StrToFloat(LJSON.Get(PROP_EXEC));
 
     //rejected reason may or may not be here
-    if LJSON.Find(PROP_REJECT) <> nil then
+    if LJSON.Find(PROP_REJECT) = nil then
       FRejectReason:=''
     else
       FRejectReason := LJSON.Get(PROP_REJECT);
 
     //create time in utc of the order
-    if LJSON.Find(PROP_CREATE) <> nil then
+    if LJSON.Find(PROP_CREATE) = nil then
     begin
       Error := Format(E_BADJSON_PROP,[PROP_CREATE]);
       Exit;

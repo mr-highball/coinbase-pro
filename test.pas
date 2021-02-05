@@ -338,7 +338,7 @@ begin
   end;
   memo_order_output.Text := LContent;
   while not (
-    LOrder.OrderStatus in [stActive,stOpen,stDone,stCancelled,stRejected]
+    LOrder.OrderStatus in [stActive,stOpen,stDone,stCancelled,stRejected,stSettled]
   ) do
   begin
     Application.ProcessMessages;
@@ -538,6 +538,8 @@ begin
   Result := TGDAXOrderImpl.Create;
   Result.Authenticator := FAuthenticator;
   Result.Product.ID := AProductID;
+  Result.Product.Authenticator := FAuthenticator;
+  Result.Product.Get(Content, LError);
   Result.Side := ASide;
   Result.OrderType := AType;
   Result.Size := ASize;

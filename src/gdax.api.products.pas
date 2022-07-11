@@ -316,21 +316,21 @@ begin
       if Assigned(LJSON.Find(PROP_BASE_MIN)) then
         FBaseMinSize := 0.00000001
       else
-        FBaseMinSize := LJSON.Get(PROP_BASE_MIN);
+        FBaseMinSize := LJSON.Get(PROP_BASE_MIN, 0.00000001);
 
       if Assigned(LJSON.Find(PROP_BASE_MAX)) then
         FBaseMaxSize := 99999999
       else
-        FBaseMaxSize := LJSON.Get(PROP_BASE_MAX);
+        FBaseMaxSize := LJSON.Get(PROP_BASE_MAX, 99999999);
 
       FQuoteCurrency := LJSON.Get(PROP_QUOTE_CUR);
       FQuoteIncrement := LJSON.Get(PROP_QUOTE_INC);
 
       if Assigned(LJSON.Find(PROP_MIN_MARKET_FUNDS)) then
-        FMinMarketFunds := LJSON.Get(PROP_MIN_MARKET_FUNDS);
+        FMinMarketFunds := LJSON.Get(PROP_MIN_MARKET_FUNDS, 0.00000001);
 
       if Assigned(LJSON.Find(PROP_MAX_MARKET_FUNDS)) then
-        FMaxMarketFunds := LJSON.Get(PROP_MAX_MARKET_FUNDS);
+        FMaxMarketFunds := LJSON.Get(PROP_MAX_MARKET_FUNDS, 99999999);
 
       Result := True;
     finally

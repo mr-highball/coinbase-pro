@@ -213,8 +213,14 @@ begin
   memo_base_web.Lines.Clear;
   memo_base_web.Lines.Add(TestTimeEndpoint);
   memo_base_web.Lines.Add('ticker test');
+
   if not LTicker.Get(LContent,LError) then
+  begin
     memo_base_web.Lines.Add('--Failure--');
+  end
+  else
+    memo_base_web.Append('min order size: ' + FloatToStr(LTicker.Product.BaseMinSize));
+
   memo_base_web.Lines.Add(LContent);
   memo_base_web.Lines.Add('candles test');
   if not LCandles.Get(LContent,LError) then

@@ -176,7 +176,22 @@ begin
 end;
 
 function TGDAXTickerImpl.GetProduct: IGDAXProduct;
+var
+  LMin: Extended;
 begin
+  //auto-calc base min for deprecated property (backwards compat)
+  //https://github.com/mr-highball/coinbase-pro/issues/8
+  if Assigned(FProduct) then
+  begin
+    //notional is placed in the min_market_funds
+    //https://docs.cloud.coinbase.com/exchange/docs/changelog#2022-jun-02
+    if FPrice <> 0 then
+    begin
+      LMin := FProduct.MinMarketFunds / FPrice;
+      FProduct.BaseMinSize := LMin;
+    end;
+  end;
+
   Result := FProduct;
 end;
 

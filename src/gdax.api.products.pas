@@ -79,12 +79,12 @@ type
     property ID : String read GetID write SetID;
     property BaseCurrency : String read GetBaseCurrency write SetBaseCurrency;
     property QuoteCurrency : String read GetQuoteCurrency write SetQuoteCurrency;
-    property BaseMinSize : Extended read GetBaseMinSize write SetBaseMinSize;
-    property BaseMaxSize : Extended read GetBaseMaxSize write SetBaseMaxSize;
+    property BaseMinSize : Extended read GetBaseMinSize write SetBaseMinSize; deprecated;
+    property BaseMaxSize : Extended read GetBaseMaxSize write SetBaseMaxSize; deprecated;
     property QuoteIncrement : Extended read GetQuoteIncrement
       write SetQuoteIncrement;
     property MinMarketFunds : Extended read GetMinMarket write SetMinMarket;
-    property MaxMarketFunds : Extended read GetMaxMarket write SetMaxMarket;
+    property MaxMarketFunds : Extended read GetMaxMarket write SetMaxMarket; deprecated;
   end;
 
   { TGDAXProductsImpl }
@@ -312,8 +312,17 @@ begin
     try
       FID := LJSON.Get(PROP_ID);
       FBaseCurrency := LJSON.Get(PROP_BASE_CUR);
-      FBaseMinSize := LJSON.Get(PROP_BASE_MIN);
-      FBaseMaxSize := LJSON.Get(PROP_BASE_MAX);
+
+      if Assigned(LJSON.Find(PROP_BASE_MIN)) then
+        FBaseMinSize := 0.00000001
+      else
+        FBaseMinSize := LJSON.Get(PROP_BASE_MIN);
+
+      if Assigned(LJSON.Find(PROP_BASE_MAX)) then
+        FBaseMaxSize := 99999999
+      else
+        FBaseMaxSize := LJSON.Get(PROP_BASE_MAX);
+
       FQuoteCurrency := LJSON.Get(PROP_QUOTE_CUR);
       FQuoteIncrement := LJSON.Get(PROP_QUOTE_INC);
 
